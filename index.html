@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>PRD — AI-Powered BIN Procurement Tracker</title>
+<title>PRD — AI-Powered Multi-Project Tracker</title>
 <style>
   :root {
     --primary: #1a3a5c;
@@ -332,15 +332,15 @@
 <!-- ══════════════ HEADER ══════════════ -->
 <header>
   <div class="badge">Product Requirements Document</div>
-  <h1>AI-Powered BIN Procurement Tracker</h1>
-  <p>Intelligent project management for New Bank Identification Number (BIN) procurement workflows — from network request through card launch.</p>
+  <h1>AI-Powered Multi-Project Tracker</h1>
+  <p>Intelligent platform for tracking multiple concurrent projects in real time — powered by <strong>Jira, Confluence, Smartsheet, or Excel</strong>. BIN Procurement (new card launch) is featured as the reference implementation, demonstrating how spreadsheet or tool updates surface instantly as live project status.</p>
   <div class="meta-row">
     <span><strong>Version:</strong> 1.0</span>
     <span><strong>Date:</strong> May 2026</span>
     <span><strong>Author:</strong> Robin Khatwani</span>
     <span><strong>Status:</strong> <span class="tag orange">Draft</span></span>
-    <span><strong>Domain:</strong> Card Payments / FinTech</span>
-    <span><strong>Stakeholders:</strong> Issuer · Network · Processor · Embosser</span>
+    <span><strong>Domain:</strong> Project Management / Enterprise SaaS</span>
+    <span><strong>Stakeholders:</strong> Project Managers · Product Teams · Operations · Procurement</span>
   </div>
 </header>
 
@@ -354,8 +354,8 @@
   <a href="#prompts">7. Prompt Strategy</a>
   <a href="#ai-risk">8. Responsible AI</a>
   <a href="#pricing">9. Pricing</a>
-  <a href="#pilot-tech">10. Pilot Scope</a>
-  <a href="#flowdiagram">Process Flow</a>
+  <a href="#pilot-tech">10. BIN Example Pilot</a>
+  <a href="#flowdiagram">BIN Example Flow</a>
 </nav>
 
 <main>
@@ -366,15 +366,16 @@
     <div class="section-num">1</div>
     <div class="section-title">
       <h2>Problem Definition</h2>
-      <p>Why this product needs to exist</p>
+      <p>Why multi-party project tracking fails without a unified platform</p>
     </div>
   </div>
 
   <h3>Background</h3>
-  <p>Launching a new payment card requires procuring a Bank Identification Number (BIN) from the card network (e.g., Mastercard, Visa). This is a complex, multi-party process involving the <strong>Issuer</strong> (the bank or card company), the <strong>Network</strong> (scheme provider), the <strong>Processor</strong> (transaction processor), and the <strong>Embosser</strong> (card manufacturer). Collectively, these parties must coordinate across <strong>31 sequential and parallel steps</strong> spanning ~5 months.</p>
+  <p>Organizations managing complex, multi-party projects — such as procurement cycles, product launches, or regulatory workflows — must coordinate across dozens of sequential and parallel steps involving multiple stakeholder groups. Without a unified tracking platform, these projects are typically managed through disconnected tools: static Excel or Smartsheet files, siloed Jira boards, or scattered Confluence pages — with no cross-tool visibility, no dependency intelligence, and no automated risk detection.</p>
+  <p><strong>Reference Example — BIN Procurement:</strong> Launching a new payment card requires procuring a Bank Identification Number (BIN) from the card network (e.g., Mastercard, Visa). This is a complex, multi-party process involving the <strong>Issuer</strong> (the bank or card company), the <strong>Network</strong> (scheme provider), the <strong>Processor</strong> (transaction processor), and the <strong>Embosser</strong> (card manufacturer). Collectively, these parties must coordinate across <strong>31 sequential and parallel steps</strong> spanning ~5 months — and currently do so through a static Excel file with no automation. This serves as the pilot use case for the platform.</p>
 
   <h3>Core Pain Points</h3>
-  <p>Based on the project tracking sheet, the following problems have been identified:</p>
+  <p>Observed across multi-party project workflows (BIN Procurement used as the reference dataset):</p>
 
   <table>
     <thead>
@@ -422,16 +423,16 @@
 
   <h3>Problem Statement</h3>
   <div class="callout">
-    BIN procurement for new card launches is a high-stakes, multi-party, sequentially dependent process that is currently managed through static spreadsheets with no automation, no real-time visibility, no dependency intelligence, and no risk prediction — resulting in delays, compliance gaps, and excessive PM overhead.
+    Complex, multi-party projects — tracked across Excel, Smartsheet, Jira, or Confluence — currently lack a unified platform that provides real-time cross-tool visibility, dependency intelligence, and AI-driven risk prediction. The result is delays, missed milestones, and excessive manual coordination overhead. <strong>BIN Procurement</strong> (a 31-step, 4-party card launch workflow) exemplifies this problem and serves as the platform's reference implementation.
   </div>
 
   <h3>Who Is Affected</h3>
   <p>
-    <span class="tag">Card Issuers (Banks / FinTechs)</span>
-    <span class="tag">Card Network PMs</span>
-    <span class="tag">Payment Processors</span>
-    <span class="tag">Card Embossers</span>
-    <span class="tag">Program Managers overseeing card launches</span>
+    <span class="tag">Program Managers overseeing multi-party projects</span>
+    <span class="tag">Product &amp; Delivery Teams</span>
+    <span class="tag">Operations &amp; Procurement Teams</span>
+    <span class="tag">Executive Sponsors needing project health summaries</span>
+    <span class="tag">Card Issuers / Networks / Processors (BIN example)</span>
   </p>
 
   <h3>Current State vs. Desired State</h3>
@@ -456,12 +457,12 @@
     <div class="section-num">2</div>
     <div class="section-title">
       <h2>Solution Definition</h2>
-      <p>What we are building and why it solves the problem</p>
+      <p>A universal multi-project tracking platform — connected to Jira, Confluence, Smartsheet, and Excel</p>
     </div>
   </div>
 
   <h3>Product Vision</h3>
-  <p>An <strong>AI-powered BIN Procurement Tracker</strong> — a collaborative, intelligent project management platform purpose-built for payment card launch workflows. The system ingests project milestones, tracks multi-party progress, predicts risks using AI, and automates stakeholder communication — reducing card launch time and eliminating manual coordination overhead.</p>
+  <p>An <strong>AI-powered Multi-Project Tracker</strong> — a collaborative, intelligent project management platform for tracking multiple complex projects simultaneously. The system connects to existing tools (Jira, Confluence, Smartsheet, or Excel), ingests live project data, tracks multi-party progress across all active projects, predicts risks using AI, and automates stakeholder communication. <strong>BIN Procurement</strong> (new payment card launch) is the pilot implementation, demonstrating how updates made in Excel or Smartsheet surface immediately as live project status — without manual re-entry.</p>
 
   <h3>Core Capabilities</h3>
   <table>
@@ -476,7 +477,7 @@
       </tr>
       <tr>
         <td><strong>Multi-source Import</strong></td>
-        <td>Project data ingested from <strong>Excel (.xlsx)</strong>, <strong>Smartsheet</strong> (via API or CSV export), or <strong>Jira</strong> (via REST API) — all three are valid configuration sources</td>
+        <td>Project data ingested from <strong>Excel (.xlsx)</strong>, <strong>Smartsheet</strong> (via API or CSV export), <strong>Jira</strong> (via REST API), or <strong>Confluence</strong> (via API) — all four are valid, interchangeable configuration sources per project</td>
         <td>No (Core)</td>
       </tr>
       <tr>
@@ -519,7 +520,7 @@
 
   <h3>Solution Architecture (High-Level)</h3>
   <p>The platform is structured in three layers:</p>
-  <p><strong>Data Layer:</strong> Project configuration (steps, owners, dates) imported from <strong>Excel (.xlsx)</strong>, <strong>Smartsheet</strong> (via API or CSV export), or <strong>Jira</strong> (via REST API) — or entered manually via UI. Data stored in a relational DB with event sourcing for audit logs.</p>
+  <p><strong>Data Layer:</strong> Project configuration (steps, owners, dates) imported from <strong>Excel (.xlsx)</strong>, <strong>Smartsheet</strong> (via API or CSV export), <strong>Jira</strong> (via REST API), or <strong>Confluence</strong> (via API) — or entered manually via UI. Multiple projects can run simultaneously, each connected to a different source. Data is stored in a relational DB with event sourcing for audit logs. In the BIN Procurement pilot, a simple save to Excel or Smartsheet triggers a live status refresh with zero manual re-entry.</p>
   <p><strong>Intelligence Layer:</strong> An LLM-based AI engine (Claude / GPT-4o class) handles risk prediction, reminder generation, and status summarization. Prompts are structured, deterministic, and auditable.</p>
   <p><strong>Presentation Layer:</strong> A web portal with role-based dashboards, a timeline view, and an API for integration with existing PM tools (Jira, ServiceNow, etc.).</p>
 
@@ -543,13 +544,13 @@
     <div class="section-num">3</div>
     <div class="section-title">
       <h2>Core Metrics</h2>
-      <p>How we measure success at each level</p>
+      <p>How we measure success across all tracked projects</p>
     </div>
   </div>
 
   <h3>North Star Metric</h3>
   <div class="callout">
-    <strong>On-Time Card Launch Rate</strong> — % of BIN procurement projects completed on or before target launch date. Target: ≥ 90% within 6 months of deployment.
+    <strong>On-Time Project Delivery Rate</strong> — % of active projects completed on or before their target delivery date, across all project types tracked on the platform. Target: ≥ 90% within 6 months of deployment. <em>(BIN Procurement pilot target: ≥ 90% of card launches on time.)</em>
   </div>
 
   <div class="metric-grid">
@@ -617,7 +618,7 @@
     <div class="section-num">4</div>
     <div class="section-title">
       <h2>Prioritization</h2>
-      <p>MoSCoW framework — what we build and when</p>
+      <p>MoSCoW framework — what we build and when, across the multi-project platform</p>
     </div>
   </div>
 
@@ -627,9 +628,9 @@
     <div class="priority-card must">
       <div class="ptitle" style="color:#1a7a4a">🟢 Must Have (Phase 1 — MVP)</div>
       <ul>
-        <li>All 31 step milestone tracker with status (To Do / In Progress / Done / Blocked)</li>
-        <li>Excel (.xlsx) import for project configuration</li>
-        <li>Smartsheet CSV / API import as an equivalent input source</li>
+        <li>Multi-step milestone tracker with status (To Do / In Progress / Done / Blocked) — configurable per project type</li>
+        <li>Excel (.xlsx) import for project configuration (live read-on-request)</li>
+        <li>Smartsheet CSV / API import as an equivalent live data source</li>
         <li>Estimated vs. actual date tracking per step</li>
         <li>Responsible party assignment per step</li>
         <li>Basic dependency blocking (step N+1 cannot start until step N complete)</li>
@@ -646,9 +647,9 @@
         <li>AI smart nudges — context-aware, personalized reminder text</li>
         <li>Executive weekly AI status summary</li>
         <li>Critical path highlighting on timeline view</li>
-        <li>Multi-project dashboard (multiple BIN procurements in parallel)</li>
+        <li>Multi-project dashboard — track multiple projects simultaneously with unified status view</li>
         <li>Slack / Teams integration for in-app notifications</li>
-        <li>Jira / Smartsheet / ServiceNow bi-directional task sync</li>
+        <li>Jira / Confluence / Smartsheet / ServiceNow bi-directional task sync</li>
       </ul>
     </div>
     <div class="priority-card could">
@@ -681,7 +682,7 @@
     <div class="section-num">5</div>
     <div class="section-title">
       <h2>Roadmap</h2>
-      <p>Phased delivery plan — June 2026 to Q1 2027</p>
+      <p>Phased delivery plan — June 2026 to Q1 2027 (BIN Procurement as Phase 1 pilot project)</p>
     </div>
   </div>
 
@@ -689,11 +690,11 @@
     <div class="rm-phase">
       <div class="rm-dot p1">P1</div>
       <div class="rm-content">
-        <div class="rm-date">Phase 1 · Jun – Jul 2026 · MVP</div>
-        <h3>Core Tracker + Multi-Party Portal</h3>
+        <div class="rm-date">Phase 1 · Jun – Jul 2026 · MVP — BIN Procurement Pilot</div>
+        <h3>Core Multi-Project Tracker + Multi-Party Portal</h3>
         <div class="rm-items">
-          <span class="rm-item">31-step milestone tracker</span>
-          <span class="rm-item">Excel / Smartsheet / Jira import engine</span>
+          <span class="rm-item">Configurable milestone tracker (BIN: 31 steps)</span>
+          <span class="rm-item">Excel / Smartsheet / Jira / Confluence import engine</span>
           <span class="rm-item">Role-based portal (4 parties)</span>
           <span class="rm-item">Dependency blocking logic</span>
           <span class="rm-item">Email reminders for overdue steps</span>
@@ -707,16 +708,16 @@
     <div class="rm-phase">
       <div class="rm-dot p2">P2</div>
       <div class="rm-content">
-        <div class="rm-date">Phase 2 · Aug – Sep 2026 · AI Intelligence Layer</div>
-        <h3>AI Risk Engine + Smart Communication</h3>
+        <div class="rm-date">Phase 2 · Aug – Sep 2026 · AI Intelligence Layer (across all projects)</div>
+        <h3>AI Risk Engine + Smart Cross-Project Communication</h3>
         <div class="rm-items">
-          <span class="rm-item">AI launch delay risk predictor</span>
+          <span class="rm-item">AI project delay risk predictor</span>
           <span class="rm-item">AI-generated smart nudges</span>
           <span class="rm-item">Weekly executive AI summary</span>
           <span class="rm-item">Critical path AI highlighting</span>
           <span class="rm-item">Slack / Teams notification integration</span>
-          <span class="rm-item">Multi-project dashboard</span>
-          <span class="rm-item">Jira &amp; Smartsheet sync (bi-directional)</span>
+          <span class="rm-item">Multi-project dashboard (track N projects simultaneously)</span>
+          <span class="rm-item">Jira, Confluence &amp; Smartsheet sync (bi-directional)</span>
         </div>
       </div>
     </div>
@@ -761,7 +762,7 @@
     <div class="section-num">6</div>
     <div class="section-title">
       <h2>Evaluation Plan</h2>
-      <p>How we validate the product works before and after launch</p>
+      <p>How we validate the platform works — using BIN Procurement as the pilot test case</p>
     </div>
   </div>
 
@@ -779,13 +780,13 @@
       </tr>
       <tr>
         <td><strong>Integration Testing</strong></td>
-        <td>Excel import → tracker, Smartsheet CSV/API import → tracker, Jira sync, email/Slack triggers</td>
+        <td>Excel import → tracker, Smartsheet CSV/API import → tracker, Jira sync, Confluence sync, email/Slack triggers</td>
         <td>Engineering + QA</td>
         <td>Zero data loss on import; notification delivery ≥ 99%</td>
       </tr>
       <tr>
         <td><strong>UAT — Phase 1</strong></td>
-        <td>2 pilot Issuer PMs complete a simulated BIN procurement in the tracker</td>
+        <td>2 pilot PMs complete a simulated BIN procurement project in the tracker (reference use case for multi-project platform)</td>
         <td>Product + Pilot Users</td>
         <td>Task success rate ≥ 90%; SUS score ≥ 70</td>
       </tr>
@@ -837,7 +838,7 @@
     <div class="section-num">7</div>
     <div class="section-title">
       <h2>Prompt Strategy</h2>
-      <p>How AI instructions are structured for reliable, safe outputs</p>
+      <p>How AI instructions are structured for reliable, safe outputs — prompts are project-type agnostic and configurable per source (Jira, Smartsheet, Excel, Confluence)</p>
     </div>
   </div>
 
@@ -845,8 +846,8 @@
   <p>All prompts follow four principles: <strong>Grounded</strong> (always use real project data, never hallucinate), <strong>Scoped</strong> (output length and format are explicitly constrained), <strong>Role-aware</strong> (audience and tone vary by recipient), and <strong>Auditable</strong> (every AI output is logged with its input context for traceability).</p>
 
   <h3>Prompt 1 — Risk Predictor</h3>
-  <p>Used when any step is marked overdue or flagged. Runs nightly.</p>
-  <div class="prompt-box"><span class="highlight">SYSTEM:</span> You are a payment card launch risk analyst. Your job is to assess the probability that a BIN procurement project will miss its target launch date based on current step statuses and delays. Be concise, factual, and data-driven. Do not speculate beyond the data provided.
+  <p>Used when any step is marked overdue or flagged. Runs nightly across all active projects. (Example below uses BIN Procurement context — project type is injected dynamically per project.)</p>
+  <div class="prompt-box"><span class="highlight">SYSTEM:</span> You are a senior project risk analyst. Your job is to assess the probability that a project will miss its target delivery date based on current step statuses and delays. Be concise, factual, and data-driven. Do not speculate beyond the data provided. The project type and workflow will be provided in context.
 
 <span class="highlight">USER:</span>
 Project: <span class="var">{{project_name}}</span>
@@ -889,8 +890,8 @@ Key Blockers: <span class="var">{{blockers}}</span>
 Write the executive summary. Start with overall health, then highlights, then risks, then ask.</div>
 
   <h3>Prompt 4 — Project Chatbot (Phase 3)</h3>
-  <p>Answers natural language questions about project status. Strictly constrained to project data — no external inference.</p>
-  <div class="prompt-box"><span class="highlight">SYSTEM:</span> You are a helpful project assistant with access to a BIN procurement project tracker. Answer only based on the provided project data. If information is not in the data, say "I don't have that information." Never guess or extrapolate. Keep answers under 3 sentences.
+  <p>Answers natural language questions about any project tracked on the platform. Strictly constrained to project data — no external inference. Works across Jira, Smartsheet, Excel, and Confluence data sources.</p>
+  <div class="prompt-box"><span class="highlight">SYSTEM:</span> You are a helpful project assistant with access to a multi-project tracker. You may be asked about any active project — the project name and data will be provided. Answer only based on the provided project data. If information is not in the data, say "I don't have that information." Never guess or extrapolate. Keep answers under 3 sentences.
 
 <span class="highlight">USER:</span>
 [Project data JSON: <span class="var">{{project_snapshot}}</span>]
@@ -914,12 +915,12 @@ User question: <span class="var">{{user_question}}</span></div>
     <div class="section-num">8</div>
     <div class="section-title">
       <h2>Responsible AI Risk &amp; Mitigation</h2>
-      <p>Ethical, security, and compliance considerations for AI features</p>
+      <p>Ethical, security, and compliance considerations — applicable across all project types and data sources</p>
     </div>
   </div>
 
   <div class="callout warn">
-    This product operates in the regulated payments domain. AI features interact with sensitive project data including card key management workflows, non-liability letters, and multi-party settlement processes. All AI risks below are assessed with this context in mind.
+    This platform tracks multiple project types across Jira, Confluence, Smartsheet, and Excel — including potentially sensitive workflows such as procurement, compliance, and security processes. AI features interact with live project data from these sources. All AI risks below are assessed in this context, with the BIN Procurement pilot (card key management, settlement, non-liability processes) as the reference risk scenario.
   </div>
 
   <table>
@@ -1002,12 +1003,12 @@ User question: <span class="var">{{user_question}}</span></div>
     <div class="section-num">9</div>
     <div class="section-title">
       <h2>Pricing &amp; Cost Structure</h2>
-      <p>Commercial model and underlying cost assumptions</p>
+      <p>Commercial model for the multi-project tracking platform — scaled by number of concurrent projects and data sources</p>
     </div>
   </div>
 
   <h3>Pricing Model</h3>
-  <p>The platform uses a <strong>per-project SaaS subscription</strong> model, billed annually. Pricing scales with the number of active BIN procurement projects and the AI feature tier.</p>
+  <p>The platform uses a <strong>per-project SaaS subscription</strong> model, billed annually. Pricing scales with the number of active projects (any type), connected data sources (Jira, Confluence, Smartsheet, Excel), and the AI feature tier.</p>
 
   <div class="pricing-grid">
     <div class="pricing-card">
@@ -1138,18 +1139,18 @@ User question: <span class="var">{{user_question}}</span></div>
   <div class="section-header">
     <div class="section-num">10</div>
     <div class="section-title">
-      <h2>Pilot Technical Scope — Live Status Tracker</h2>
-      <p>Four deliverables built and deployed as part of the pilot programme</p>
+      <h2>Pilot Technical Scope — BIN Procurement Reference Implementation</h2>
+      <p>Four deliverables demonstrating how Excel/Smartsheet updates flow to a live multi-project dashboard — BIN Procurement as the example project</p>
     </div>
   </div>
 
   <div class="callout">
-    The pilot technical scope covers four concrete deliverables that bring the BIN Procurement Tracker to life as a working local web application — reading live data from the Excel source file and serving it through a browser-accessible dashboard.
+    The pilot demonstrates the core platform capability: <strong>update a cell in Excel or Smartsheet → save → the live dashboard refreshes automatically</strong>. BIN Procurement (31 steps, 4 parties, Jun–Oct 2026) is the example project. The same architecture scales to track multiple concurrent projects, each connected to its own Jira, Confluence, Smartsheet, or Excel source.
   </div>
 
   <!-- ── a. Status Tracker HTML ── -->
-  <h3>a. Status Tracker HTML with Executive Summary</h3>
-  <p>A fully self-contained, dynamically generated HTML page served at <code style="background:#f4f7fb;padding:1px 6px;border-radius:4px;font-size:13px;border:1px solid #d0daea">/bin-tracker</code> that provides:</p>
+  <h3>a. Live Status Tracker — BIN Procurement Example</h3>
+  <p>A fully self-contained, dynamically generated HTML page served at <code style="background:#f4f7fb;padding:1px 6px;border-radius:4px;font-size:13px;border:1px solid #d0daea">/bin-tracker</code> that reads live from Excel or Smartsheet and provides:</p>
 
   <table>
     <thead><tr><th>Component</th><th>Content</th><th>Data Source</th></tr></thead>
@@ -1230,8 +1231,8 @@ User question: <span class="var">{{user_question}}</span></div>
   </div>
 
   <!-- ── c. Landing Page ── -->
-  <h3>c. Landing Page — Project Hub</h3>
-  <p>A professional landing page served at <code style="background:#f4f7fb;padding:1px 6px;border-radius:4px;font-size:13px;border:1px solid #d0daea">http://localhost:8080</code> acting as a project hub. It contains a hyperlinked card to the BIN Procurement Status Tracker.</p>
+  <h3>c. Landing Page — Multi-Project Hub</h3>
+  <p>A professional landing page served at <code style="background:#f4f7fb;padding:1px 6px;border-radius:4px;font-size:13px;border:1px solid #d0daea">http://localhost:8080</code> acting as the multi-project hub. It contains a hyperlinked card for the BIN Procurement pilot project and is designed to display additional projects as cards without any routing changes.</p>
 
   <table>
     <thead><tr><th>Element</th><th>Description</th></tr></thead>
@@ -1244,7 +1245,7 @@ User question: <span class="var">{{user_question}}</span></div>
     </tbody>
   </table>
 
-  <p>The landing page is designed to be extensible — additional projects (e.g., a second BIN procurement or a renewal project) can be added as cards without modifying server routing.</p>
+  <p>The landing page is extensible by design — any additional project (e.g., a second BIN procurement, a Jira-sourced product launch, or a Confluence-backed compliance workflow) can be added as a card without modifying server routing. This makes it the foundation for the full multi-project platform.</p>
 
   <!-- ── d. Live Refresh ── -->
   <h3>d. Live Data Refresh Mechanism</h3>
@@ -1304,8 +1305,8 @@ User question: <span class="var">{{user_question}}</span></div>
   <div class="section-header">
     <div class="section-num" style="background:var(--accent2)">⬡</div>
     <div class="section-title">
-      <h2>BIN Procurement Process Flow</h2>
-      <p>All 31 steps — from Network Request to Project Close (Jun – Oct 2026)</p>
+      <h2>BIN Procurement — Reference Process Flow</h2>
+      <p>Example implementation: 31 steps tracked via Excel/Smartsheet, from Network Request to Card Launch (Jun – Oct 2026) — illustrating the platform's multi-step, multi-party tracking capability</p>
     </div>
   </div>
 
@@ -1708,8 +1709,8 @@ User question: <span class="var">{{user_question}}</span></div>
 </main>
 
 <footer>
-  <p>BIN Procurement Tracker PRD · Version 1.0 · May 2026 · Author: Robin Khatwani · Confidential — Internal Use Only</p>
-  <p style="margin-top:8px;">This document reflects the project structure in <em>Project_Input_BIN_SS.xlsx</em> (31 steps, Jun–Oct 2026)</p>
+  <p>Multi-Project Tracker PRD · BIN Procurement Reference Implementation · Version 1.0 · May 2026 · Author: Robin Khatwani · Confidential — Internal Use Only</p>
+  <p style="margin-top:8px;">Pilot data source: <em>Project_Input_BIN_SS.xlsx</em> (31 steps, Jun–Oct 2026) — compatible with Smartsheet CSV/API, Jira REST API, and Confluence API as drop-in replacements</p>
 </footer>
 
 </body>
