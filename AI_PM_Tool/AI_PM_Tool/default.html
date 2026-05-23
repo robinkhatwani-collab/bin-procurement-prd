@@ -18,9 +18,13 @@
       --accent-blue:  #4f8ef7;
       --accent-purple:#9f6ef5;
       --accent-teal:  #2dd4bf;
+      --accent-amber: #f59e0b;
+      --accent-rose:  #f472b6;
       --glow-blue:    rgba(79,142,247,0.25);
       --glow-purple:  rgba(159,110,245,0.25);
       --glow-teal:    rgba(45,212,191,0.25);
+      --glow-amber:   rgba(245,158,11,0.25);
+      --glow-rose:    rgba(244,114,182,0.25);
     }
 
     html, body {
@@ -246,6 +250,22 @@
     }
     .card--teal:hover { box-shadow: 0 20px 60px var(--glow-teal), 0 0 0 1px rgba(45,212,191,.2); }
 
+    /* amber card */
+    .card--amber {
+      --card-gradient: linear-gradient(90deg, var(--accent-amber), #fbbf24);
+      --card-glow: radial-gradient(ellipse at top left, var(--glow-amber), transparent 70%);
+      --card-border-hover: rgba(245,158,11,.4);
+    }
+    .card--amber:hover { box-shadow: 0 20px 60px var(--glow-amber), 0 0 0 1px rgba(245,158,11,.2); }
+
+    /* rose card */
+    .card--rose {
+      --card-gradient: linear-gradient(90deg, var(--accent-rose), #fb7185);
+      --card-glow: radial-gradient(ellipse at top left, var(--glow-rose), transparent 70%);
+      --card-border-hover: rgba(244,114,182,.4);
+    }
+    .card--rose:hover { box-shadow: 0 20px 60px var(--glow-rose), 0 0 0 1px rgba(244,114,182,.2); }
+
     /* icon */
     .card-icon {
       width: 56px; height: 56px;
@@ -261,6 +281,8 @@
     .card--blue  .card-icon { background: rgba(79,142,247,.15);  box-shadow: 0 0 20px rgba(79,142,247,.2); }
     .card--purple .card-icon { background: rgba(159,110,245,.15); box-shadow: 0 0 20px rgba(159,110,245,.2); }
     .card--teal  .card-icon { background: rgba(45,212,191,.15);  box-shadow: 0 0 20px rgba(45,212,191,.2); }
+    .card--amber .card-icon { background: rgba(245,158,11,.15);  box-shadow: 0 0 20px rgba(245,158,11,.2); }
+    .card--rose  .card-icon { background: rgba(244,114,182,.15); box-shadow: 0 0 20px rgba(244,114,182,.2); }
 
     .card-tag {
       display: inline-block;
@@ -278,6 +300,8 @@
     .card--blue   .card-tag { color: var(--accent-blue);   background: rgba(79,142,247,.12);  border: 1px solid rgba(79,142,247,.25); }
     .card--purple .card-tag { color: var(--accent-purple); background: rgba(159,110,245,.12); border: 1px solid rgba(159,110,245,.25); }
     .card--teal   .card-tag { color: var(--accent-teal);   background: rgba(45,212,191,.12);  border: 1px solid rgba(45,212,191,.25); }
+    .card--amber  .card-tag { color: var(--accent-amber);  background: rgba(245,158,11,.12);  border: 1px solid rgba(245,158,11,.25); }
+    .card--rose   .card-tag { color: var(--accent-rose);   background: rgba(244,114,182,.12); border: 1px solid rgba(244,114,182,.25); }
 
     .card h2 {
       font-size: 22px;
@@ -319,6 +343,8 @@
     .card--blue   .card-cta { color: var(--accent-blue); }
     .card--purple .card-cta { color: var(--accent-purple); }
     .card--teal   .card-cta { color: var(--accent-teal); }
+    .card--amber  .card-cta { color: var(--accent-amber); }
+    .card--rose   .card-cta { color: var(--accent-rose); }
 
     .card-meta {
       font-size: 11px;
@@ -745,6 +771,40 @@
       <div class="card-footer">
         <span class="card-cta">Explore learning →</span>
         <span class="card-meta">Grow every day</span>
+      </div>
+    </a>
+
+    <!-- Card 4 — Architecture Diagram -->
+    <a class="card card--rose" href="architecture-diagram.html">
+      <div class="card-icon">🏗️</div>
+      <div class="card-tag">Design</div>
+      <h2>Architecture Diagram</h2>
+      <p>Full system design — how AI agents generate project pages, how RAG powers the chatbot, and the complete user journey.</p>
+      <div class="stat-row">
+        <div class="stat-pill">🤖 AI Agent Flow</div>
+        <div class="stat-pill">🔍 RAG Pipeline</div>
+        <div class="stat-pill">🗺️ User Journey</div>
+      </div>
+      <div class="card-footer">
+        <span class="card-cta">View diagram →</span>
+        <span class="card-meta">5 sections</span>
+      </div>
+    </a>
+
+    <!-- Card 5 — Project PRD -->
+    <a class="card card--amber" href="PRD.html">
+      <div class="card-icon">📋</div>
+      <div class="card-tag">Document</div>
+      <h2>Project PRD</h2>
+      <p>Full Product Requirements Document for the AI-Powered Multi-Project Tracker — vision, scope, features, and technical spec.</p>
+      <div class="stat-row">
+        <div class="stat-pill">🎯 Vision</div>
+        <div class="stat-pill">📐 Scope</div>
+        <div class="stat-pill">⚙️ Tech Stack</div>
+      </div>
+      <div class="card-footer">
+        <span class="card-cta">Read PRD →</span>
+        <span class="card-meta">AI PM Tool</span>
       </div>
     </a>
 
