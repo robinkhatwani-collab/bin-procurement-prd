@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI PM Tool — Dashboard</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #0b0f1a;
+      --surface:     #111827;
+      --border:      rgba(255,255,255,0.08);
+      --text-primary: #f0f4ff;
+      --text-muted:   #8b9ab4;
+      --accent-blue:  #4f8ef7;
+      --accent-purple:#9f6ef5;
+      --accent-teal:  #2dd4bf;
+      --glow-blue:    rgba(79,142,247,0.25);
+      --glow-purple:  rgba(159,110,245,0.25);
+      --glow-teal:    rgba(45,212,191,0.25);
+    }
+
+    html, body {
+      min-height: 100vh;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      overflow-x: hidden;
+    }
+
+    /* ── animated mesh background ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 10%,  rgba(79,142,247,.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 80%,  rgba(159,110,245,.12) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 60% 30%,  rgba(45,212,191,.08)  0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── layout ── */
+    .page {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ── header ── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px 48px;
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      background: rgba(11,15,26,.7);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-icon {
+      width: 38px; height: 38px;
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+      border-radius: 10px;
+      display: grid; place-items: center;
+      font-size: 18px;
+      box-shadow: 0 0 20px var(--glow-blue);
+    }
+
+    .logo-text {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -.3px;
+    }
+
+    .logo-text span { color: var(--accent-blue); }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .badge {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      color: var(--accent-teal);
+      background: rgba(45,212,191,.1);
+      border: 1px solid rgba(45,212,191,.3);
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+
+    .time {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* ── hero ── */
+    .hero {
+      text-align: center;
+      padding: 72px 24px 48px;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--accent-purple);
+      margin-bottom: 20px;
+    }
+
+    .hero-eyebrow::before,
+    .hero-eyebrow::after {
+      content: '';
+      display: block;
+      width: 28px;
+      height: 1px;
+      background: var(--accent-purple);
+      opacity: .5;
+    }
+
+    .hero h1 {
+      font-size: clamp(36px, 5vw, 58px);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -1.5px;
+      background: linear-gradient(135deg, #fff 30%, var(--accent-blue) 70%, var(--accent-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 18px;
+    }
+
+    .hero p {
+      font-size: 17px;
+      color: var(--text-muted);
+      max-width: 520px;
+      margin: 0 auto;
+      line-height: 1.7;
+      font-weight: 400;
+    }
+
+    /* ── cards grid ── */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 28px;
+      padding: 16px 48px 80px;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* ── individual card ── */
+    .card {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 40px 36px;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      overflow: hidden;
+      transition: transform .3s cubic-bezier(.34,1.56,.64,1),
+                  box-shadow .3s ease,
+                  border-color .3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-8px) scale(1.01);
+    }
+
+    /* coloured top border bar */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      border-radius: 24px 24px 0 0;
+      background: var(--card-gradient);
+      opacity: 0;
+      transition: opacity .3s ease;
+    }
+    .card:hover::before { opacity: 1; }
+
+    /* glow on hover */
+    .card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 24px;
+      background: var(--card-glow);
+      opacity: 0;
+      transition: opacity .3s ease;
+      pointer-events: none;
+    }
+    .card:hover::after { opacity: 1; }
+
+    .card:hover { border-color: var(--card-border-hover); }
+
+    /* blue card */
+    .card--blue {
+      --card-gradient: linear-gradient(90deg, var(--accent-blue), #60a5fa);
+      --card-glow: radial-gradient(ellipse at top left, var(--glow-blue), transparent 70%);
+      --card-border-hover: rgba(79,142,247,.4);
+    }
+    .card--blue:hover { box-shadow: 0 20px 60px var(--glow-blue), 0 0 0 1px rgba(79,142,247,.2); }
+
+    /* purple card */
+    .card--purple {
+      --card-gradient: linear-gradient(90deg, var(--accent-purple), #c084fc);
+      --card-glow: radial-gradient(ellipse at top left, var(--glow-purple), transparent 70%);
+      --card-border-hover: rgba(159,110,245,.4);
+    }
+    .card--purple:hover { box-shadow: 0 20px 60px var(--glow-purple), 0 0 0 1px rgba(159,110,245,.2); }
+
+    /* teal card */
+    .card--teal {
+      --card-gradient: linear-gradient(90deg, var(--accent-teal), #34d399);
+      --card-glow: radial-gradient(ellipse at top left, var(--glow-teal), transparent 70%);
+      --card-border-hover: rgba(45,212,191,.4);
+    }
+    .card--teal:hover { box-shadow: 0 20px 60px var(--glow-teal), 0 0 0 1px rgba(45,212,191,.2); }
+
+    /* icon */
+    .card-icon {
+      width: 56px; height: 56px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      font-size: 26px;
+      margin-bottom: 28px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card--blue  .card-icon { background: rgba(79,142,247,.15);  box-shadow: 0 0 20px rgba(79,142,247,.2); }
+    .card--purple .card-icon { background: rgba(159,110,245,.15); box-shadow: 0 0 20px rgba(159,110,245,.2); }
+    .card--teal  .card-icon { background: rgba(45,212,191,.15);  box-shadow: 0 0 20px rgba(45,212,191,.2); }
+
+    .card-tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 20px;
+      margin-bottom: 14px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card--blue   .card-tag { color: var(--accent-blue);   background: rgba(79,142,247,.12);  border: 1px solid rgba(79,142,247,.25); }
+    .card--purple .card-tag { color: var(--accent-purple); background: rgba(159,110,245,.12); border: 1px solid rgba(159,110,245,.25); }
+    .card--teal   .card-tag { color: var(--accent-teal);   background: rgba(45,212,191,.12);  border: 1px solid rgba(45,212,191,.25); }
+
+    .card h2 {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      letter-spacing: -.3px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card p {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.7;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-footer {
+      margin-top: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-cta {
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: gap .2s ease;
+    }
+
+    .card:hover .card-cta { gap: 10px; }
+
+    .card--blue   .card-cta { color: var(--accent-blue); }
+    .card--purple .card-cta { color: var(--accent-purple); }
+    .card--teal   .card-cta { color: var(--accent-teal); }
+
+    .card-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* stat pills inside card */
+    .stat-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 1;
+    }
+
+    .stat-pill {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      background: rgba(255,255,255,.04);
+      border: 1px solid var(--border);
+      padding: 4px 10px;
+      border-radius: 8px;
+    }
+
+    .stat-pill .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+    }
+
+    /* ── footer ── */
+    footer {
+      margin-top: auto;
+      text-align: center;
+      padding: 24px;
+      font-size: 12px;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+    }
+
+    footer span { color: var(--accent-blue); }
+
+    /* ── floating refresh button ── */
+    .refresh-fab {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      z-index: 100;
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+      border: none;
+      cursor: pointer;
+      display: grid; place-items: center;
+      box-shadow: 0 4px 24px rgba(79,142,247,.45), 0 0 0 1px rgba(79,142,247,.2);
+      transition: transform .3s cubic-bezier(.34,1.56,.64,1), box-shadow .3s ease, opacity .2s;
+      color: #fff;
+      font-size: 20px;
+    }
+    .refresh-fab:hover {
+      transform: scale(1.15) rotate(30deg);
+      box-shadow: 0 8px 36px rgba(79,142,247,.6), 0 0 0 2px rgba(79,142,247,.35);
+    }
+    .refresh-fab:active { transform: scale(0.95) rotate(180deg); opacity: .8; }
+    .refresh-fab-tip {
+      position: fixed;
+      bottom: 90px;
+      right: 28px;
+      z-index: 100;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: rgba(17,24,39,.92);
+      border: 1px solid var(--border);
+      padding: 5px 11px;
+      border-radius: 8px;
+      backdrop-filter: blur(8px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s;
+      white-space: nowrap;
+    }
+    .refresh-fab:hover + .refresh-fab-tip { opacity: 1; }
+
+    /* ── responsive ── */
+    @media (max-width: 640px) {
+      header { padding: 16px 20px; }
+      .hero  { padding: 48px 20px 32px; }
+      .cards { padding: 0 20px 60px; gap: 20px; }
+      .refresh-fab { bottom: 20px; right: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- Header -->
+  <header>
+    <div class="logo">
+      <div class="logo-icon">🤖</div>
+      <div class="logo-text">AI <span>PM</span> Tool</div>
+    </div>
+    <div class="header-right">
+      <span class="badge">Dashboard</span>
+      <span class="time" id="clock"></span>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-eyebrow">Robin's Workspace</div>
+    <h1>Your AI Product<br/>Command Centre</h1>
+    <p>Manage projects, capture ideas, and accelerate your learning — all in one intelligent workspace.</p>
+  </section>
+
+  <!-- Cards -->
+  <div class="cards">
+
+    <!-- Card 1 — All Project Summary -->
+    <a class="card card--blue" href="projects.html">
+      <div class="card-icon">📊</div>
+      <div class="card-tag">Overview</div>
+      <h2>All Project Summary</h2>
+      <p>Get a bird's-eye view of every project — status, progress, milestones, and key metrics at a glance.</p>
+      <div class="stat-row">
+        <div class="stat-pill"><span class="dot" style="background:#4f8ef7"></span> Active</div>
+        <div class="stat-pill"><span class="dot" style="background:#f59e0b"></span> In Review</div>
+        <div class="stat-pill"><span class="dot" style="background:#34d399"></span> Done</div>
+      </div>
+      <div class="card-footer">
+        <span class="card-cta">View all projects →</span>
+        <span class="card-meta">Updated now</span>
+      </div>
+    </a>
+
+    <!-- Card 2 — Add New Project -->
+    <a class="card card--purple" href="new-project.html">
+      <div class="card-icon">✨</div>
+      <div class="card-tag">Create</div>
+      <h2>Add New Project</h2>
+      <p>Kick off a new initiative. Define your goal, scope, and timeline — then let AI help you build the PRD and roadmap.</p>
+      <div class="stat-row">
+        <div class="stat-pill">🗺️ PRD Generation</div>
+        <div class="stat-pill">📅 Roadmap</div>
+      </div>
+      <div class="card-footer">
+        <span class="card-cta">Start a project →</span>
+        <span class="card-meta">AI-assisted</span>
+      </div>
+    </a>
+
+    <!-- Card 3 — AI Learning -->
+    <a class="card card--teal" href="ai-learning.html">
+      <div class="card-icon">🧠</div>
+      <div class="card-tag">Learning</div>
+      <h2>AI Learning</h2>
+      <p>Explore curated resources, track what you've learned, and deepen your AI Product Management expertise.</p>
+      <div class="stat-row">
+        <div class="stat-pill">📚 Resources</div>
+        <div class="stat-pill">🎯 Concepts</div>
+        <div class="stat-pill">⚡ Prompts</div>
+      </div>
+      <div class="card-footer">
+        <span class="card-cta">Explore learning →</span>
+        <span class="card-meta">Grow every day</span>
+      </div>
+    </a>
+
+  </div>
+
+  <footer>
+    Built for <span>Robin Khatwani</span> · AI PM Tool · <span id="year"></span>
+  </footer>
+
+</div>
+
+<!-- Floating Refresh FAB -->
+<button class="refresh-fab" onclick="window.location.reload(true)" title="Refresh Dashboard" aria-label="Refresh">↻</button>
+<div class="refresh-fab-tip">Refresh Dashboard</div>
+
+<script>
+  // live clock
+  function tick() {
+    const now = new Date();
+    document.getElementById('clock').textContent =
+      now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  }
+  tick();
+  setInterval(tick, 1000);
+
+  // year
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>

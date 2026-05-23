@@ -1,0 +1,410 @@
+Week 1- 
+
+Chat = the brain → thinks, reasons, advises
+CoWork = the hands → handles files and tasks on your desktop
+Claude Code = the engineering muscle → actually builds things
+
+What is Cost function and used in AI ?
+What is Grounding ?
+
+All changes made in W and b -- Came up as vector (matrix) to minimize the cost function
+
+
+Y =   - Gradiant Cost Function (Relu(Wx+b))
+
+Relus -- ?? 
+
+Back propagation -- go back and change the values. 
+Go forward is called inference and then changing any thing 
+ss called back propagation. 
+
+Inputs are constant -- This process to go back and forth 
+
+Data
+Labeled Data
+
+That is idea of training a model - to have data and labeled data
+Go back and forth for weights and biases by 
+
+Model is huge matrix of y=wx+b. 
+When not changing it becomes Frozen model. 
+
+Wights - How much each things matter 
+Bias - Your default assumption before looking at anything. (Personal baseline) 
+
+
+Open source model - When Weights and Bias release. 
+Lama Models - Open source model.
+Chat GPT and Claude models - Closed Models.
+
+Data, Training (train by data) , Inferencing (go forward use etc.)
+
+Finding the minimum value of function - 
+Learning Rate ?? 
+Hyper Parameters -- Outside your model decide to your lower cost of model. 
+Overfitting ??
+
+Tokens and Transformers - 
+
+
+What is AI - 
+The ability of a machine to perform tasks that require human-like intelligence
+— learning, reasoning, and deciding.
+Core capabilities
+Learning -Improve from data and experience
+Reasoning -Draw conclusions from information
+Perception -Interpret text, image, audio, data
+Decision-making - Choose actions to achieve goals
+
+What AI System needs needs - 
+
+Knowledge - Domain understanding the model encodes — via training, RAG, or knowledge graphs.
+Data - The fuel for training and fine- tuning ML models. Essential for modern AI systems.
+Tools - APIs, search, code execution , extend what the model can do.
+Guardrails - Safety, ethics, compliance rules applied around the model. Governance layer, not AI itself
+
+In Summary - 
+"AI is the ability of machines to learn, reason, perceive, and make decisions in ways that mimic human intelligence. In practice, building a reliable AI system (Agents) requires four key pillars: Knowledge (what it knows), Data (what it learns from), Tools (what it can act with), and Guardrails (how it stays safe and ethical)."
+
+
+Equation behind AI - 
+y = Wx + b is not just one equation used in one place — it is the universal primitive of all of modern AI. Every neural network, at every layer, is doing nothing more than this equation, repeated millions or billions of times.
+
+The key insight about scale — a single y = Wx + b draws a straight line and can only solve simple problems. The magic of deep learning comes from stacking these equations in layers and adding a non-linear activation function (like ReLU) between each layer. That combination lets the network learn curves, spirals, and boundaries of any shape — which is what makes it powerful enough to recognize faces, understand language, or beat world champions at Go.
+
+Here W = Weight, x is Data and b is Bias.
+Example - Email / NLP
+Spam filter
+spam_score = W₁×"free" + W₂×"winner" + W₃×"unsubscribe" + W₄×"meeting" + b
+spam_score = 2.1×1 + 1.9×1 + 0.3×0 + −1.8×0 + −0.5
+spam_score = 3.5 → spam (threshold > 0.5)
+W="free" → +2.1 (strong spam signal)
+W="winner" → +1.9 (spam signal)
+W="meeting" → −1.8 (work email, not spam)
+b=−0.5 → default lean toward not-spam
+W for each word reflects how strongly that word signals spam. "Free" and "winner" push the score up; "meeting" pushes it down. b sets the default — assume innocent until proven guilty.
+
+GPT - Generative Pre-trained Transformers 
+
+Difference between Predictive AI, Generative AI and Agentic AI 
+(useful progression - Predict -> Create -> Act)
+
+Predictive AI - 
+1. Data In - Prediction Out
+2. Predictive AI looks backward — it learns from historical data to make forecasts or classifications. It doesn't create anything new, just tells you what's likely to happen. Think spam filters or credit scoring.
+3. Example -  Input - Structred data, Output is Score label or probability. 
+    Credit Score, Rain Chances etc. 
+
+Generative AI - 
+1. Prompt In - Content Out 
+2. Creates something new from a prompt. It's trained on massive datasets and can produce text, images, code, or audio that didn't exist before. Think ChatGPT, Claude, or Midjourney.
+3. Example - Input - Natural Language or Unstructured Prompts, Output - New Content (text), image, audio. 
+   Chat GPT, Claude, SoPilot, Sora (Video). 
+
+Agentic AI - 
+1. Goal In - Actions Out
+2. Agentic AI takes action. It combines reasoning with tools (web search, APIs, code execution) to autonomously complete multi-step tasks toward a goal — not just answering a question, but doing something.
+3. Example - Input - A high level goal or objective or context, Output - Real world actions.
+AI research agents, Auto - coding agents. AI Workflows.
+
+ 
+Difference between Models - 
+Supervised vs Unsupervised vs Reinforcement Learning
+
+To build any ML based products three things are important - Data, Training and Inferencing (Logical process of drawing a conclusion based on knowledge or expertise).
+
+Data - 
+How PM can help 
+a. Make it clear as to what your system will do and don't do upfront. It will save lot of time and cost. 
+b. Privacy - Know the law of lan GDPR or CCPA (what you can collect, how much you can store and where you can store). 
+c. Data Sourcing - What are the sources of data (trusted vs non-trusted). 
+d. Cost - Evaluate Cost to build and manage the data upfront.              
+ 
+Training  (Learning) - 
+Researchers and scientists in team are responsible for choosing or creating new algorithms that allow you to create models. 
+
+What is the model - 
+Equation with constants and variables (Algorithm y=Wx+b) When going through multiple iteration of adjustments in parameters (weights (W) and biases(b)) values based on data becomes a model  This final equation with trained variables (weights and biases) is used to make predictions. 
+
+
+Supervised Learning Models - 
+You teach the model using examples where you already know the right answer — like a student studying with an answer key. It's precise but requires a lot of labeled data, which is expensive to create.
+
+Learns from labeled data
+How it learns - You provide input + the
+correct answer. The model
+learns to map one to the
+other.
+Input → [Model] → Output -> Correct label given
+Task types -
+Classification (cat vs dog)
+Regression -(predict house price)
+Algorithms
+• Linear / Logistic Reg.
+• Decision Trees
+• Random Forest
+• SVM, Neural Networks
+Real-world uses
+• Email spam filter
+• Image recognition
+• Loan default prediction
+
+Unsupervised Learning Models - 
+Gets no labels at all. It's exploratory — the model finds its own structure in raw data. You don't tell it what to look for; it figures out what's interesting. Great for discovering hidden patterns you didn't know existed.
+
+Finds patterns, no labels
+How it learns - You provide raw input only.
+The model discovers hidden structure or groups on its own.
+Input → [Model] → Patterns - No labels provided
+
+Task types - 
+Clustering (group similar items)
+Dimensionality reduction (compress features)
+Algorithms
+• K-Means Clustering
+• DBSCAN
+• PCA, t-SNE
+• Auto encoders
+
+Real-world uses
+• Customer segmentation
+• Anomaly detection
+• Recommendation engines
+
+
+Reinforcement Learning Model - 
+is fundamentally different from both — there's no dataset. An agent takes actions, gets rewards or penalties, and gradually learns the best strategy through experience. It's how AlphaGo mastered chess and how ChatGPT was fine-tuned to be more helpful (via RLHF — Reinforcement Learning from Human Feedback).
+
+Reinforcement - Learns by trial and reward
+How it learns -An agent takes actions in an environment, receives, rewards or penalties, and
+optimizes its strategy.
+Action → Reward / Penalty - Agent learns over time
+
+Task types
+Policy optimization (best sequence of actions)
+Game playing / control (maximize cumulative reward)
+
+Algorithms
+• Q-Learning
+• Deep Q-Network (DQN)
+• PPO, A3C
+• RLHF (used in LLMs)
+
+Real-world uses
+• Game AI (AlphaGo)
+• Robotics control
+• Ad bidding systems
+
+Extension of this technique is RLHF (reinforcement learning with human feedback) here what happens is when a LLM answers your questions human review this output and this human input is used to train a reward model to align the model for human expectations. This technique is used in almost all the AI that you have seen today to ensure that you not only get factual answers but they are served in a way that you feel that you are interacting with humans on the other side. 
+The five building blocks work together: the agent observes a state, picks an action, receives a reward, and updates its policy (strategy). This loop repeats millions of times until the policy becomes highly optimized.
+PPO - Proximal Policy Optima. (Open AI 5)
+
+Example; chatGPT:  ChatGPT utilizes different types of learning techniques to improve its understanding and responses:
+
+Unsupervised Learning: For unsupervised learning, ChatGPT is tasked with detecting the next word or filling in missing words across various contexts or domains. In this case, it doesn't have labeled data to learn from, but it can identify patterns and structures within the text it processes to make predictions. This was the original GPT3 model with 175b parameters that was open sourced and was only used by 100’s of people. 
+
+Supervised Learning: In supervised learning, we went from GPT3 model to ChatGPT where the model learned  how to understand language and generate answers based on user instructions (prompts). This means it is trained on a dataset where the inputs (prompts) and desired outputs (correct responses) are provided, allowing it to learn the relationship between them. This step allows it to follow instructions like act as PM or generate output in SQL format etc. 
+
+Reinforcement Learning: Reinforcement learning is employed to evaluate responses and improve alignment with human-like answers. ChatGPT is rewarded or penalized based on how well its responses match those expected from humans. Over time, it learns to adjust its responses to better match human expectations through this feedback loop.
+
+Inference and assessment - 
+After training the model, next step is to make it available to customers. This involves the process of inference, which entails sending input or data and receive a prediction from the model.
+
+To evaluate the performance of a model, it is important to check its accuracy by true positives, false positives and negatives. 
+
+Accuracy is determined by dividing the number of correct predictions by the total number of predictions. 
+Recall rate is calculated by dividing the number of true positives by the sum of true positives and false negatives. 
+Precision is calculated by dividing the number of true positives by the sum of true positives and false positives.
+You need to ensure you set benchmarks for your teams across these assessments based on customer needs. For example, to automate a task you wish to have a high precision rate to ensure that the model is accurately identifying and predicting outcomes.
+
+
+Prompt Engineering - 
+Prompt - Set of instructions provided to model to get best output. 
+Best practices 
+
+a. Be specific with information requests. 
+b. Supply Examples for Context. 
+c. Include Relevant Data.
+d. Specify Desired Output format. 
+e. Use positive instructions. 
+f.  Assign a Persona or Frame of Reference.
+g. Implement chain of thought prompting. 
+h. Break down complex tasks.
+i. Acknowledge the Model's Limitations. 
+j. Take an experimental approach. 
+
+Example - 
+Role  - Defines the persona or context for the AI, helping it adopt the language and approach of a given persona or avatar.
+Instruction  - sets the overall goal for the prompt, guiding the AI to approach the task in hand.
+Task - lists step-by-step, specific activities or job to be done by the model
+Guardrails e - establishes boundaries to ensure clarity, relevance, and accuracy, including preferred output formats, tone, and fallback actions if there is any ambiguity
+
+
+
+
+
+
+AI PM Objectives (Agentic AI) -  
+
+
+a. Translate business needs into solvable AI problems. 
+b. Target users and workflows for AI driven products. 
+c. Define clear success metrics for AI solutions. 
+d. MOAT - Margin, Operations, Advantage, Team. 
+
+Step 1 - Identify Opportunities - Recognize and prioritize opportunities where AI can create the most value.
+
+a. Core Tasks - Focus on repetitive tasks that are need to be performed daily or weekly. 
+b. Cost - Ensure sufficient data and resource are available.
+c. Regulatory Compliance - Solution must meet be compliant and legal approved.
+d. Scalability Potential - AI solution can grow with minimal human intervention. 
+
+Step - 2 - Articulate 
+
+After identify the opportunity, the next steps is to craft a clear problem statement 
+In problem statements - 
+a. Define the Customer Persona and Challenges. 
+b. articulate measurable consequences of the Problem. 
+c. Highlight any Saas based or previous rule based solutions and challenges to that solution. 
+d. Explain why current AI model Chat GPT or CoPilot fall ashort. 
+e. Summarize pain points and business needs. 
+
+Step - 3 - Identify Solution 
+
+Prepare a sample solution proposal  by considering the factors as 
+
+a. Introduce your solution and what it offers to its PO/Users. 
+b. Account for limitations like reasoning, planning and hallunication in your AI solution. 
+c. Quality Assurance with human oversight until AI results are reliable. 
+d. Build competive advantage (MOAT) through integrtions. 
+
+Step -4 - Define Success Metrics - 
+
+Actionable Metrics is very important and focus should be on
+a. Time Saved.
+b. Cost Reduction.
+c. Accuracy Improvement. 
+d. Level 1 - Primary Metrics 
+    1. Error Rate (%)
+    2. User Feedback. 
+    3. Helpfulness. 
+    4. Honesty (Accuracy of Facts).
+    5. Harmlessness 
+
+e. Level 2 - Secondary Metrics 
+    1. Cloud/AI Infrastructure. 
+    2. Average Tokens Consumed Per Job. 
+    3. Latency (first meaningule Response Time - P99, P95). 
+    4. Number of Iteractiosn Handled per minute (TPM, QPS, TPS). 
+    5. Recovery Rate 
+    6. Resialent. 
+
+
+
+Difference Between Rule Based vs ML Based Systems - Here are the key differences between rule based and ML based systems 
+
+a. Rule-based Systems
+1. Use predefined rules and logic to make decisions.
+2. Smaller amounts of structured data required.
+3. Require manual updates to rules and logic.
+4. Can run on standard hardware like CPU.
+5. Low complexity as rules are defined beforehand.
+6. end to be more interoperable, but can suffer from bias(human bias)
+
+b. ML Systems
+1.Use data to learn and improve decision-making over time.
+2. Large quantities of unstructured data required.
+3. Need  to automatically adapt to new data and changing conditions.
+4. Require specialized hardware (GPU,TPU)and high-performance computing capabilities (Supercomputers grade networking capabilities) for large-scale data processing.
+5. High complexity due to the use of statistical models and algorithms.
+6. Can be less interoperable, but can be designed to mitigate bias.
+
+
+PM Approach - When to use What
+
+a Data Availability -  Small size of structured data available - Go with Rule Based approach.  Unstructured large data available 
+ML based approach would be better. Also if anticipating a significant growth then ML based would be approach as well.
+
+b.Data Collection Strategy - Include in your product that How data will be collected. 
+
+c. Resource Availability - ML Based system require experts and specialized ML engineers. If not available in team then stay with rule based approach. 
+
+d. Cost to develop and maintain - Consider the hardware and infrastructure cost for ML based solutions. To lower the cost, can consider the
+already trained model
+
+e. Explanation and Bias in real world - 
+In rule based system - logic is human return and explainable what is going to do. 
+In ML based system - Solution is more like black box and models keep learning. 
+Consider adding more details in your results by adding second level classifiers.
+
+
+Choosing the Right Model - 
+
+Three step framework to choose right model for your GenAI application
+Step 1 - Based on customer journey, List the tasks/jobs to be done by your app.
+Step 2 - Once your have task, create requirements for AI across dimension of task (reasoning vs understanding) , budget, latency, time to market, tools needed and team's AI expertise.
+Step 3 - Looks for relevant benchmarks that which AI model is best suited for your task. 
+
+Can also use - 
+1. https://artificialanalysis.ai for model assessment. 
+2. Model Cards - 
+
+Model Cards are concise documents that provide detailed information about machine learning (ML) models. Introduced by Google. 
+These cards typically includes details such as: 
+1. Model purpose and Use Cases. 
+2. Training Data.
+3. Performance Metrics.
+4. Limitations.
+5. Ethical Considerations.
+
+
+Week 1 - LAB - 
+
+a. Learned how to create agents through n8n. 
+b. Learned difference between Claude Chat, CoWork and Code. 
+
+Claude Chat 
+The simple mental model: Claude Chat is for thinking with Claude, Cowork is for delegating to Claude, and Code is for building with Claude.
+Claude Chat is Anthropic's general-purpose AI assistant, available as a web and mobile chat interface at claude.ai. It handles tasks like writing, analysis, coding help, research, and brainstorming. The free tier includes memory across conversations, file creation, code execution, web search, and Slack and Google Workspace integration. The key limitation is that it doesn't take autonomous action outside the chat window — it's a back-and-forth conversation tool. 
+
+Cowork
+Built on the same foundations as Claude Code and baked into the macOS Claude desktop app, Cowork allows users to give Claude access to a specific folder on their computer and then give plain-language instructions for tasks — like filling out an expense report from receipt photos, writing reports from digital notes, or reorganizing a folder. It's best for business analysts, operations managers, non-technical teams, and anyone handling repetitive file and application tasks who lacks the technical background to script solutions. Cowork is the easier option — no setup or installation required — and runs in a virtual machine that is isolated and protected from the wider internet. 
+
+
+Claude Code
+Claude Code is a command-line coding agent built for developers. It runs in your terminal or via a VS Code extension. You describe a problem and Claude Code reads your entire codebase so it can operate with full project context. It handles refactoring, debugging, test writing, and Git workflows. Claude Code is the power option — you install it locally and configure it yourself. With Code, you get more precision, speed, control, extensibility, and reliability, especially for complex tasks. 
+
+
+What is CLAUDE.md file ? 
+CLAUDE.md is a markdown file you add to your project root that Claude Code reads at the start of every session. It's specific to Claude Code (the terminal/IDE tool), not Claude Chat. Claude
+Your CLAUDE.md file becomes part of Claude's system prompt. Every conversation starts with this context already loaded, eliminating the need to explain basic project information repeatedly. Claude
+What goes in it:
+Project context, code style, commands for running tests/builds/linting, and gotchas or project-specific warnings. Builder.io
+Where it lives:
+You can have both a global and project-level file — both can coexist. Personal preferences that hold across all your work go in ~/.claude/CLAUDE.md; project-specific rules go in the project root. MindStudio
+
+What is Skills (SKILL.md) file
+Skills are reusable workflows you can invoke with /skill-name, stored under .claude/skills/ at the project level or ~/.claude/skills/ for global availability across all projects. Substack
+Skills are on-demand, task-specific instruction sets — you invoke them when you need them, rather than them being loaded automatically every session.
+
+Key Differences
+
+Claude.md
+Loaded - Automatically
+Purpose - Persistent Object Context
+Scope - Project Identify and Rules
+Invocation - Always Active 
+BestFor - How this Project Works
+
+Skills.md
+Loaded - On demand, when invoked. 
+Purpose - Reusable task workflows.
+Scope - Specific repetable task.
+Invocation - / skill-name command
+BestFor - How to do x-task.
+
+
+
+
+
+   

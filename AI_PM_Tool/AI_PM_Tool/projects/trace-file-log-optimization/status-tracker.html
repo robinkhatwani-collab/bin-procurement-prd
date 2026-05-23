@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Status Tracker — Trace file log optimization</title>
+  <style>
+
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0b0f1a; --surface: #111827; --surface2: #161d2e; --surface3: #1c2540;
+      --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.13);
+      --text: #f0f4ff; --text-muted: #8b9ab4; --text-dim: #5a6a84;
+      --primary: #4f8ef7; --primary-dim: rgba(79,142,247,0.15);
+      --secondary: #2dd4bf; --secondary-dim: rgba(45,212,191,0.15);
+      --purple: #9f6ef5; --purple-dim: rgba(159,110,245,0.15);
+      --accent: #f59e0b; --accent-dim: rgba(245,158,11,0.15);
+      --green: #34d399; --green-dim: rgba(52,211,153,0.15);
+      --red: #f87171; --red-dim: rgba(248,113,113,0.15);
+      --radius: 14px; --shadow: 0 4px 24px rgba(0,0,0,0.35);
+    }
+    html, body { min-height: 100vh; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 70% 50% at 15% 15%, rgba(79,142,247,.09) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 45% at 85% 75%, rgba(159,110,245,.09) 0%, transparent 60%);
+      pointer-events: none; z-index: 0;
+    }
+    .page { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; }
+    nav {
+      position: sticky; top: 0; z-index: 20;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 48px; background: rgba(11,15,26,.85);
+      backdrop-filter: blur(14px); border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+    .nav-logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, var(--primary), var(--purple)); border-radius: 8px; display: grid; place-items: center; font-size: 15px; }
+    .nav-logo-text { font-size: 15px; font-weight: 700; }
+    .nav-logo-text span { color: var(--primary); }
+    .back-btn { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--text-muted); text-decoration: none; background: rgba(255,255,255,.04); border: 1px solid var(--border); padding: 7px 14px; border-radius: 9px; transition: all .2s; }
+    .back-btn:hover { color: var(--text); background: rgba(255,255,255,.07); }
+    main { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 48px 32px 80px; width: 100%; }
+    .card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 26px; box-shadow: var(--shadow); margin-bottom: 20px; }
+    .card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 10px; }
+    .card p { color: var(--text-muted); font-size: 0.93rem; }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 18px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; }
+    .callout { border-radius: var(--radius); padding: 18px 22px; margin-bottom: 18px; border-left: 4px solid; }
+    .callout-blue   { background: rgba(37,99,235,.1);  border-color: var(--primary); }
+    .callout-green  { background: rgba(5,150,105,.1);  border-color: var(--green); }
+    .callout-amber  { background: rgba(217,119,6,.1);  border-color: var(--accent); }
+    .callout-purple { background: rgba(124,58,237,.1); border-color: var(--purple); }
+    .callout h4 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; opacity: .6; font-weight: 700; }
+    .callout p { font-size: 0.91rem; color: var(--text-muted); }
+    .callout strong { color: var(--text); }
+    .tag { border-radius: 999px; padding: 3px 12px; font-size: 0.78rem; font-weight: 600; }
+    .tag-blue   { background: var(--primary-dim); color: #93c5fd; }
+    .tag-green  { background: var(--green-dim);   color: #6ee7b7; }
+    .tag-amber  { background: var(--accent-dim);  color: #fcd34d; }
+    .tag-purple { background: var(--purple-dim);  color: #c4b5fd; }
+    .tag-red    { background: var(--red-dim);      color: #fca5a5; }
+    footer { margin-top: auto; text-align: center; padding: 24px; font-size: 12px; color: var(--text-muted); border-top: 1px solid var(--border); }
+
+    .hero { background:linear-gradient(135deg,#071a12 0%,#0a1f2e 50%,#1a0f3a 100%); border-bottom:1px solid var(--border); padding:52px 40px 44px; text-align:center; position:relative; overflow:hidden; }
+    .hero::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(52,211,153,.15) 0%,transparent 70%); pointer-events:none; }
+    .hero .badge { position:relative; display:inline-block; background:rgba(52,211,153,.15); border:1px solid rgba(52,211,153,.35); border-radius:999px; padding:5px 16px; font-size:.72rem; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:16px; color:var(--green); font-weight:700; }
+    .hero h1 { position:relative; font-size:clamp(1.8rem,3.5vw,2.5rem); font-weight:800; letter-spacing:-.5px; margin-bottom:10px; }
+    .hero p { position:relative; font-size:.95rem; color:var(--text-muted); max-width:620px; margin:0 auto 24px; }
+    .hero-kpi { position:relative; display:inline-flex; align-items:center; gap:20px; background:rgba(255,255,255,.06); border:1px solid var(--border2); border-radius:14px; padding:12px 24px; flex-wrap:wrap; justify-content:center; }
+    .kstat { text-align:center; }
+    .kstat .val { font-size:1.5rem; font-weight:800; }
+    .kstat .lbl { font-size:.68rem; color:var(--text-muted); font-weight:500; text-transform:uppercase; letter-spacing:.5px; }
+    .kstat-div { width:1px; height:28px; background:var(--border2); }
+    .section-head { display:flex; align-items:center; gap:12px; margin:40px 0 18px; }
+    .section-head h2 { font-size:1.2rem; font-weight:700; }
+    .section-icon { width:38px; height:38px; border-radius:10px; background:var(--surface2); border:1px solid var(--border); display:grid; place-items:center; font-size:1rem; flex-shrink:0; }
+    .overview-row { display:grid; grid-template-columns:160px 1fr; gap:18px; margin-bottom:20px; }
+    .donut-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:18px; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+    .donut-wrap { width:110px; height:110px; margin-bottom:12px; }
+    .donut-legend { display:flex; flex-wrap:wrap; gap:6px 14px; justify-content:center; }
+    .leg-item { display:flex; align-items:center; gap:5px; font-size:.75rem; color:var(--text-muted); }
+    .leg-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+    .exec-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px 24px; }
+    .exec-label { font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--text-dim); margin-bottom:10px; }
+    .exec-summary { font-size:.92rem; color:var(--text-muted); line-height:1.75; margin-bottom:16px; }
+    .timeline-row { display:flex; gap:24px; flex-wrap:wrap; margin-top:4px; }
+    .tl-item .tl-val { font-size:1.4rem; font-weight:800; }
+    .tl-item .tl-lbl { font-size:.7rem; color:var(--text-dim); font-weight:600; text-transform:uppercase; letter-spacing:.5px; margin-top:2px; }
+    .progress-track { height:8px; background:rgba(255,255,255,.06); border-radius:99px; overflow:hidden; margin:10px 0; }
+    .progress-fill  { height:100%; border-radius:99px; background:linear-gradient(90deg,var(--green),var(--secondary)); box-shadow:0 0 12px rgba(52,211,153,.35); }
+    .kpi-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:12px; margin-bottom:20px; }
+    .kpi-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px 12px; text-align:center; }
+    .kpi-val { font-size:1.8rem; font-weight:800; line-height:1; margin-bottom:4px; }
+    .kpi-lbl { font-size:.68rem; text-transform:uppercase; letter-spacing:.6px; color:var(--text-dim); font-weight:600; }
+    .party-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; margin-bottom:24px; }
+    .dri-grid { display:flex; flex-wrap:wrap; gap:12px; margin-bottom:4px; }
+    .dri-pill { display:flex; align-items:center; gap:11px; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:10px 14px; }
+    .dri-avatar { width:34px; height:34px; border-radius:50%; display:grid; place-items:center; font-size:.88rem; font-weight:700; flex-shrink:0; color:white; }
+    .dri-name { font-size:.86rem; font-weight:700; }
+    .dri-email { font-size:.74rem; color:var(--primary); text-decoration:none; }
+    .dri-email:hover { text-decoration:underline; }
+    .steps-table { width:100%; border-collapse:collapse; font-size:.86rem; }
+    .steps-table th { padding:11px 14px; text-align:left; font-size:.7rem; text-transform:uppercase; letter-spacing:.7px; background:var(--surface2); color:var(--text-dim); border-bottom:1px solid var(--border2); white-space:nowrap; }
+    .steps-table td { padding:10px 14px; border-top:1px solid var(--border); background:var(--surface); vertical-align:middle; }
+    .steps-table tr:hover td { background:var(--surface2); }
+    .status-badge { display:inline-block; font-size:.72rem; font-weight:600; padding:3px 10px; border-radius:999px; white-space:nowrap; }
+    .status-done       { background:var(--green-dim);  color:var(--green); }
+    .status-inprogress { background:var(--primary-dim);color:var(--primary); }
+    .status-todo       { background:rgba(255,255,255,.06); color:var(--text-muted); }
+    .filter-bar { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+    .filter-btn { background:var(--surface2); border:1px solid var(--border); color:var(--text-muted); padding:6px 14px; border-radius:8px; font-size:.78rem; font-weight:600; cursor:pointer; transition:all .2s; }
+    .filter-btn:hover,.filter-btn.active { background:rgba(52,211,153,.12); border-color:rgba(52,211,153,.35); color:var(--green); }
+  </style>
+</head>
+<body>
+<div class="page">
+  <nav>
+    <a class="nav-logo" href="../../default.html">
+      <div class="nav-logo-icon">🤖</div>
+      <div class="nav-logo-text">AI <span>PM</span> Tool</div>
+    </a>
+    <a class="back-btn" href="../../projects.html">← All Projects</a>
+  </nav>
+
+  <header class="hero">
+    <div class="badge">📊 Live Status Tracker</div>
+    <h1>Trace file log optimization</h1>
+    <p>Payments Division · New Card Launch Programme</p>
+    <div class="hero-kpi">
+      <div class="kstat"><div class="val" style="color:var(--primary);">13%</div><div class="lbl">Complete</div></div>
+      <div class="kstat-div"></div>
+      <div class="kstat"><div class="val" style="color:var(--green);">4</div><div class="lbl">Done</div></div>
+      <div class="kstat-div"></div>
+      <div class="kstat"><div class="val" style="color:var(--primary);">2</div><div class="lbl">In Progress</div></div>
+      <div class="kstat-div"></div>
+      <div class="kstat"><div class="val" style="color:var(--text-muted);">25</div><div class="lbl">To Do</div></div>
+      <div class="kstat-div"></div>
+      <div class="kstat"><div class="val" style="color:var(--red);">0</div><div class="lbl">Overdue</div></div>
+      <div class="kstat-div"></div>
+      <div class="kstat"><div class="val" style="font-size:1rem;color:var(--primary);">STARTED</div><div class="lbl">Health</div></div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- OVERVIEW ROW -->
+    <div class="overview-row">
+      <div class="donut-card">
+        <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-dim);margin-bottom:10px;text-align:center;">Overall Progress</div>
+        <div class="donut-wrap"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="38" fill="none" stroke="#34d399" stroke-width="18" stroke-dasharray="30.81 9999" stroke-dashoffset="0" transform="rotate(-90 50 50)"/><circle cx="50" cy="50" r="38" fill="none" stroke="#4f8ef7" stroke-width="18" stroke-dasharray="15.4 9999" stroke-dashoffset="-30.81" transform="rotate(-90 50 50)"/><circle cx="50" cy="50" r="38" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="18" stroke-dasharray="192.55 9999" stroke-dashoffset="-46.21" transform="rotate(-90 50 50)"/><text x="50" y="46" text-anchor="middle" fill="#f0f4ff" font-size="16" font-weight="800" font-family="Inter,sans-serif">13%</text><text x="50" y="64" text-anchor="middle" fill="#8b9ab4" font-size="9" font-family="Inter,sans-serif">done</text></svg></div>
+        <div class="donut-legend">
+          <div class="leg-item"><div class="leg-dot" style="background:var(--green);"></div>Done: 4</div>
+          <div class="leg-item"><div class="leg-dot" style="background:var(--primary);"></div>Active: 2</div>
+          <div class="leg-item"><div class="leg-dot" style="background:rgba(255,255,255,.15);"></div>ToDo: 25</div>
+        </div>
+      </div>
+      <div class="exec-card">
+        <div class="exec-label">📋 Executive Summary</div>
+        <p class="exec-summary">The <strong>Trace file log optimization</strong> programme is <strong style="color:var(--primary);">13% complete</strong> with <strong>4 of 31</strong> steps finished. <strong>2</strong> steps are actively in progress and <strong>25</strong> remain in the queue. Target completion: <strong>Oct 10, 2026</strong>. Overall health is rated <strong style="color:var(--primary);">STARTED</strong>.</p>
+        <div class="progress-track"><div class="progress-fill" style="width:13%"></div></div>
+        <div class="timeline-row">
+          <div class="tl-item"><div class="tl-val" style="color:var(--primary);">Oct 10, 2026</div><div class="tl-lbl">Target Launch</div></div>
+          <div class="tl-item"><div class="tl-val" style="color:var(--text-muted);">31</div><div class="tl-lbl">Total Steps</div></div>
+          <div class="tl-item"><div class="tl-val" style="color:var(--green);">4</div><div class="tl-lbl">Completed</div></div>
+          <div class="tl-item"><div class="tl-val" style="color:var(--text-dim);">0</div><div class="tl-lbl">Overdue</div></div>
+        </div>
+        <div style="font-size:.72rem;color:var(--text-dim);margin-top:12px;">🔄 Last updated: May 19, 2026 at 15:50 &nbsp;·&nbsp; Re-upload Excel to refresh</div>
+      </div>
+    </div>
+
+    <!-- STAKEHOLDER PROGRESS -->
+    <div class="section-head">
+      <div class="section-icon">🏢</div>
+      <div><h2>Stakeholder Progress</h2></div>
+    </div>
+    <div class="party-grid">
+        <div class="card" style="border-top:3px solid #4f8ef7;text-align:center;padding:20px 16px;">
+          <div style="font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#4f8ef7;margin-bottom:12px;">Issuer</div>
+          <div style="width:90px;height:90px;margin:0 auto 12px;"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="34" fill="none" stroke="#34d399" stroke-width="14" stroke-dasharray="49.3 9999" stroke-dashoffset="0" transform="rotate(-90 50 50)"/><circle cx="50" cy="50" r="34" fill="none" stroke="#4f8ef7" stroke-width="14" stroke-dasharray="16.43 9999" stroke-dashoffset="-49.3" transform="rotate(-90 50 50)"/><circle cx="50" cy="50" r="34" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="14" stroke-dasharray="147.9 9999" stroke-dashoffset="-65.72999999999999" transform="rotate(-90 50 50)"/><text x="50" y="46" text-anchor="middle" fill="#f0f4ff" font-size="16" font-weight="800" font-family="Inter,sans-serif">23%</text><text x="50" y="64" text-anchor="middle" fill="#8b9ab4" font-size="9" font-family="Inter,sans-serif">done</text></svg></div>
+          <div style="font-size:.76rem;color:var(--text-muted);line-height:1.8;">
+            <span style="color:var(--green);">✅ 3</span> &nbsp;
+            <span style="color:var(--primary);">🔄 1</span> &nbsp;
+            <span style="color:var(--text-dim);">⏳ 9</span>
+          </div>
+          <div style="font-size:.7rem;color:var(--text-dim);margin-top:4px;">13 total steps</div>
+        </div>
+        <div class="card" style="border-top:3px solid #9f6ef5;text-align:center;padding:20px 16px;">
+          <div style="font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#9f6ef5;margin-bottom:12px;">Network</div>
+          <div style="width:90px;height:90px;margin:0 auto 12px;"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="34" fill="none" stroke="#34d399" stroke-width="14" stroke-dasharray="16.43 9999" stroke-dashoffset="0" transform="rotate(-90 50 50)"/><circle cx="50" cy="50" r="34" fill="none" stroke="#4f8ef7" stroke-width="14" stroke-dasharray="16.43 9999" stroke-dashoffset="-16.43" transform="rotate(-90 50 50)"/><circle cx="50" cy="50" r="34" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="14" stroke-dasharray="180.76 9999" stroke-dashoffset="-32.86" transform="rotate(-90 50 50)"/><text x="50" y="46" text-anchor="middle" fill="#f0f4ff" font-size="16" font-weight="800" font-family="Inter,sans-serif">8%</text><text x="50" y="64" text-anchor="middle" fill="#8b9ab4" font-size="9" font-family="Inter,sans-serif">done</text></svg></div>
+          <div style="font-size:.76rem;color:var(--text-muted);line-height:1.8;">
+            <span style="color:var(--green);">✅ 1</span> &nbsp;
+            <span style="color:var(--primary);">🔄 1</span> &nbsp;
+            <span style="color:var(--text-dim);">⏳ 11</span>
+          </div>
+          <div style="font-size:.7rem;color:var(--text-dim);margin-top:4px;">13 total steps</div>
+        </div>
+        <div class="card" style="border-top:3px solid #2dd4bf;text-align:center;padding:20px 16px;">
+          <div style="font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#2dd4bf;margin-bottom:12px;">Processor</div>
+          <div style="width:90px;height:90px;margin:0 auto 12px;"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="34" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="14" stroke-dasharray="213.63 9999" stroke-dashoffset="-0.0" transform="rotate(-90 50 50)"/><text x="50" y="46" text-anchor="middle" fill="#f0f4ff" font-size="16" font-weight="800" font-family="Inter,sans-serif">0%</text><text x="50" y="64" text-anchor="middle" fill="#8b9ab4" font-size="9" font-family="Inter,sans-serif">done</text></svg></div>
+          <div style="font-size:.76rem;color:var(--text-muted);line-height:1.8;">
+            <span style="color:var(--green);">✅ 0</span> &nbsp;
+            <span style="color:var(--primary);">🔄 0</span> &nbsp;
+            <span style="color:var(--text-dim);">⏳ 3</span>
+          </div>
+          <div style="font-size:.7rem;color:var(--text-dim);margin-top:4px;">3 total steps</div>
+        </div>
+        <div class="card" style="border-top:3px solid #f59e0b;text-align:center;padding:20px 16px;">
+          <div style="font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#f59e0b;margin-bottom:12px;">Embosser</div>
+          <div style="width:90px;height:90px;margin:0 auto 12px;"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="34" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="14" stroke-dasharray="213.63 9999" stroke-dashoffset="-0.0" transform="rotate(-90 50 50)"/><text x="50" y="46" text-anchor="middle" fill="#f0f4ff" font-size="16" font-weight="800" font-family="Inter,sans-serif">0%</text><text x="50" y="64" text-anchor="middle" fill="#8b9ab4" font-size="9" font-family="Inter,sans-serif">done</text></svg></div>
+          <div style="font-size:.76rem;color:var(--text-muted);line-height:1.8;">
+            <span style="color:var(--green);">✅ 0</span> &nbsp;
+            <span style="color:var(--primary);">🔄 0</span> &nbsp;
+            <span style="color:var(--text-dim);">⏳ 2</span>
+          </div>
+          <div style="font-size:.7rem;color:var(--text-dim);margin-top:4px;">2 total steps</div>
+        </div></div>
+
+    <!-- DRI TEAM -->
+    <div class="section-head">
+      <div class="section-icon">👥</div>
+      <div><h2>DRI Team</h2></div>
+    </div>
+    <div class="dri-grid"><div class="dri-pill"><div class="dri-avatar" style="background:linear-gradient(135deg,var(--primary),rgba(255,255,255,.05));">R</div><div><div class="dri-name">Robin</div><a class="dri-email" href="mailto:robin.khatwani2@gmail.com">robin.khatwani2@gmail.com</a></div></div><div class="dri-pill"><div class="dri-avatar" style="background:linear-gradient(135deg,var(--purple),rgba(255,255,255,.05));">M</div><div><div class="dri-name">Monu</div><a class="dri-email" href="mailto:robin.khatwani2@gmail.com">robin.khatwani2@gmail.com</a></div></div><div class="dri-pill"><div class="dri-avatar" style="background:linear-gradient(135deg,var(--secondary),rgba(255,255,255,.05));">J</div><div><div class="dri-name">John</div><a class="dri-email" href="mailto:robin.khatwani2@gmail.com">robin.khatwani2@gmail.com</a></div></div><div class="dri-pill"><div class="dri-avatar" style="background:linear-gradient(135deg,var(--accent),rgba(255,255,255,.05));">A</div><div><div class="dri-name">Ajay</div><a class="dri-email" href="mailto:robin.khatwani2@gmail.com">robin.khatwani2@gmail.com</a></div></div></div>
+
+    <!-- ALL STEPS TABLE -->
+    <div class="section-head" style="margin-top:40px;">
+      <div class="section-icon">🗂️</div>
+      <div><h2>All Steps (31 total)</h2></div>
+    </div>
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="filterRows('all',this)">All (31)</button>
+      <button class="filter-btn" onclick="filterRows('status-inprogress',this)">🔄 In Progress (2)</button>
+      <button class="filter-btn" onclick="filterRows('status-done',this)">✅ Done (4)</button>
+      <button class="filter-btn" onclick="filterRows('status-todo',this)">⏳ To Do (25)</button>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden;">
+      <table class="steps-table" id="stepsTable">
+        <thead><tr>
+          <th>#</th><th>Description</th><th>Responsible</th><th>DRI</th>
+          <th>Status</th><th>Est. Date</th><th>Completed</th>
+        </tr></thead>
+        <tbody>
+          <tr class="status-done-row">
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;width:36px;">1</td>
+            <td style="font-weight:600;font-size:.86rem;">Request for Project to Network</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Issuer</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Robin</td>
+            <td><span class="status-badge status-done">✅ Done</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">May 01, 2026</td>
+            <td style="font-size:.8rem;color:var(--green);">May 01, 2026</td>
+          </tr>
+          <tr class="status-inprogress-row">
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;width:36px;">2</td>
+            <td style="font-weight:600;font-size:.86rem;">Project Creation and PM Assignment</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Network</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Monu</td>
+            <td><span class="status-badge status-inprogress">🔄 In Progress</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Jun 05, 2026</td>
+            <td style="font-size:.8rem;color:var(--green);"><span style="color:var(--text-dim);">—</span></td>
+          </tr>
+          <tr class="status-inprogress-row">
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;width:36px;">3</td>
+            <td style="font-weight:600;font-size:.86rem;">Project SOW Preparation</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Issuer</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Robin</td>
+            <td><span class="status-badge status-inprogress">🔄 In Progress</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Jun 15, 2026</td>
+            <td style="font-size:.8rem;color:var(--green);"><span style="color:var(--text-dim);">—</span></td>
+          </tr>
+          <tr class="status-done-row">
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;width:36px;">4</td>
+            <td style="font-weight:600;font-size:.86rem;">Project SOW Approval</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Issuer</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Robin</td>
+            <td><span class="status-badge status-done">✅ Done</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Jun 18, 2026</td>
+            <td style="font-size:.8rem;color:var(--green);"><span style="color:var(--text-dim);">—</span></td>
+          </tr>
+          <tr class="status-done-row">
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;width:36px;">5</td>
+            <td style="font-weight:600;font-size:.86rem;">Project Plan Proposal</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Network</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Monu</td>
+            <td><span class="status-badge status-done">✅ Done</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Jun 25, 2026</td>
+            <td style="font-size:.8rem;color:var(--green);"><span style="color:var(--text-dim);">—</span></td>
+          </tr>
+          <tr class="status-done-row">
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;width:36px;">6</td>
+            <td style="font-weight:600;font-size:.86rem;">Project Plan Approval</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Issuer</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Robin</td>
+            <td><span class="status-badge status-done">✅ Done</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Jul 01, 2026</td>
+            <td style="font-size:.8rem;color:var(--green);"><span style="color:var(--text-dim);">—</span></td>
+          </tr>
+          <tr class="status-todo-row">
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;width:36px;">7</td>
+            <td style="font-weight:600;font-size:.86rem;">New Account BIN Ordering</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Issuer</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Robin</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Jul 05, 2026</td>
+            <td style="font-size:.8rem;color:var(--green);"><span style="color:var(--text-dim);">—</span></td>
+          </tr>
+          <tr class="status-todo-row">
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;width:36px;">8</td>
+            <td style="font-weight:600;font-size:.86rem;">New Account BIN Available</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Network</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Monu</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Jul 10, 2026</td>
+            <td style="font-size:.8rem;color:var(--green);"><span style="color:var(--text-dim);">—</span></td>
+          </tr>
+          <tr class="status-todo-row">
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;width:36px;">9</td>
+            <td style="font-weight:600;font-size:.86rem;">Processor Authorization for Card Keys</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Issuer</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Robin</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Jul 15, 2026</td>
+            <td style="font-size:.8rem;color:var(--green);"><span style="color:var(--text-dim);">—</span></td>
+          </tr>
+          <tr class="status-todo-row">
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;width:36px;">10</td>
+            <td style="font-weight:600;font-size:.86rem;">Card Keys Generation</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Processor</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">John</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Jul 20, 2026</td>
+            <td style="font-size:.8rem;color:var(--green);"><span style="color:var(--text-dim);">—</span></td>
+          </tr>
+          <tr class="status-todo-row">
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;width:36px;">11</td>
+            <td style="font-weight:600;font-size:.86rem;">Card Keys Exchange with Processor</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Network</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Monu</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Jul 31, 2026</td>
+            <td style="font-size:.8rem;color:var(--green);"><span style="color:var(--text-dim);">—</span></td>
+          </tr>
+          <tr class="status-todo-row">
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;width:36px;">12</td>
+            <td style="font-weight:600;font-size:.86rem;">Key Updates in Processor System</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Processor</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">John</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Aug 05, 2026</td>
+            <td style="font-size:.8rem;color:var(--green);"><span style="color:var(--text-dim);">—</span></td>
+          </tr>
+          <tr class="status-todo-row">
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;width:36px;">13</td>
+            <td style="font-weight:600;font-size:.86rem;">Key Updates in Network System</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Network</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Monu</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Aug 08, 2026</td>
+            <td style="font-size:.8rem;color:var(--green);"><span style="color:var(--text-dim);">—</span></td>
+          </tr>
+          <tr class="status-todo-row">
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;width:36px;">14</td>
+            <td style="font-weight:600;font-size:.86rem;">Non Liability Letter to Network</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Issuer</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Robin</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Aug 12, 2026</td>
+            <td style="font-size:.8rem;color:var(--green);"><span style="color:var(--text-dim);">—</span></td>
+          </tr>
+          <tr class="status-todo-row">
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;width:36px;">15</td>
+            <td style="font-weight:600;font-size:.86rem;">Network Settlement End Point Initiation</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Network</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Monu</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Aug 12, 2026</td>
+            <td style="font-size:.8rem;color:var(--green);"><span style="color:var(--text-dim);">—</span></td>
+          </tr>
+          <tr class="status-todo-row">
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;width:36px;">16</td>
+            <td style="font-weight:600;font-size:.86rem;">Network Settlement End Point Approval</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Issuer</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Robin</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Aug 20, 2026</td>
+            <td style="font-size:.8rem;color:var(--green);"><span style="color:var(--text-dim);">—</span></td>
+          </tr>
+          <tr class="status-todo-row">
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;width:36px;">17</td>
+            <td style="font-weight:600;font-size:.86rem;">File Encryption Key Exchange with Processor</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Network</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Monu</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Aug 25, 2026</td>
+            <td style="font-size:.8rem;color:var(--green);"><span style="color:var(--text-dim);">—</span></td>
+          </tr>
+          <tr class="status-todo-row">
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;width:36px;">18</td>
+            <td style="font-weight:600;font-size:.86rem;">Account BIN Setup in Blocked State</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Network</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Monu</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Aug 28, 2026</td>
+            <td style="font-size:.8rem;color:var(--green);"><span style="color:var(--text-dim);">—</span></td>
+          </tr>
+          <tr class="status-todo-row">
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;width:36px;">19</td>
+            <td style="font-weight:600;font-size:.86rem;">Account BIN and Settlement End Point Go Live</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Network</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Monu</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Aug 31, 2026</td>
+            <td style="font-size:.8rem;color:var(--green);"><span style="color:var(--text-dim);">—</span></td>
+          </tr>
+          <tr class="status-todo-row">
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;width:36px;">20</td>
+            <td style="font-weight:600;font-size:.86rem;">MDES Project Enablement</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Network</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Monu</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Sep 02, 2026</td>
+            <td style="font-size:.8rem;color:var(--green);"><span style="color:var(--text-dim);">—</span></td>
+          </tr>
+          <tr class="status-todo-row">
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;width:36px;">21</td>
+            <td style="font-weight:600;font-size:.86rem;">Token BIN Assignment</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Network</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Monu</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Sep 04, 2026</td>
+            <td style="font-size:.8rem;color:var(--green);"><span style="color:var(--text-dim);">—</span></td>
+          </tr>
+          <tr class="status-todo-row">
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;width:36px;">22</td>
+            <td style="font-weight:600;font-size:.86rem;">Token BIN Live</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Network</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Monu</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Sep 08, 2026</td>
+            <td style="font-size:.8rem;color:var(--green);"><span style="color:var(--text-dim);">—</span></td>
+          </tr>
+          <tr class="status-todo-row">
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;width:36px;">23</td>
+            <td style="font-weight:600;font-size:.86rem;">Account BIN Block Removal Initiation</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Issuer</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Robin</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Sep 09, 2026</td>
+            <td style="font-size:.8rem;color:var(--green);"><span style="color:var(--text-dim);">—</span></td>
+          </tr>
+          <tr class="status-todo-row">
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;width:36px;">24</td>
+            <td style="font-weight:600;font-size:.86rem;">Account BIN Block Removal Completion</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Network</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Monu</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Sep 13, 2026</td>
+            <td style="font-size:.8rem;color:var(--green);"><span style="color:var(--text-dim);">—</span></td>
+          </tr>
+          <tr class="status-todo-row">
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;width:36px;">25</td>
+            <td style="font-weight:600;font-size:.86rem;">Account Setup and Card Ordering for Processor</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Issuer</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Robin</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Sep 20, 2026</td>
+            <td style="font-size:.8rem;color:var(--green);"><span style="color:var(--text-dim);">—</span></td>
+          </tr>
+          <tr class="status-todo-row">
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;width:36px;">26</td>
+            <td style="font-weight:600;font-size:.86rem;">Card Fulfillment and Personalization</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Embosser</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Ajay</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Sep 25, 2026</td>
+            <td style="font-size:.8rem;color:var(--green);"><span style="color:var(--text-dim);">—</span></td>
+          </tr>
+          <tr class="status-todo-row">
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;width:36px;">27</td>
+            <td style="font-weight:600;font-size:.86rem;">Card Shipping</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Embosser</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Ajay</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Sep 28, 2026</td>
+            <td style="font-size:.8rem;color:var(--green);"><span style="color:var(--text-dim);">—</span></td>
+          </tr>
+          <tr class="status-todo-row">
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;width:36px;">28</td>
+            <td style="font-weight:600;font-size:.86rem;">Card Receiving  and Activation</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Issuer</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Robin</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Sep 30, 2026</td>
+            <td style="font-size:.8rem;color:var(--green);"><span style="color:var(--text-dim);">—</span></td>
+          </tr>
+          <tr class="status-todo-row">
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;width:36px;">29</td>
+            <td style="font-weight:600;font-size:.86rem;">Card Transaction Validation</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Issuer</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Robin</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Oct 02, 2026</td>
+            <td style="font-size:.8rem;color:var(--green);"><span style="color:var(--text-dim);">—</span></td>
+          </tr>
+          <tr class="status-todo-row">
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;width:36px;">30</td>
+            <td style="font-weight:600;font-size:.86rem;">Settlement Verification</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Processor</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">John</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Oct 07, 2026</td>
+            <td style="font-size:.8rem;color:var(--green);"><span style="color:var(--text-dim);">—</span></td>
+          </tr>
+          <tr class="status-todo-row">
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;width:36px;">31</td>
+            <td style="font-weight:600;font-size:.86rem;">Project Close</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Issuer</td>
+            <td style="font-size:.82rem;color:var(--text-muted);">Robin</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Oct 10, 2026</td>
+            <td style="font-size:.8rem;color:var(--green);"><span style="color:var(--text-dim);">—</span></td>
+          </tr></tbody>
+      </table>
+    </div>
+
+  </main>
+  <footer><p>📊 Status Tracker — Trace file log optimization &nbsp;·&nbsp; Robin AI Learnings &nbsp;·&nbsp; AI PM Tool &nbsp;·&nbsp; May 19, 2026 at 15:50</p></footer>
+</div>
+<script>
+  function filterRows(cls, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('#stepsTable tbody tr').forEach(row => {
+      row.style.display = (cls === 'all' || row.classList.contains(cls + '-row')) ? '' : 'none';
+    });
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Add New Project — AI PM Tool</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0b0f1a; --surface: #111827; --surface2: #161d2e; --surface3: #1c2540;
+      --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.13);
+      --text: #f0f4ff; --text-muted: #8b9ab4; --text-dim: #5a6a84;
+      --primary: #4f8ef7; --primary-dim: rgba(79,142,247,0.15);
+      --secondary: #2dd4bf; --secondary-dim: rgba(45,212,191,0.15);
+      --purple: #9f6ef5; --purple-dim: rgba(159,110,245,0.15);
+      --accent: #f59e0b; --accent-dim: rgba(245,158,11,0.15);
+      --green: #34d399; --green-dim: rgba(52,211,153,0.15);
+      --red: #f87171; --red-dim: rgba(248,113,113,0.15);
+      --glow-purple: rgba(159,110,245,0.22);
+      --radius: 14px; --shadow: 0 4px 24px rgba(0,0,0,0.35);
+    }
+
+    html, body { min-height: 100vh; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 70% 50% at 20% 20%, rgba(159,110,245,.1) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 45% at 80% 70%, rgba(79,142,247,.1) 0%, transparent 60%);
+      pointer-events: none; z-index: 0;
+    }
+
+    .page { position: relative; z-index: 1; display: flex; flex-direction: column; min-height: 100vh; }
+
+    /* NAV */
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 48px; border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px); background: rgba(11,15,26,.8);
+      position: sticky; top: 0; z-index: 10;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+    .nav-logo-icon { width: 34px; height: 34px; background: linear-gradient(135deg, var(--primary), var(--purple)); border-radius: 9px; display: grid; place-items: center; font-size: 16px; }
+    .nav-logo-text { font-size: 16px; font-weight: 700; }
+    .nav-logo-text span { color: var(--primary); }
+    .back-btn { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--text-muted); text-decoration: none; background: rgba(255,255,255,.04); border: 1px solid var(--border); padding: 7px 14px; border-radius: 9px; transition: all .2s; }
+    .back-btn:hover { color: var(--text); background: rgba(255,255,255,.07); }
+
+    /* HERO */
+    .hero { text-align: center; padding: 56px 24px 36px; }
+    .hero-eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--purple); margin-bottom: 16px; }
+    .hero-eyebrow::before, .hero-eyebrow::after { content: ''; display: block; width: 22px; height: 1px; background: var(--purple); opacity: .5; }
+    .hero h1 { font-size: clamp(28px, 4vw, 46px); font-weight: 800; letter-spacing: -1.2px; line-height: 1.1; background: linear-gradient(135deg, #fff 30%, var(--purple) 65%, var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 14px; }
+    .hero p { font-size: 15px; color: var(--text-muted); max-width: 480px; margin: 0 auto; line-height: 1.7; }
+
+    /* MAIN LAYOUT */
+    .main { max-width: 760px; margin: 0 auto; padding: 16px 24px 80px; width: 100%; }
+
+    /* UPLOAD CARD */
+    .upload-card { background: var(--surface); border: 1px solid var(--border); border-radius: 22px; padding: 40px; margin-bottom: 24px; }
+
+    /* DROP ZONE */
+    .drop-zone {
+      border: 2px dashed rgba(159,110,245,.35);
+      border-radius: 16px; padding: 48px 32px; text-align: center;
+      cursor: pointer; transition: all .25s ease; position: relative;
+      background: rgba(159,110,245,.04);
+    }
+    .drop-zone:hover, .drop-zone.drag-over {
+      border-color: var(--purple); background: rgba(159,110,245,.09);
+      box-shadow: 0 0 30px rgba(159,110,245,.15);
+    }
+    .drop-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+    .drop-icon { font-size: 3rem; margin-bottom: 14px; }
+    .drop-title { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+    .drop-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; }
+    .drop-btn { display: inline-block; background: var(--purple-dim); color: var(--purple); border: 1px solid rgba(159,110,245,.3); padding: 8px 22px; border-radius: 9px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background .2s; }
+    .drop-btn:hover { background: rgba(159,110,245,.25); }
+    .file-types { font-size: 11px; color: var(--text-dim); margin-top: 10px; letter-spacing: .5px; }
+
+    /* FILE SELECTED STATE */
+    .file-selected { display: none; background: var(--surface2); border: 1px solid rgba(52,211,153,.3); border-radius: 12px; padding: 16px 20px; margin-top: 18px; align-items: center; gap: 14px; }
+    .file-selected.visible { display: flex; }
+    .file-icon { font-size: 1.8rem; }
+    .file-info { flex: 1; }
+    .file-name { font-size: 14px; font-weight: 600; color: var(--text); }
+    .file-size { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .file-clear { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 18px; padding: 4px; line-height: 1; transition: color .2s; }
+    .file-clear:hover { color: var(--red); }
+
+    /* OPTIONS */
+    .options-section { margin-top: 28px; }
+    .options-title { font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; }
+    .option-row { display: flex; align-items: center; justify-content: space-between; background: var(--surface2); border: 1px solid var(--border); border-radius: 11px; padding: 14px 18px; margin-bottom: 10px; }
+    .option-label { font-size: 13px; font-weight: 600; }
+    .option-desc { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .toggle { position: relative; width: 42px; height: 24px; flex-shrink: 0; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider { position: absolute; inset: 0; background: rgba(255,255,255,.1); border-radius: 999px; cursor: pointer; transition: .25s; border: 1px solid var(--border2); }
+    .toggle-slider::before { content: ''; position: absolute; height: 16px; width: 16px; left: 3px; bottom: 3px; background: var(--text-muted); border-radius: 50%; transition: .25s; }
+    .toggle input:checked + .toggle-slider { background: rgba(159,110,245,.3); border-color: rgba(159,110,245,.5); }
+    .toggle input:checked + .toggle-slider::before { transform: translateX(18px); background: var(--purple); }
+
+    /* SUBMIT */
+    .submit-btn {
+      width: 100%; margin-top: 28px; padding: 16px;
+      background: linear-gradient(135deg, var(--purple), var(--primary));
+      color: #fff; border: none; border-radius: 13px;
+      font-size: 15px; font-weight: 700; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      transition: opacity .2s, transform .2s;
+      box-shadow: 0 4px 20px rgba(159,110,245,.35);
+    }
+    .submit-btn:hover:not(:disabled) { opacity: .9; transform: translateY(-1px); }
+    .submit-btn:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+
+    /* LOADING STATE */
+    .loading-overlay { display: none; text-align: center; padding: 40px 20px; }
+    .loading-overlay.visible { display: block; }
+    .spinner { width: 44px; height: 44px; border: 3px solid rgba(159,110,245,.2); border-top-color: var(--purple); border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 20px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-steps { display: flex; flex-direction: column; gap: 10px; max-width: 340px; margin: 24px auto 0; text-align: left; }
+    .loading-step { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--text-muted); }
+    .loading-step .step-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border2); flex-shrink: 0; transition: background .3s; }
+    .loading-step.active .step-dot { background: var(--purple); box-shadow: 0 0 8px var(--glow-purple); }
+    .loading-step.done .step-dot { background: var(--green); }
+    .loading-step.active { color: var(--text); font-weight: 600; }
+
+    /* SUCCESS STATE */
+    .success-card { display: none; background: var(--surface); border: 1px solid rgba(52,211,153,.25); border-radius: 22px; padding: 40px; text-align: center; }
+    .success-card.visible { display: block; }
+    .success-icon { font-size: 3.5rem; margin-bottom: 16px; }
+    .success-card h2 { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+    .success-card p { font-size: 14px; color: var(--text-muted); margin-bottom: 28px; }
+    .success-links { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+    .success-link { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 20px 16px; border-radius: 14px; text-decoration: none; color: var(--text); border: 1px solid var(--border); background: var(--surface2); transition: all .25s cubic-bezier(.34,1.56,.64,1); }
+    .success-link:hover { transform: translateY(-4px); }
+    .success-link.prd-link { border-color: rgba(79,142,247,.3); }
+    .success-link.prd-link:hover { background: rgba(79,142,247,.08); box-shadow: 0 8px 24px rgba(79,142,247,.2); }
+    .success-link.tracker-link { border-color: rgba(52,211,153,.3); }
+    .success-link.tracker-link:hover { background: rgba(52,211,153,.08); box-shadow: 0 8px 24px rgba(52,211,153,.2); }
+    .success-link .link-icon { font-size: 1.8rem; }
+    .success-link .link-title { font-size: 13px; font-weight: 700; }
+    .success-link .link-sub { font-size: 11px; color: var(--text-muted); }
+    .another-btn { background: rgba(255,255,255,.05); border: 1px solid var(--border); color: var(--text-muted); padding: 10px 24px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all .2s; }
+    .another-btn:hover { background: rgba(255,255,255,.09); color: var(--text); }
+
+    /* ERROR */
+    .error-box { display: none; background: var(--red-dim); border: 1px solid rgba(248,113,113,.3); border-radius: 12px; padding: 16px 20px; margin-top: 16px; font-size: 13px; color: var(--red); }
+    .error-box.visible { display: block; }
+
+    /* FORMAT HINT */
+    .format-hint { background: var(--surface2); border: 1px solid var(--border); border-radius: 14px; padding: 22px 26px; margin-bottom: 24px; }
+    .format-hint h3 { font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; }
+    .format-row { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; padding: 6px 0; border-bottom: 1px solid var(--border); }
+    .format-row:last-child { border-bottom: none; }
+    .format-row .row-num { font-size: 11px; font-weight: 700; color: var(--text-dim); width: 50px; flex-shrink: 0; padding-top: 2px; }
+    .format-row .row-desc { color: var(--text-muted); }
+    .format-row .row-desc strong { color: var(--text); }
+
+    footer { margin-top: auto; text-align: center; padding: 20px; font-size: 12px; color: var(--text-muted); border-top: 1px solid var(--border); }
+    footer span { color: var(--purple); }
+
+    @media (max-width: 600px) {
+      nav { padding: 14px 18px; }
+      .main { padding: 16px 16px 60px; }
+      .upload-card { padding: 24px; }
+      .success-links { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <nav>
+    <a class="nav-logo" href="default.html">
+      <div class="nav-logo-icon">🤖</div>
+      <div class="nav-logo-text">AI <span>PM</span> Tool</div>
+    </a>
+    <a class="back-btn" href="default.html">← Dashboard</a>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-eyebrow">Project Setup</div>
+    <h1>Add New Project</h1>
+    <p>Upload your project Excel sheet and the agent will generate a full PRD and Status Tracker automatically.</p>
+  </section>
+
+  <div class="main">
+
+    <!-- Upload form -->
+    <div id="uploadSection">
+      <!-- Format hint -->
+      <div class="format-hint">
+        <h3>📋 Expected Excel Format</h3>
+        <div class="format-row"><span class="row-num">Row 1</span><span class="row-desc"><strong>Project Objective</strong> — full description in first cell</span></div>
+        <div class="format-row"><span class="row-num">Row 2</span><span class="row-desc"><strong>Headers</strong> — Steps · Description · Responsible · Notes · DRI · DRI Email · Dependency · Status · Est. Date · Completion Date</span></div>
+        <div class="format-row"><span class="row-num">Row 3+</span><span class="row-desc"><strong>Step rows</strong> — one row per milestone with status (Done / In Progress / ToDo)</span></div>
+      </div>
+
+      <div class="upload-card">
+        <!-- Drop zone -->
+        <div class="drop-zone" id="dropZone">
+          <input type="file" id="fileInput" accept=".xlsx,.xls" />
+          <div class="drop-icon">📊</div>
+          <div class="drop-title">Drop your Excel file here</div>
+          <div class="drop-sub">or click to browse your computer</div>
+          <div class="drop-btn">Browse Files</div>
+          <div class="file-types">Supports .xlsx and .xls</div>
+        </div>
+
+        <!-- File selected display -->
+        <div class="file-selected" id="fileSelected">
+          <div class="file-icon">📗</div>
+          <div class="file-info">
+            <div class="file-name" id="fileName">—</div>
+            <div class="file-size" id="fileSize">—</div>
+          </div>
+          <button class="file-clear" id="fileClear" title="Remove file">✕</button>
+        </div>
+
+        <!-- Options -->
+        <div class="options-section">
+          <div class="options-title">Generation Options</div>
+          <div class="option-row">
+            <div>
+              <div class="option-label">Generate Full PRD</div>
+              <div class="option-desc">Problem statement, stakeholders, milestones, metrics &amp; risks</div>
+            </div>
+            <label class="toggle"><input type="checkbox" id="optPrd" checked /><span class="toggle-slider"></span></label>
+          </div>
+          <div class="option-row">
+            <div>
+              <div class="option-label">Generate Status Tracker</div>
+              <div class="option-desc">Live milestone tracker with DRI info, progress bar &amp; step statuses</div>
+            </div>
+            <label class="toggle"><input type="checkbox" id="optTracker" checked /><span class="toggle-slider"></span></label>
+          </div>
+          <div class="option-row">
+            <div>
+              <div class="option-label">Overwrite if project exists</div>
+              <div class="option-desc">Silently regenerate pages when re-uploading the same project</div>
+            </div>
+            <label class="toggle"><input type="checkbox" id="optOverwrite" checked /><span class="toggle-slider"></span></label>
+          </div>
+        </div>
+
+        <!-- Error -->
+        <div class="error-box" id="errorBox"></div>
+
+        <!-- Submit -->
+        <button class="submit-btn" id="submitBtn" disabled>
+          <span>✨</span> <span id="submitLabel">Select a file to continue</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading-overlay" id="loadingSection">
+      <div class="spinner"></div>
+      <div style="font-size:17px;font-weight:700;margin-bottom:6px;">Processing your project…</div>
+      <div style="font-size:13px;color:var(--text-muted);">This takes just a few seconds</div>
+      <div class="loading-steps">
+        <div class="loading-step" id="step1"><span class="step-dot"></span> Reading Excel sheet</div>
+        <div class="loading-step" id="step2"><span class="step-dot"></span> Extracting project data</div>
+        <div class="loading-step" id="step3"><span class="step-dot"></span> Creating project directory</div>
+        <div class="loading-step" id="step4"><span class="step-dot"></span> Generating PRD page</div>
+        <div class="loading-step" id="step5"><span class="step-dot"></span> Generating Status Tracker</div>
+        <div class="loading-step" id="step6"><span class="step-dot"></span> Updating Projects hub</div>
+      </div>
+    </div>
+
+    <!-- Success -->
+    <div class="success-card" id="successSection">
+      <div class="success-icon">🎉</div>
+      <h2 id="successTitle">Project Created!</h2>
+      <p id="successDesc">Your PRD and Status Tracker have been generated successfully.</p>
+      <div class="success-links">
+        <a class="success-link prd-link" id="prdLink" href="#" target="_blank">
+          <span class="link-icon">📄</span>
+          <span class="link-title">View PRD</span>
+          <span class="link-sub">Product Requirements Document</span>
+        </a>
+        <a class="success-link tracker-link" id="trackerLink" href="#" target="_blank">
+          <span class="link-icon">📊</span>
+          <span class="link-title">View Status Tracker</span>
+          <span class="link-sub">Live milestone tracker</span>
+        </a>
+      </div>
+      <button class="another-btn" id="anotherBtn">+ Upload another project</button>
+    </div>
+
+  </div>
+
+  <footer>Built for <span>Robin Khatwani</span> · AI PM Tool</footer>
+</div>
+
+<script>
+  const dropZone   = document.getElementById('dropZone');
+  const fileInput  = document.getElementById('fileInput');
+  const fileSelected = document.getElementById('fileSelected');
+  const fileName   = document.getElementById('fileName');
+  const fileSize   = document.getElementById('fileSize');
+  const fileClear  = document.getElementById('fileClear');
+  const submitBtn  = document.getElementById('submitBtn');
+  const submitLabel = document.getElementById('submitLabel');
+  const errorBox   = document.getElementById('errorBox');
+  const uploadSection  = document.getElementById('uploadSection');
+  const loadingSection = document.getElementById('loadingSection');
+  const successSection = document.getElementById('successSection');
+
+  let selectedFile = null;
+
+  function formatBytes(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+  }
+
+  function setFile(file) {
+    if (!file) return;
+    if (!file.name.match(/\.(xlsx|xls)$/i)) {
+      showError('Please select an Excel file (.xlsx or .xls)');
+      return;
+    }
+    selectedFile = file;
+    fileName.textContent = file.name;
+    fileSize.textContent = formatBytes(file.size);
+    fileSelected.classList.add('visible');
+    submitBtn.disabled = false;
+    submitLabel.textContent = 'Generate PRD & Status Tracker';
+    hideError();
+  }
+
+  fileInput.addEventListener('change', () => setFile(fileInput.files[0]));
+
+  fileClear.addEventListener('click', () => {
+    selectedFile = null;
+    fileInput.value = '';
+    fileSelected.classList.remove('visible');
+    submitBtn.disabled = true;
+    submitLabel.textContent = 'Select a file to continue';
+    hideError();
+  });
+
+  dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+  dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file) setFile(file);
+  });
+
+  function showError(msg) { errorBox.textContent = msg; errorBox.classList.add('visible'); }
+  function hideError() { errorBox.classList.remove('visible'); }
+
+  // Animate loading steps
+  function animateSteps(stepTimings) {
+    stepTimings.forEach(({ id, delay, duration }) => {
+      setTimeout(() => {
+        document.getElementById(id).classList.add('active');
+        setTimeout(() => {
+          document.getElementById(id).classList.remove('active');
+          document.getElementById(id).classList.add('done');
+        }, duration);
+      }, delay);
+    });
+  }
+
+  submitBtn.addEventListener('click', async () => {
+    if (!selectedFile) return;
+    hideError();
+
+    const genPrd     = document.getElementById('optPrd').checked;
+    const genTracker = document.getElementById('optTracker').checked;
+
+    if (!genPrd && !genTracker) {
+      showError('Please enable at least one generation option.');
+      return;
+    }
+
+    // Switch to loading state
+    uploadSection.style.display = 'none';
+    loadingSection.classList.add('visible');
+
+    // Animate steps
+    animateSteps([
+      { id: 'step1', delay: 200,  duration: 800 },
+      { id: 'step2', delay: 900,  duration: 700 },
+      { id: 'step3', delay: 1500, duration: 600 },
+      { id: 'step4', delay: 2000, duration: 1000 },
+      { id: 'step5', delay: 2900, duration: 1000 },
+      { id: 'step6', delay: 3800, duration: 700 },
+    ]);
+
+    // Build form data
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+    formData.append('genPrd', genPrd);
+    formData.append('genTracker', genTracker);
+    formData.append('overwrite', document.getElementById('optOverwrite').checked);
+
+    try {
+      const res = await fetch('/upload-project', { method: 'POST', body: formData });
+      const data = await res.json();
+
+      if (!res.ok || data.error) throw new Error(data.error || 'Server error');
+
+      // Wait for animations to finish
+      await new Promise(r => setTimeout(r, 4600));
+
+      loadingSection.classList.remove('visible');
+      successSection.classList.add('visible');
+
+      document.getElementById('successTitle').textContent = `"${data.projectName}" Created!`;
+      document.getElementById('successDesc').textContent =
+        `${data.stepsCount} milestones · ${data.dris?.length || 0} DRIs · stored in projects/${data.slug}/`;
+      document.getElementById('prdLink').href = data.prdUrl;
+      document.getElementById('trackerLink').href = data.trackerUrl;
+
+    } catch (err) {
+      loadingSection.classList.remove('visible');
+      uploadSection.style.display = 'block';
+      showError('Error: ' + (err.message || 'Something went wrong. Is the server running?'));
+    }
+  });
+
+  document.getElementById('anotherBtn').addEventListener('click', () => {
+    successSection.classList.remove('visible');
+    uploadSection.style.display = 'block';
+    fileClear.click();
+  });
+</script>
+</body>
+</html>

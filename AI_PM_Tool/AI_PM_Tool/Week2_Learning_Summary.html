@@ -1,0 +1,1523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Week 2 – AI Learning Summary</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:            #0b0f1a;
+      --surface:       #111827;
+      --surface2:      #161d2e;
+      --surface3:      #1c2540;
+      --border:        rgba(255,255,255,0.08);
+      --border2:       rgba(255,255,255,0.13);
+      --text:          #f0f4ff;
+      --text-muted:    #8b9ab4;
+      --text-dim:      #5a6a84;
+      --primary:       #4f8ef7;
+      --primary-dim:   rgba(79,142,247,0.15);
+      --secondary:     #2dd4bf;
+      --secondary-dim: rgba(45,212,191,0.15);
+      --accent:        #f59e0b;
+      --accent-dim:    rgba(245,158,11,0.15);
+      --green:         #34d399;
+      --green-dim:     rgba(52,211,153,0.15);
+      --red:           #f87171;
+      --red-dim:       rgba(248,113,113,0.15);
+      --purple:        #9f6ef5;
+      --purple-dim:    rgba(159,110,245,0.15);
+      /* Week 2 theme */
+      --w2:            #9f6ef5;
+      --w2-dim:        rgba(159,110,245,0.15);
+      --w2-glow:       rgba(159,110,245,0.22);
+      --radius:        14px;
+      --shadow:        0 4px 24px rgba(0,0,0,0.35);
+    }
+
+    html, body { min-height: 100vh; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 70% 50% at 10% 10%, rgba(159,110,245,.1) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 45% at 90% 80%, rgba(79,142,247,.08) 0%, transparent 60%);
+      pointer-events: none; z-index: 0;
+    }
+
+    /* ── NAV ── */
+    .top-nav {
+      position: sticky; top: 0; z-index: 20;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 48px;
+      background: rgba(11,15,26,.88); backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+    .nav-logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, var(--w2), var(--primary)); border-radius: 8px; display: grid; place-items: center; font-size: 15px; }
+    .nav-logo-text { font-size: 15px; font-weight: 700; }
+    .nav-logo-text span { color: var(--w2); }
+    .back-btn {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 12px; font-weight: 600; color: var(--text-muted);
+      text-decoration: none; background: rgba(255,255,255,.04);
+      border: 1px solid var(--border); padding: 7px 14px; border-radius: 9px;
+      transition: all .2s;
+    }
+    .back-btn:hover { color: var(--text); background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.15); }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative; z-index: 1;
+      background: linear-gradient(135deg, #130a2e 0%, #1a1040 50%, #0d1545 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 60px 40px 50px; text-align: center; overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(159,110,245,.22) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero .badge {
+      position: relative;
+      display: inline-block; background: rgba(159,110,245,.15); border: 1px solid rgba(159,110,245,.35);
+      border-radius: 999px; padding: 6px 18px; font-size: .78rem; letter-spacing: 1.5px;
+      text-transform: uppercase; margin-bottom: 18px; color: var(--w2); font-weight: 600;
+    }
+    .hero h1 {
+      position: relative; font-size: clamp(1.9rem, 4vw, 2.8rem); font-weight: 800;
+      margin-bottom: 14px; letter-spacing: -.5px;
+      background: linear-gradient(135deg, #fff 30%, var(--w2) 70%, var(--primary));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .hero p { position: relative; font-size: 1.05rem; color: var(--text-muted); max-width: 580px; margin: 0 auto 28px; }
+    .hero .topics-count {
+      position: relative;
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,.07); border: 1px solid var(--border2);
+      border-radius: 999px; padding: 8px 20px; font-size: .9rem; color: var(--text-muted); font-weight: 500;
+    }
+
+    /* ── LEARNING PATH NAV ── */
+    .path-wrapper {
+      position: relative; z-index: 1;
+      background: var(--surface); border-bottom: 1px solid var(--border); padding: 26px 40px;
+    }
+    .path-wrapper h2 { font-size: .78rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 16px; font-weight: 700; }
+    .path-phases { display: flex; gap: 0; flex-wrap: wrap; }
+    .phase-block { flex: 1; min-width: 160px; position: relative; }
+    .phase-block:not(:last-child)::after { content: '›'; position: absolute; right: -10px; top: 50%; transform: translateY(-50%); font-size: 1.4rem; color: var(--text-dim); z-index: 1; }
+    .phase-inner { background: var(--surface2); border-radius: 10px; padding: 12px 14px; margin: 0 18px 0 0; border: 1px solid var(--border); }
+    .phase-block:last-child .phase-inner { margin-right: 0; }
+    .phase-label { font-size: .7rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 6px; }
+    .phase-topics a { color: var(--text-muted); text-decoration: none; display: block; padding: 1px 0; font-size: .78rem; line-height: 1.5; transition: color .2s; }
+    .phase-topics a:hover { color: var(--w2); }
+    .ph1 .phase-label { color: #a78bfa; } .ph1 .phase-inner { border-left: 3px solid #7c3aed; }
+    .ph2 .phase-label { color: #60a5fa; } .ph2 .phase-inner { border-left: 3px solid #2563eb; }
+    .ph3 .phase-label { color: #22d3ee; } .ph3 .phase-inner { border-left: 3px solid #0891b2; }
+    .ph4 .phase-label { color: #34d399; } .ph4 .phase-inner { border-left: 3px solid #059669; }
+    .ph5 .phase-label { color: #f59e0b; } .ph5 .phase-inner { border-left: 3px solid #d97706; }
+
+    /* ── MAIN CONTENT ── */
+    .main { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 40px 32px 80px; }
+
+    /* ── PHASE DIVIDER ── */
+    .phase-divider { display: flex; align-items: center; gap: 16px; margin: 48px 0 32px; }
+    .pd-badge { display: inline-flex; align-items: center; gap: 8px; font-size: .78rem; font-weight: 700; padding: 7px 16px; border-radius: 999px; white-space: nowrap; letter-spacing: .3px; }
+    .pd-1 { background: rgba(159,110,245,.15); color: #a78bfa; border: 1px solid rgba(159,110,245,.3); }
+    .pd-2 { background: rgba(79,142,247,.15); color: #60a5fa; border: 1px solid rgba(79,142,247,.3); }
+    .pd-3 { background: rgba(34,211,238,.15); color: #22d3ee; border: 1px solid rgba(34,211,238,.3); }
+    .pd-4 { background: rgba(52,211,153,.15); color: #34d399; border: 1px solid rgba(52,211,153,.3); }
+    .pd-5 { background: rgba(245,158,11,.15); color: #f59e0b; border: 1px solid rgba(245,158,11,.3); }
+    .pd-line { flex: 1; height: 1px; background: var(--border2); }
+
+    /* ── CARDS ── */
+    .card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 28px 30px; box-shadow: var(--shadow); margin-bottom: 22px; }
+    .card-header { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+    .card-icon-wrap { width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; font-size: 1.3rem; flex-shrink: 0; }
+    .card-section-label { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-dim); margin-bottom: 3px; }
+    .card-title { font-size: 1.12rem; font-weight: 800; letter-spacing: -.2px; }
+    .card p { color: var(--text-muted); font-size: .92rem; line-height: 1.75; margin-bottom: 14px; }
+    .card p:last-child { margin-bottom: 0; }
+    strong { color: var(--text); font-weight: 700; }
+
+    /* ── CALLOUTS ── */
+    .callout { border-radius: 10px; padding: 16px 20px; margin: 18px 0; font-size: .88rem; line-height: 1.7; }
+    .callout-purple { background: rgba(159,110,245,.1); border: 1px solid rgba(159,110,245,.25); border-left: 3px solid var(--w2); color: var(--text-muted); }
+    .callout-blue   { background: rgba(79,142,247,.1);  border: 1px solid rgba(79,142,247,.25);  border-left: 3px solid var(--primary); color: var(--text-muted); }
+    .callout-green  { background: rgba(52,211,153,.1);  border: 1px solid rgba(52,211,153,.25);  border-left: 3px solid var(--green); color: var(--text-muted); }
+    .callout-amber  { background: rgba(245,158,11,.1);  border: 1px solid rgba(245,158,11,.25);  border-left: 3px solid var(--accent); color: var(--text-muted); }
+    .callout-title  { font-weight: 700; color: var(--text); margin-bottom: 6px; font-size: .82rem; text-transform: uppercase; letter-spacing: .8px; }
+
+    /* ── CODE BLOCK ── */
+    .code-block {
+      background: var(--surface2); border: 1px solid var(--border2); border-radius: 10px;
+      padding: 18px 20px; font-family: 'Courier New', monospace; font-size: .82rem;
+      color: #a5b4fc; line-height: 1.8; margin: 14px 0; overflow-x: auto;
+      white-space: pre; letter-spacing: .2px;
+    }
+    .code-block .cm  { color: var(--text-dim); }
+    .code-block .ck  { color: #f9a8d4; }
+    .code-block .cv  { color: #86efac; }
+    .code-block .cn  { color: var(--accent); }
+
+    /* ── ANALOGY TABLE ── */
+    .analogy-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: .85rem; }
+    .analogy-table thead tr { background: var(--surface2); }
+    .analogy-table th { padding: 10px 14px; text-align: left; font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--text-dim); border-bottom: 1px solid var(--border2); }
+    .analogy-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text-muted); vertical-align: top; }
+    .analogy-table tbody tr:last-child td { border-bottom: none; }
+    .analogy-table tbody tr:hover { background: rgba(255,255,255,.02); }
+    .analogy-table td:first-child { color: var(--w2); font-weight: 700; }
+    .analogy-table td:nth-child(2) { color: var(--text); font-weight: 600; }
+
+    /* ── COMPARISON GRID ── */
+    .compare-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin: 16px 0; }
+    .compare-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
+    .compare-card-title { font-size: .8rem; font-weight: 800; text-transform: uppercase; letter-spacing: .8px; margin-bottom: 10px; }
+    .compare-card ul { list-style: none; padding: 0; }
+    .compare-card ul li { font-size: .82rem; color: var(--text-muted); padding: 4px 0; display: flex; align-items: flex-start; gap: 8px; line-height: 1.5; }
+    .compare-card ul li::before { content: '▸'; font-size: .65rem; margin-top: 4px; flex-shrink: 0; }
+
+    /* ── STEP FLOW ── */
+    .step-flow { display: flex; flex-direction: column; gap: 0; margin: 16px 0; }
+    .step-item { display: flex; align-items: flex-start; gap: 14px; }
+    .step-item:not(:last-child) .step-connector { height: 28px; width: 2px; background: var(--border2); margin: 4px 0 4px 17px; }
+    .step-num { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; font-size: .82rem; font-weight: 800; flex-shrink: 0; }
+    .step-body { padding-top: 6px; }
+    .step-label { font-size: .82rem; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+    .step-desc  { font-size: .8rem; color: var(--text-muted); line-height: 1.55; }
+    .step-connector-wrap { display: flex; flex-direction: column; }
+
+    /* ── ARCHITECTURE DIAGRAM ── */
+    .arch-diagram { background: var(--surface2); border: 1px solid var(--border2); border-radius: 12px; padding: 22px; margin: 16px 0; display: flex; flex-direction: column; align-items: center; gap: 0; }
+    .arch-layer { width: 100%; max-width: 380px; background: var(--surface3); border: 1px solid var(--border2); border-radius: 8px; padding: 11px 16px; text-align: center; position: relative; }
+    .arch-layer-title { font-size: .78rem; font-weight: 800; text-transform: uppercase; letter-spacing: .8px; }
+    .arch-layer-sub   { font-size: .72rem; color: var(--text-muted); margin-top: 3px; }
+    .arch-arrow { font-size: 1.1rem; color: var(--text-dim); margin: 6px 0; }
+
+    /* ── ATTENTION MATRIX VISUAL ── */
+    .attention-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: .82rem; }
+    .attention-word { background: var(--surface3); border: 1px solid var(--border2); border-radius: 6px; padding: 4px 10px; font-weight: 700; white-space: nowrap; }
+    .attention-arrow { color: var(--w2); font-weight: 800; }
+    .attention-rel { color: var(--text-muted); }
+    .attention-pct { color: var(--w2); font-weight: 700; margin-left: 4px; font-size: .78rem; }
+
+    /* ── FAMILY CARD ── */
+    .family-card { border-radius: 12px; padding: 22px; margin-bottom: 18px; border: 1px solid; }
+    .fc-encoder { background: rgba(159,110,245,.07); border-color: rgba(159,110,245,.25); }
+    .fc-decoder { background: rgba(79,142,247,.07);  border-color: rgba(79,142,247,.25);  }
+    .fc-seq2seq { background: rgba(34,211,238,.07);  border-color: rgba(34,211,238,.25);  }
+    .fc-title { font-size: .95rem; font-weight: 800; margin-bottom: 4px; }
+    .fc-subtitle { font-size: .76rem; color: var(--text-muted); font-style: italic; margin-bottom: 14px; }
+    .fc-examples { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+    .fc-tag { font-size: .7rem; font-weight: 700; padding: 3px 9px; border-radius: 6px; }
+    .fc-use-title { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--text-dim); margin-bottom: 6px; }
+    .fc-uses { display: flex; flex-direction: column; gap: 4px; }
+    .fc-use-item { font-size: .8rem; color: var(--text-muted); display: flex; gap: 8px; align-items: flex-start; }
+    .fc-use-item::before { content: '✓'; font-weight: 700; margin-top: 1px; flex-shrink: 0; }
+
+    /* ── KEY TAKEAWAYS ── */
+    .takeaway-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-top: 18px; }
+    .takeaway-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+    .takeaway-num { font-size: 1.4rem; font-weight: 800; color: var(--w2); line-height: 1; margin-bottom: 6px; }
+    .takeaway-text { font-size: .82rem; color: var(--text-muted); line-height: 1.6; }
+
+    /* ── FOOTER ── */
+    footer { margin-top: auto; text-align: center; padding: 24px; font-size: .75rem; color: var(--text-muted); border-top: 1px solid var(--border); position: relative; z-index: 1; }
+    footer span { color: var(--w2); }
+
+    @media (max-width: 640px) {
+      .top-nav { padding: 14px 18px; }
+      .main { padding: 28px 18px 60px; }
+      .path-wrapper { padding: 18px; }
+      .hero { padding: 44px 20px 36px; }
+      .path-phases { flex-direction: column; gap: 10px; }
+      .phase-block:not(:last-child)::after { display: none; }
+      .phase-inner { margin-right: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav class="top-nav">
+  <a class="nav-logo" href="default.html">
+    <div class="nav-logo-icon">🤖</div>
+    <div class="nav-logo-text">AI <span>PM</span> Tool</div>
+  </a>
+  <a class="back-btn" href="ai-learning.html">← AI Learning Hub</a>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="badge">Week 2 · Large Language Models</div>
+  <h1>How AI Actually Reads & Thinks</h1>
+  <p>Tokens, Transformers, and the Encoder–Decoder architecture — explained through the lens of card payment processing.</p>
+  <div class="topics-count">🧩 5 Topics &nbsp;·&nbsp; 5 Phases &nbsp;·&nbsp; Card Processing Lens</div>
+</section>
+
+<!-- ── LEARNING PATH ── -->
+<div class="path-wrapper">
+  <h2>📍 Week 2 Learning Path</h2>
+  <div class="path-phases">
+    <div class="phase-block ph1">
+      <div class="phase-inner">
+        <div class="phase-label">Phase 1 — Tokens</div>
+        <div class="phase-topics">
+          <a href="#tokens">What is a Token?</a>
+          <a href="#vocab">Token Vocabulary</a>
+          <a href="#context">Context Window</a>
+          <a href="#token-analogy">Mental Model</a>
+        </div>
+      </div>
+    </div>
+    <div class="phase-block ph2">
+      <div class="phase-inner">
+        <div class="phase-label">Phase 2 — Transformers</div>
+        <div class="phase-topics">
+          <a href="#transformers">The Problem Solved</a>
+          <a href="#attention">Attention Mechanism</a>
+          <a href="#arch">Architecture</a>
+          <a href="#limits">Limits & Cost</a>
+        </div>
+      </div>
+    </div>
+    <div class="phase-block ph3">
+      <div class="phase-inner">
+        <div class="phase-label">Phase 3 — Enc/Dec</div>
+        <div class="phase-topics">
+          <a href="#encoder">Encoder Only</a>
+          <a href="#decoder">Decoder Only</a>
+          <a href="#seq2seq">Encoder + Decoder</a>
+          <a href="#together">Working Together</a>
+        </div>
+      </div>
+    </div>
+    <div class="phase-block ph4">
+      <div class="phase-inner">
+        <div class="phase-label">Phase 4 — Grounding</div>
+        <div class="phase-topics">
+          <a href="#grounding">What is Grounding?</a>
+          <a href="#rag">RAG Overview</a>
+          <a href="#tool-use">Tool Use</a>
+          <a href="#grounding-stack">Full Stack</a>
+        </div>
+      </div>
+    </div>
+    <div class="phase-block ph5">
+      <div class="phase-inner">
+        <div class="phase-label">Phase 5 — RAG Deep Dive</div>
+        <div class="phase-topics">
+          <a href="#rag-steps">6-Step Pipeline</a>
+          <a href="#rag-usecases">Use Cases</a>
+          <a href="#rag-failures">Failure Modes</a>
+          <a href="#four-connected">How It All Connects</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── MAIN ── -->
+<div class="main">
+
+  <!-- ════════════════════════════
+       PHASE 1 — TOKENS
+       ════════════════════════════ -->
+  <div class="phase-divider">
+    <span class="pd-badge pd-1">🔤 Phase 1 — Tokens & Tokenisation</span>
+    <div class="pd-line"></div>
+  </div>
+
+  <!-- Topic 1: What is a Token -->
+  <div class="card" id="tokens">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(159,110,245,.15);border:1px solid rgba(159,110,245,.25);">🔤</div>
+      <div>
+        <div class="card-section-label">Topic 1 of 3</div>
+        <div class="card-title">What is a Token?</div>
+      </div>
+    </div>
+
+    <p>A <strong>token</strong> is the smallest unit of text a model can process — and every cost, every limit, and every architectural decision in AI ultimately comes back to counting tokens.</p>
+    <p>A token is <em>not</em> exactly a word. It's a chunk of text — could be a whole word, part of a word, or even just punctuation.</p>
+
+    <div class="callout callout-purple">
+      <div class="callout-title">💳 Banking Analogy</div>
+      Just as a bank breaks a large payment into smaller processing units, the model breaks text into smaller units it can process.
+    </div>
+
+    <div class="card" style="background:var(--surface2);border-color:var(--border2);padding:20px;margin:16px 0;">
+      <p style="margin-bottom:10px;font-size:.82rem;font-weight:700;color:var(--text);">Real Example — "Authorization was declined"</p>
+      <div class="code-block"><span class="cm">// Input sentence (3 words) → 5 tokens</span>
+<span class="cv">"Author"</span>  <span class="cv">"ization"</span>  <span class="cv">" was"</span>  <span class="cv">" decl"</span>  <span class="cv">"ined"</span>
+<span class="cm">                                             ↑ 5 tokens, not 3 words</span></div>
+    </div>
+
+    <p>Domain-specific jargon costs <em>more</em> tokens — common words get their own token, while rare words get split into pieces:</p>
+
+    <div class="code-block"><span class="ck">"Visa"</span>        → <span class="cv">"Visa"</span>               <span class="cm">// 1 token  (common word)</span>
+<span class="ck">"Mastercard"</span>  → <span class="cv">"Master"</span> + <span class="cv">"card"</span>     <span class="cm">// 2 tokens (split)</span>
+<span class="ck">"ISO8583"</span>     → <span class="cv">"ISO"</span> + <span class="cv">"85"</span> + <span class="cv">"83"</span>  <span class="cm">// 3 tokens (rare jargon)</span></div>
+
+    <div class="callout callout-amber">
+      <div class="callout-title">⚠️ PM Tip</div>
+      When building payment AI products, technical jargon (BIN, ISO 8583, MDES) fragments into more tokens than plain English. This increases both cost and latency. Always test token counts when using domain-heavy prompts.
+    </div>
+  </div>
+
+  <!-- Topic 1b: Token Vocabulary + Context Window -->
+  <div class="card" id="vocab">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(159,110,245,.15);border:1px solid rgba(159,110,245,.25);">🧮</div>
+      <div>
+        <div class="card-section-label">Topic 1 of 3 (continued)</div>
+        <div class="card-title">Token Vocabulary & Context Window</div>
+      </div>
+    </div>
+
+    <p>Every model has a fixed <strong>vocabulary</strong> — typically 50,000 to 100,000 tokens. The model converts every token into a unique number (Token ID) before processing.</p>
+
+    <div class="code-block"><span class="cm">// The full processing pipeline</span>
+Text → Split into Tokens → Each Token gets an ID → Model works with Numbers
+     → Numbers converted back → Response you read
+
+<span class="cm">// The model NEVER sees words — only numbers.</span></div>
+
+    <p id="context">The <strong>Context Window</strong> is the maximum number of tokens a model can hold in memory at once — think of it as a whiteboard. Once full, early content starts falling off.</p>
+
+    <table class="analogy-table">
+      <thead><tr><th>Model</th><th>Context Window</th><th>≈ Words</th><th>≈ Pages</th></tr></thead>
+      <tbody>
+        <tr><td>Claude Sonnet</td><td style="color:var(--green);font-weight:700;">200,000 tokens</td><td>~150,000 words</td><td>~500 pages</td></tr>
+        <tr><td>GPT-4</td><td style="color:var(--primary);font-weight:700;">128,000 tokens</td><td>~96,000 words</td><td>~320 pages</td></tr>
+      </tbody>
+    </table>
+
+    <div class="code-block"><span class="cm">// What lives inside a context window</span>
+[System Prompt]  [Documents]  [Chat History]  [Your Question]  [Answer]
+   ~500 tokens   ~50k tokens    ~10k tokens      ~200 tokens
+
+<span class="cm">// All of this must fit within the limit simultaneously</span></div>
+
+    <div class="callout callout-blue">
+      <div class="callout-title">💡 Key Insight</div>
+      Context limits aren't arbitrary — they're a hard computational constraint. For card processing agents, never blindly dump full rulebooks into the prompt. Be strategic about what you include.
+    </div>
+  </div>
+
+  <!-- Analogy Table -->
+  <div class="card" id="token-analogy">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(159,110,245,.15);border:1px solid rgba(159,110,245,.25);">🏦</div>
+      <div>
+        <div class="card-section-label">Mental Model</div>
+        <div class="card-title">Tokens — Banking Analogy</div>
+      </div>
+    </div>
+    <table class="analogy-table">
+      <thead><tr><th>AI Concept</th><th>Card Processing Equivalent</th></tr></thead>
+      <tbody>
+        <tr><td>Token</td><td>A single transaction entry in a batch file</td></tr>
+        <tr><td>Token ID</td><td>The transaction reference number</td></tr>
+        <tr><td>Vocabulary</td><td>The bank's master transaction code list</td></tr>
+        <tr><td>Context Window</td><td>The reconciliation batch size limit</td></tr>
+        <tr><td>Tokenisation</td><td>Breaking a bulk payment file into individual records</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <!-- ════════════════════════════
+       PHASE 2 — TRANSFORMERS
+       ════════════════════════════ -->
+  <div class="phase-divider">
+    <span class="pd-badge pd-2">⚡ Phase 2 — Transformers & Attention</span>
+    <div class="pd-line"></div>
+  </div>
+
+  <!-- Topic 2: Transformers -->
+  <div class="card" id="transformers">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(79,142,247,.15);border:1px solid rgba(79,142,247,.25);">⚡</div>
+      <div>
+        <div class="card-section-label">Topic 2 of 3</div>
+        <div class="card-title">The Problem Transformers Solved</div>
+      </div>
+    </div>
+
+    <p>Before Transformers (pre-2017), models read text <em>one word at a time</em>, left to right — like reading with your finger covering everything except the current word. By the time they reached the end of a sentence, they'd largely forgotten the beginning.</p>
+
+    <div class="code-block"><span class="cm">// Old sequential models — forgotten context</span>
+"The transaction was declined because the card was expired"
+
+Old: The → transaction → was → declined → because...
+     <span class="cm">(by "expired" it has half-forgotten "transaction")</span>
+
+Transformer: reads ALL words simultaneously, figures out
+             which words relate to which, regardless of distance.</div>
+
+    <div class="callout callout-purple">
+      <div class="callout-title">🔑 The Breakthrough — Attention</div>
+      The Attention Mechanism answers one question for every token: <strong>"Which other tokens in this text should I pay attention to when understanding this token?"</strong>
+    </div>
+
+    <p id="attention">Example — when the model processes the word <strong>"it"</strong> in "The card was declined because it was expired":</p>
+
+    <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:18px;margin:14px 0;">
+      <div class="attention-row">
+        <div class="attention-word" style="background:rgba(159,110,245,.2);border-color:rgba(159,110,245,.4);">"it"</div>
+        <span class="attention-arrow">→ attends to →</span>
+        <div class="attention-word">"card"</div>
+        <span class="attention-pct">90% attention</span>
+      </div>
+      <div class="attention-row">
+        <div style="width:60px;"></div>
+        <span class="attention-arrow" style="color:var(--text-dim);">→ also →</span>
+        <div class="attention-word">"declined"</div>
+        <span class="attention-pct" style="color:var(--text-dim);">7% attention</span>
+      </div>
+      <div class="attention-row">
+        <div style="width:60px;"></div>
+        <span class="attention-arrow" style="color:var(--text-dim);">→ rest →</span>
+        <div class="attention-word">everything else</div>
+        <span class="attention-pct" style="color:var(--text-dim);">3% attention</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step by Step -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(79,142,247,.15);border:1px solid rgba(79,142,247,.25);">🔍</div>
+      <div>
+        <div class="card-section-label">Topic 2 of 3 (continued)</div>
+        <div class="card-title">Attention in Action — Card Fraud Example</div>
+      </div>
+    </div>
+
+    <p style="margin-bottom:16px;">Input: <em>"Large transaction in Moscow. Card last used in Atlanta 1 hour ago."</em></p>
+
+    <div class="step-flow">
+      <div class="step-item">
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div class="step-num" style="background:rgba(159,110,245,.2);border:1px solid rgba(159,110,245,.4);color:var(--w2);">1</div>
+          <div style="width:2px;height:28px;background:var(--border2);margin:4px 0;"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-label">Tokenise the Input</div>
+          <div class="step-desc">"Large" "transaction" "in" "Moscow" "Card" "last" "used" "in" "Atlanta" "1" "hour" "ago" → each becomes a number (token ID)</div>
+        </div>
+      </div>
+      <div class="step-item">
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div class="step-num" style="background:rgba(79,142,247,.2);border:1px solid rgba(79,142,247,.4);color:var(--primary);">2</div>
+          <div style="width:2px;height:28px;background:var(--border2);margin:4px 0;"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-label">Calculate Attention Scores</div>
+          <div class="step-desc">"Moscow" ↔ "Atlanta" (geography comparison) · "1 hour" ↔ "Moscow" + "Atlanta" (time between locations) · "Large" ↔ "transaction" (describes it)</div>
+        </div>
+      </div>
+      <div class="step-item">
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div class="step-num" style="background:rgba(34,211,238,.15);border:1px solid rgba(34,211,238,.3);color:#22d3ee;">3</div>
+          <div style="width:2px;height:28px;background:var(--border2);margin:4px 0;"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-label">Build Enriched Understanding</div>
+          <div class="step-desc">Each token is enriched with context. Not just "Moscow" — but "Moscow as a suspicious location given Atlanta 1 hour ago." Not just "Large" — but "Large as a risk signal."</div>
+        </div>
+      </div>
+      <div class="step-item">
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div class="step-num" style="background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.3);color:var(--green);">4</div>
+        </div>
+        <div class="step-body">
+          <div class="step-label">Generate Output</div>
+          <div class="step-desc" style="color:var(--green);">"This transaction shows geographic impossibility — high fraud risk"</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Architecture -->
+  <div class="card" id="arch">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(79,142,247,.15);border:1px solid rgba(79,142,247,.25);">🏗️</div>
+      <div>
+        <div class="card-section-label">Topic 2 of 3 (continued)</div>
+        <div class="card-title">The Transformer Architecture</div>
+      </div>
+    </div>
+
+    <div class="arch-diagram">
+      <div class="arch-layer" style="border-top:3px solid var(--text-dim);">
+        <div class="arch-layer-title" style="color:var(--text-muted);">Input Tokens</div>
+        <div class="arch-layer-sub">Raw text → token IDs</div>
+      </div>
+      <div class="arch-arrow">↓</div>
+      <div class="arch-layer" style="border-top:3px solid #a78bfa;">
+        <div class="arch-layer-title" style="color:#a78bfa;">Embedding Layer</div>
+        <div class="arch-layer-sub">Converts token IDs to rich numeric vectors</div>
+      </div>
+      <div class="arch-arrow">↓</div>
+      <div class="arch-layer" style="border-top:3px solid var(--primary);">
+        <div class="arch-layer-title" style="color:var(--primary);">Attention Layer 1</div>
+        <div class="arch-layer-sub">Finds basic relationships (grammar, syntax)</div>
+      </div>
+      <div class="arch-arrow">↓</div>
+      <div class="arch-layer" style="border-top:3px solid var(--w2);">
+        <div class="arch-layer-title" style="color:var(--w2);">Attention Layer 2…N</div>
+        <div class="arch-layer-sub">Finds deeper relationships (GPT-4 has 96 layers)</div>
+      </div>
+      <div class="arch-arrow">↓</div>
+      <div class="arch-layer" style="border-top:3px solid var(--green);">
+        <div class="arch-layer-title" style="color:var(--green);">Output Layer</div>
+        <div class="arch-layer-sub">Predicts the next token → text response</div>
+      </div>
+    </div>
+
+    <div class="callout callout-blue">
+      <div class="callout-title">💡 Key Insight</div>
+      Early attention layers find grammar and syntax. Later layers find meaning, reasoning, and intent. Each layer builds on the previous one — like stacked risk checks in a fraud engine.
+    </div>
+
+    <p id="limits">Why Transformers changed everything for card processing:</p>
+    <table class="analogy-table" style="margin-top:12px;">
+      <thead><tr><th>Capability</th><th>Card Processing Benefit</th></tr></thead>
+      <tbody>
+        <tr><td>Long-range attention</td><td>Connects "card issued 2019" to "transaction 2024" across a long document</td></tr>
+        <tr><td>Parallel processing</td><td>Reads entire ISO 8583 spec at once, not word by word</td></tr>
+        <tr><td>Deep context</td><td>Understands "decline" differs in different rule contexts</td></tr>
+        <tr><td>Scales with data</td><td>More transaction data = smarter fraud patterns learned</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Limits -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.25);">⚠️</div>
+      <div>
+        <div class="card-section-label">Critical Limitation</div>
+        <div class="card-title">The Quadratic Cost of Attention</div>
+      </div>
+    </div>
+
+    <p>Attention has a cost — every token must attend to every other token. This grows <em>quadratically</em>:</p>
+
+    <div class="code-block">    100 tokens  →       10,000 calculations  <span class="cv">(fast)</span>
+  1,000 tokens  →    1,000,000 calculations  <span class="cn">(manageable)</span>
+ 10,000 tokens  →  100,000,000 calculations  <span class="cn">(expensive)</span>
+100,000 tokens  →  10B calculations          <span class="ck">(very expensive)</span></div>
+
+    <div class="callout callout-amber">
+      <div class="callout-title">⚠️ PM Tip — Context Window Strategy</div>
+      Context limits are <strong>computational limits</strong>, not arbitrary ones. For card processing AI agents, you don't want to dump entire rulebooks into the model blindly. Use RAG (Retrieval-Augmented Generation) to fetch only the most relevant rules per transaction — keeping token usage tight and responses fast.
+    </div>
+  </div>
+
+  <!-- Phase 2 Mental Model -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(79,142,247,.15);border:1px solid rgba(79,142,247,.25);">🏦</div>
+      <div>
+        <div class="card-section-label">Mental Model</div>
+        <div class="card-title">Transformers — Card Processing Analogy</div>
+      </div>
+    </div>
+    <table class="analogy-table">
+      <thead><tr><th>AI Concept</th><th>Card Processing Equivalent</th></tr></thead>
+      <tbody>
+        <tr><td>Token</td><td>Individual transaction field (amount, MCC, terminal ID)</td></tr>
+        <tr><td>Attention</td><td>The rules engine checking which fields relate to each other</td></tr>
+        <tr><td>Layers</td><td>Multiple risk checks stacked on top of each other</td></tr>
+        <tr><td>Context Window</td><td>The transaction batch size your switch can process</td></tr>
+        <tr><td>Transformer</td><td>The entire authorization switch — ingests, relates, decides</td></tr>
+      </tbody>
+    </table>
+    <div class="callout callout-green">
+      <div class="callout-title">✅ One-Line Summary</div>
+      A Transformer reads everything at once, figures out what relates to what, and builds a deep understanding of the whole context — not just the last thing it saw.
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════
+       PHASE 3 — ENCODER / DECODER
+       ════════════════════════════ -->
+  <div class="phase-divider">
+    <span class="pd-badge pd-3">🔄 Phase 3 — Encoders & Decoders</span>
+    <div class="pd-line"></div>
+  </div>
+
+  <!-- Overview -->
+  <div class="card" id="encoder">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(34,211,238,.12);border:1px solid rgba(34,211,238,.25);">🔄</div>
+      <div>
+        <div class="card-section-label">Topic 3 of 3</div>
+        <div class="card-title">Encoder, Decoder & Encoder–Decoder</div>
+      </div>
+    </div>
+
+    <div class="compare-grid" style="margin-bottom:0;">
+      <div class="compare-card" style="border-color:rgba(159,110,245,.3);border-top:3px solid var(--w2);">
+        <div class="compare-card-title" style="color:var(--w2);">Encoder</div>
+        <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:8px;">A <strong>deep reader</strong>. Sees the whole picture at once. Great at understanding. Outputs meaning, not text.</p>
+        <div style="font-size:.72rem;color:var(--text-dim);font-style:italic;">Card analogy: Transaction parser — reads ISO 8583 message, understands every field and their relationships</div>
+      </div>
+      <div class="compare-card" style="border-color:rgba(79,142,247,.3);border-top:3px solid var(--primary);">
+        <div class="compare-card-title" style="color:var(--primary);">Decoder</div>
+        <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:8px;">A <strong>writer</strong>. Builds output one piece at a time. Great at generating. Thinks forward only.</p>
+        <div style="font-size:.72rem;color:var(--text-dim);font-style:italic;">Card analogy: Authorization engine — takes understanding and generates a decision + response message</div>
+      </div>
+      <div class="compare-card" style="border-color:rgba(34,211,238,.3);border-top:3px solid var(--secondary);">
+        <div class="compare-card-title" style="color:var(--secondary);">Encoder–Decoder</div>
+        <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:8px;">A <strong>translator</strong>. Deeply reads one thing, then carefully writes something else based on that understanding.</p>
+        <div style="font-size:.72rem;color:var(--text-dim);font-style:italic;">Card analogy: Full switch — parses incoming message AND generates the response ISO 8583 message back</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Family 1: Encoder Only -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(159,110,245,.15);border:1px solid rgba(159,110,245,.25);">📥</div>
+      <div>
+        <div class="card-section-label">Family 1 — Encoder Only</div>
+        <div class="card-title">"I just need to understand, not generate"</div>
+      </div>
+    </div>
+
+    <div class="family-card fc-encoder">
+      <div class="fc-title" style="color:#a78bfa;">Encoder-Only Models</div>
+      <div class="fc-subtitle">Reads ALL tokens simultaneously. Bidirectional — sees full context in both directions ← →</div>
+      <div class="fc-examples">
+        <span class="fc-tag" style="background:rgba(159,110,245,.15);color:#a78bfa;border:1px solid rgba(159,110,245,.3);">BERT</span>
+        <span class="fc-tag" style="background:rgba(159,110,245,.15);color:#a78bfa;border:1px solid rgba(159,110,245,.3);">RoBERTa</span>
+        <span class="fc-tag" style="background:rgba(159,110,245,.15);color:#a78bfa;border:1px solid rgba(159,110,245,.3);">sentence-transformers</span>
+      </div>
+      <div class="fc-use-title">Used For</div>
+      <div class="fc-uses">
+        <div class="fc-use-item" style="color:var(--text-muted);">Text classification (is this transaction fraudulent? yes/no)</div>
+        <div class="fc-use-item" style="color:var(--text-muted);">Semantic search (find similar past transactions)</div>
+        <div class="fc-use-item" style="color:var(--text-muted);">Generating embeddings for vector databases</div>
+        <div class="fc-use-item" style="color:var(--text-muted);">Named entity recognition (extract merchant name, amount, location)</div>
+      </div>
+    </div>
+
+    <div class="code-block"><span class="cm">// Card Processing Example</span>
+Input:  "Unusual late night purchase at electronics store,
+         foreign currency, new merchant"
+
+Encoder Output:  [0.82, -0.31, 0.94, 0.12, ...]
+                 <span class="cm">↑ A vector that captures meaning</span>
+                 <span class="cm">↑ Used to find similar past fraud cases in a vector DB</span></div>
+  </div>
+
+  <!-- Family 2: Decoder Only -->
+  <div class="card" id="decoder">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(79,142,247,.15);border:1px solid rgba(79,142,247,.25);">📤</div>
+      <div>
+        <div class="card-section-label">Family 2 — Decoder Only</div>
+        <div class="card-title">"I just need to generate"</div>
+      </div>
+    </div>
+
+    <div class="family-card fc-decoder">
+      <div class="fc-title" style="color:#60a5fa;">Decoder-Only Models</div>
+      <div class="fc-subtitle">Reads tokens left to right only. Each token can only attend to tokens before it — cannot peek ahead →</div>
+      <div class="fc-examples">
+        <span class="fc-tag" style="background:rgba(79,142,247,.15);color:#60a5fa;border:1px solid rgba(79,142,247,.3);">GPT-4</span>
+        <span class="fc-tag" style="background:rgba(79,142,247,.15);color:#60a5fa;border:1px solid rgba(79,142,247,.3);">Claude</span>
+        <span class="fc-tag" style="background:rgba(79,142,247,.15);color:#60a5fa;border:1px solid rgba(79,142,247,.3);">Llama</span>
+        <span class="fc-tag" style="background:rgba(79,142,247,.15);color:#60a5fa;border:1px solid rgba(79,142,247,.3);">Mistral</span>
+      </div>
+      <div class="fc-use-title">Used For</div>
+      <div class="fc-uses">
+        <div class="fc-use-item" style="color:var(--text-muted);">Generating text, reports, summaries</div>
+        <div class="fc-use-item" style="color:var(--text-muted);">Answering questions and reasoning</div>
+        <div class="fc-use-item" style="color:var(--text-muted);">Writing code</div>
+        <div class="fc-use-item" style="color:var(--text-muted);">Analysis and explanation</div>
+      </div>
+    </div>
+
+    <div class="code-block"><span class="cm">// Card Fraud — Decoder generating token by token</span>
+Prompt: "Transaction: $4,200, Moscow, 11pm, card last used Atlanta 1hr ago.
+         Analyze fraud risk and explain."
+
+<span class="cv">"This"</span> → <span class="cv">"transaction"</span> → <span class="cv">"shows"</span> → <span class="cv">"geographic"</span> → <span class="cv">"impossibility"</span> → ...
+
+Output: "This transaction shows geographic impossibility.
+         The cardholder cannot physically travel from Atlanta
+         to Moscow in 1 hour. Recommend decline and alert."</div>
+  </div>
+
+  <!-- Family 3: Encoder + Decoder -->
+  <div class="card" id="seq2seq">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(34,211,238,.12);border:1px solid rgba(34,211,238,.25);">🔃</div>
+      <div>
+        <div class="card-section-label">Family 3 — Encoder + Decoder (Seq2Seq)</div>
+        <div class="card-title">"I need to understand one thing deeply, then generate something different"</div>
+      </div>
+    </div>
+
+    <div class="family-card fc-seq2seq">
+      <div class="fc-title" style="color:#22d3ee;">Encoder–Decoder Models</div>
+      <div class="fc-subtitle">Encoder deeply reads input (bidirectional) → compresses to context vector → Decoder generates output using that understanding</div>
+      <div class="fc-examples">
+        <span class="fc-tag" style="background:rgba(34,211,238,.12);color:#22d3ee;border:1px solid rgba(34,211,238,.3);">T5</span>
+        <span class="fc-tag" style="background:rgba(34,211,238,.12);color:#22d3ee;border:1px solid rgba(34,211,238,.3);">BART</span>
+        <span class="fc-tag" style="background:rgba(34,211,238,.12);color:#22d3ee;border:1px solid rgba(34,211,238,.3);">Whisper (speech→text)</span>
+      </div>
+      <div class="fc-use-title">Used For</div>
+      <div class="fc-uses">
+        <div class="fc-use-item" style="color:var(--text-muted);">Translation (French → English)</div>
+        <div class="fc-use-item" style="color:var(--text-muted);">Summarisation (long doc → short summary)</div>
+        <div class="fc-use-item" style="color:var(--text-muted);">Speech to text</div>
+        <div class="fc-use-item" style="color:var(--text-muted);">Question answering over long documents</div>
+      </div>
+    </div>
+
+    <div class="code-block"><span class="cm">// Card Processing — Summarise a full transaction log</span>
+Encoder Input:   "[Full 500-line ISO 8583 transaction log]"
+                 <span class="cm">↓ deeply reads and compresses ↓</span>
+
+Decoder Output: "Summary: 847 transactions processed.
+                 3 declined for insufficient funds.
+                 1 flagged for fraud.
+                 Total settled: $2,847,392"</div>
+  </div>
+
+  <!-- Working Together -->
+  <div class="card" id="together">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.25);">🤝</div>
+      <div>
+        <div class="card-section-label">Putting It Together</div>
+        <div class="card-title">How Both Families Work Together in a Card Fraud Agent</div>
+      </div>
+    </div>
+
+    <p>A well-designed agentic system uses <em>both</em> families together — encoder for finding, decoder for reasoning:</p>
+
+    <div class="arch-diagram" style="align-items:stretch;max-width:100%;">
+      <div style="background:var(--surface3);border:1px solid rgba(159,110,245,.3);border-radius:10px;padding:14px 18px;">
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#a78bfa;margin-bottom:6px;">Step 1 — Encoder (sentence-transformers)</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">Convert incoming transaction into a vector embedding for similarity search</div>
+      </div>
+      <div class="arch-arrow">↓</div>
+      <div style="background:var(--surface3);border:1px solid rgba(245,158,11,.3);border-radius:10px;padding:14px 18px;">
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--accent);margin-bottom:6px;">Step 2 — Vector Search</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">Find the 5 most similar past fraud cases from the database</div>
+      </div>
+      <div class="arch-arrow">↓</div>
+      <div style="background:var(--surface3);border:1px solid rgba(79,142,247,.3);border-radius:10px;padding:14px 18px;">
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#60a5fa;margin-bottom:6px;">Step 3 — Decoder (Claude Sonnet)</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">"Here is the transaction + 5 similar past fraud cases. Reason about fraud risk and generate a decision."</div>
+      </div>
+      <div class="arch-arrow">↓</div>
+      <div style="background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.3);border-radius:10px;padding:14px 18px;">
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--green);margin-bottom:6px;">Output</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">Fraud Score (0–100) + Human-readable explanation + Recommended action</div>
+      </div>
+    </div>
+
+    <div class="callout callout-green">
+      <div class="callout-title">✅ The Rule</div>
+      <strong>Encoder handles finding. Decoder handles reasoning and explaining.</strong> Knowing which to use — and when to combine them — is a core AI PM skill.
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════
+       PHASE 4 — GROUNDING
+       ════════════════════════════ -->
+  <div class="phase-divider">
+    <span class="pd-badge pd-4">🔒 Phase 4 — Grounding</span>
+    <div class="pd-line"></div>
+  </div>
+
+  <!-- What is Grounding -->
+  <div class="card" id="grounding">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.25);">🔒</div>
+      <div>
+        <div class="card-section-label">Topic 4 of 4</div>
+        <div class="card-title">What is Grounding?</div>
+      </div>
+    </div>
+    <p><strong>Grounding</strong> means anchoring the model's output to verified, specific, external sources — so it cannot freely invent. It is the discipline of ensuring the model only uses what you gave it — not what it thinks it remembers — so every decision is accurate, traceable, and defensible.</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0;">
+      <div style="background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.25);border-radius:10px;padding:16px;">
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#f87171;margin-bottom:8px;">❌ Without Grounding</div>
+        <div style="font-size:.82rem;color:var(--text-muted);line-height:1.6;">Model's brain only<br/><br/>Output: <strong style="color:#f87171;">plausible but invented</strong></div>
+      </div>
+      <div style="background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.25);border-radius:10px;padding:16px;">
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#34d399;margin-bottom:8px;">✅ With Grounding</div>
+        <div style="font-size:.82rem;color:var(--text-muted);line-height:1.6;">Model's brain + Your actual Visa rulebook + Your transaction data + Your policies<br/><br/>Output: <strong style="color:#34d399;">accurate and traceable</strong></div>
+      </div>
+    </div>
+
+    <div class="callout callout-purple">
+      <div class="callout-title">💡 The Analogy</div>
+      Like the difference between asking a consultant from memory versus asking them to answer <em>only</em> from the documents in front of them.
+    </div>
+  </div>
+
+  <!-- Technique 1: RAG -->
+  <div class="card" id="rag">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.25);">📚</div>
+      <div>
+        <div class="card-section-label">Grounding Technique 1</div>
+        <div class="card-title">Retrieval Augmented Generation (RAG)</div>
+      </div>
+    </div>
+    <p>The most common grounding technique. Fetch relevant facts from your knowledge store, inject them into the prompt — the model answers only from what you provided.</p>
+
+    <div class="step-flow" style="margin:16px 0;">
+      <div class="step-item">
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div class="step-num" style="background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.3);color:var(--green);">1</div>
+          <div style="width:2px;height:24px;background:var(--border2);margin:4px 0;"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-label">Search your document store</div>
+          <div class="step-desc">Query: "What is the dispute timeframe for Visa fraud claims?" → Finds page 47 of Visa Core Rules 2024</div>
+        </div>
+      </div>
+      <div class="step-item">
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div class="step-num" style="background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.3);color:var(--green);">2</div>
+          <div style="width:2px;height:24px;background:var(--border2);margin:4px 0;"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-label">Inject into prompt</div>
+          <div class="step-desc">"Using ONLY this text: [page 47 content] — Answer: What is the dispute timeframe?"</div>
+        </div>
+      </div>
+      <div class="step-item">
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div class="step-num" style="background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.3);color:var(--green);">3</div>
+        </div>
+        <div class="step-body">
+          <div class="step-label">Model answers from that text only</div>
+          <div class="step-desc" style="color:var(--green);">"According to Visa Core Rules section 4.7, the dispute timeframe is 120 days from transaction date."</div>
+        </div>
+      </div>
+    </div>
+    <div class="callout callout-green">
+      <div class="callout-title">✅ Result</div>
+      Model is grounded to your document — not its training memory. Every answer is traceable to a specific source.
+    </div>
+  </div>
+
+  <!-- Technique 2: Tool Use -->
+  <div class="card" id="tool-use">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.25);">🔧</div>
+      <div>
+        <div class="card-section-label">Grounding Technique 2</div>
+        <div class="card-title">Tool Use / Function Calling</div>
+      </div>
+    </div>
+    <p>The model calls <em>real systems</em> instead of guessing. For any live data — card balances, transaction status, velocity checks — always use a tool call, never rely on the model's memory.</p>
+
+    <div class="code-block"><span class="cm">// Without grounding — model guesses or refuses</span>
+Query: "What is the current balance on card 4111 XXXX XXXX 1234?"
+Model: "I don't have access to real-time card data..."
+
+<span class="cm">// With tool use — model fetches real data</span>
+Model calls → <span class="cv">get_card_balance</span>(<span class="cn">card_id="4111...1234"</span>)
+System returns → <span class="cv">{"balance": 2847.50, "currency": "USD"}</span>
+Model answers → <span class="cv">"The current balance is $2,847.50"</span>
+<span class="cm">// The model never invented the number.</span></div>
+
+    <p style="margin-top:14px;margin-bottom:8px;">Card processing tools you'd build for your agent:</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px;margin-top:4px;">
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:.78rem;font-family:'Courier New',monospace;color:#a5b4fc;">get_transaction_history(card_id, date_range)</div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:.78rem;font-family:'Courier New',monospace;color:#a5b4fc;">check_velocity_rules(merchant_id, amount)</div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:.78rem;font-family:'Courier New',monospace;color:#a5b4fc;">lookup_bin_details(bin_number)</div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:.78rem;font-family:'Courier New',monospace;color:#a5b4fc;">get_scheme_rules(network, rule_type)</div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:.78rem;font-family:'Courier New',monospace;color:#a5b4fc;">validate_cvv(card_id, cvv)</div>
+    </div>
+  </div>
+
+  <!-- Technique 3: System Prompt Constraints -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.25);">📋</div>
+      <div>
+        <div class="card-section-label">Grounding Technique 3</div>
+        <div class="card-title">System Prompt Constraints</div>
+      </div>
+    </div>
+    <p>Rules baked in before the conversation starts. Constrains the space where the model can invent things — doesn't eliminate hallucination entirely, but reduces it significantly.</p>
+
+    <div class="code-block"><span class="cm">// System prompt for a card fraud analyst assistant</span>
+<span class="ck">SYSTEM:</span> <span class="cv">"You are a card fraud analyst assistant.
+ Rules you MUST follow:
+
+ 1. NEVER give a fraud decision without citing
+    a specific rule or transaction evidence
+
+ 2. NEVER state a Visa/Mastercard rule from memory —
+    only from documents provided to you
+
+ 3. If uncertain, say 'I need to verify this'
+    rather than guessing
+
+ 4. Always end fraud recommendations with:
+    'Confidence: High/Medium/Low — Reason: [why]'"</span></div>
+  </div>
+
+  <!-- Technique 4: Fine Tuning -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.25);">🧠</div>
+      <div>
+        <div class="card-section-label">Grounding Technique 4</div>
+        <div class="card-title">Fine Tuning</div>
+      </div>
+    </div>
+    <p>Train the model on your specific domain data so it deeply understands your bank's products, policies, codes, and terminology.</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0;">
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px;">
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-dim);margin-bottom:8px;">General Model</div>
+        <div style="font-size:.82rem;color:var(--text-muted);line-height:1.6;">"chargeback" = general finance knowledge</div>
+      </div>
+      <div style="background:rgba(52,211,153,.06);border:1px solid rgba(52,211,153,.2);border-radius:10px;padding:16px;">
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--green);margin-bottom:8px;">Fine-tuned Model</div>
+        <div style="font-size:.82rem;color:var(--text-muted);line-height:1.6;">"chargeback" = YOUR exact workflow and reason code mapping</div>
+      </div>
+    </div>
+
+    <p style="margin-bottom:10px;font-size:.85rem;font-weight:700;color:var(--text);">Use fine tuning when:</p>
+    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;">
+      <div style="font-size:.82rem;color:var(--text-muted);display:flex;gap:8px;"><span style="color:var(--green);">✓</span>Your terminology is highly specific (internal product codes, custom reason codes)</div>
+      <div style="font-size:.82rem;color:var(--text-muted);display:flex;gap:8px;"><span style="color:var(--green);">✓</span>You need the model to always respond in a specific format</div>
+      <div style="font-size:.82rem;color:var(--text-muted);display:flex;gap:8px;"><span style="color:var(--green);">✓</span>You have thousands of labeled examples (resolved disputes, fraud cases)</div>
+    </div>
+
+    <div class="callout callout-amber">
+      <div class="callout-title">⚠️ Critical Caveat</div>
+      Fine tuning teaches <strong>style and knowledge</strong> — it does not replace RAG for live data. You still need RAG for current rulebooks and real-time transaction data. Fine-tune for style, RAG for facts.
+    </div>
+  </div>
+
+  <!-- Grounding Stack -->
+  <div class="card" id="grounding-stack">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.25);">🏗️</div>
+      <div>
+        <div class="card-section-label">Full Architecture</div>
+        <div class="card-title">Grounding Stack for Your Card Processing Agent</div>
+      </div>
+    </div>
+    <p style="margin-bottom:16px;">A fully grounded agent uses all layers together — each one removes another way the model can invent something.</p>
+
+    <div class="arch-diagram" style="align-items:stretch;">
+      <div style="background:var(--surface3);border:1px solid rgba(159,110,245,.3);border-radius:10px;padding:14px 18px;">
+        <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#8b9ab4;margin-bottom:4px;">User / System Query</div>
+      </div>
+      <div class="arch-arrow">↓</div>
+      <div style="background:rgba(159,110,245,.08);border:1px solid rgba(159,110,245,.3);border-radius:10px;padding:14px 18px;">
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#a78bfa;margin-bottom:5px;">System Prompt Constraints</div>
+        <div style="font-size:.8rem;color:var(--text-muted);">Hard rules, tone, citation requirements, confidence scoring</div>
+      </div>
+      <div class="arch-arrow">↓</div>
+      <div style="background:rgba(79,142,247,.08);border:1px solid rgba(79,142,247,.3);border-radius:10px;padding:14px 18px;">
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#60a5fa;margin-bottom:5px;">RAG Layer</div>
+        <div style="font-size:.8rem;color:var(--text-muted);">Relevant scheme rules, policy documents, similar past cases — fetched from your document store</div>
+      </div>
+      <div class="arch-arrow">↓</div>
+      <div style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.3);border-radius:10px;padding:14px 18px;">
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--accent);margin-bottom:5px;">Tool Use Layer</div>
+        <div style="font-size:.8rem;color:var(--text-muted);">Live transaction data, real-time card status, velocity checks — fetched from real systems</div>
+      </div>
+      <div class="arch-arrow">↓</div>
+      <div style="background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.3);border-radius:10px;padding:14px 18px;">
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--green);margin-bottom:5px;">Claude Decoder — Reasons ONLY from above</div>
+        <div style="font-size:.8rem;color:var(--text-muted);">Never from training memory alone</div>
+      </div>
+      <div class="arch-arrow">↓</div>
+      <div style="background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.4);border-radius:10px;padding:14px 18px;">
+        <div style="font-size:.78rem;font-weight:700;color:#34d399;">Decision + Explanation + Source Citations + Confidence Score</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Spectrum + Common Mistakes -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.25);">📊</div>
+      <div>
+        <div class="card-section-label">Grounding Spectrum</div>
+        <div class="card-title">Hallucination vs. Fully Grounded</div>
+      </div>
+    </div>
+
+    <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:18px;margin:14px 0;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+        <span style="font-size:.72rem;font-weight:700;color:#f87171;">FULLY HALLUCINATED</span>
+        <span style="font-size:.72rem;font-weight:700;color:#34d399;">FULLY GROUNDED</span>
+      </div>
+      <div style="height:8px;background:linear-gradient(90deg,rgba(248,113,113,.5),rgba(245,158,11,.5),rgba(79,142,247,.5),rgba(52,211,153,.7));border-radius:99px;margin-bottom:12px;"></div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center;">
+        <div style="font-size:.72rem;color:var(--text-muted);"><div style="font-weight:700;color:#f87171;margin-bottom:3px;">No Sources</div>Pure memory<br/>"I think the rule is..."</div>
+        <div style="font-size:.72rem;color:var(--text-muted);"><div style="font-weight:700;color:var(--accent);margin-bottom:3px;">System Prompt</div>Constrained<br/>"I must cite sources"</div>
+        <div style="font-size:.72rem;color:var(--text-muted);"><div style="font-weight:700;color:var(--primary);margin-bottom:3px;">Tool Use</div>Live data<br/>"I fetched the data"</div>
+        <div style="font-size:.72rem;color:var(--text-muted);"><div style="font-weight:700;color:#34d399;margin-bottom:3px;">RAG + Tools</div>Full grounding<br/>"Found in V-7.3 + live data"</div>
+      </div>
+    </div>
+
+    <div style="font-size:.82rem;font-weight:700;color:var(--text);margin:18px 0 10px;">Common Grounding Mistakes in Card AI</div>
+    <table class="analogy-table">
+      <thead><tr><th>Mistake</th><th>Risk</th><th>Fix</th></tr></thead>
+      <tbody>
+        <tr><td>Asking model about scheme rules from memory</td><td style="color:#f87171;">Gets outdated rules</td><td style="color:var(--green);">RAG over current rulebooks</td></tr>
+        <tr><td>No source citation in fraud decisions</td><td style="color:#f87171;">Not auditable</td><td style="color:var(--green);">Force citations in system prompt</td></tr>
+        <tr><td>Trusting model for live card status</td><td style="color:#f87171;">Invents data</td><td style="color:var(--green);">Always use tool call for live data</td></tr>
+        <tr><td>One giant prompt with no retrieval</td><td style="color:#f87171;">Model picks wrong facts</td><td style="color:var(--green);">RAG with precise chunking</td></tr>
+        <tr><td>Fine tuning instead of RAG for live data</td><td style="color:#f87171;">Stale knowledge</td><td style="color:var(--green);">RAG for live, fine-tune for style</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-green">
+      <div class="callout-title">✅ The Goal</div>
+      Your goal as architect is to push every agent as far right on the spectrum as possible — RAG + Tool Use + Constraints working together.
+    </div>
+  </div>
+
+  <!-- ════════════════════════════
+       PHASE 5 — RAG DEEP DIVE
+       ════════════════════════════ -->
+  <div class="phase-divider">
+    <span class="pd-badge pd-5">📚 Phase 5 — RAG Deep Dive</span>
+    <div class="pd-line"></div>
+  </div>
+
+  <!-- RAG 6-Step Pipeline -->
+  <div class="card" id="rag-steps">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);">📚</div>
+      <div>
+        <div class="card-section-label">Topic 5 of 5</div>
+        <div class="card-title">RAG — The Complete 6-Step Pipeline</div>
+      </div>
+    </div>
+    <p>RAG (Retrieval Augmented Generation) is the system that orchestrates Tokens, Transformers, and Grounding into a working, trustworthy intelligence layer. Here's exactly how it works end-to-end.</p>
+
+    <!-- Steps 1 & 2 -->
+    <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:12px;padding:18px;margin:16px 0;">
+      <div style="font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--accent);margin-bottom:12px;">Steps 1 & 2 — Document Processing & Embedding</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div>
+          <div style="font-size:.78rem;font-weight:700;color:var(--text);margin-bottom:6px;">Step 1 — Chunking</div>
+          <div style="font-size:.8rem;color:var(--text-muted);line-height:1.6;">Split documents into ~1,000 token pieces. Each chunk = one logical section. Overlap chunks so context isn't lost at boundaries.</div>
+          <div class="code-block" style="margin-top:8px;font-size:.75rem;">Visa Core Rules (500 pages)
+→ Chunk 001: Pages 1–3   (~800 tokens)
+→ Chunk 002: Pages 3–5   (~800 tokens)
+→ Chunk 003: ...
+→ Chunk 847: Page 500    (~600 tokens)</div>
+        </div>
+        <div>
+          <div style="font-size:.78rem;font-weight:700;color:var(--text);margin-bottom:6px;">Step 2 — Embedding (Vectors)</div>
+          <div style="font-size:.8rem;color:var(--text-muted);line-height:1.6;">An Encoder model converts each chunk into a vector — a list of ~1,536 numbers capturing meaning. Similar meaning = similar numbers.</div>
+          <div class="code-block" style="margin-top:8px;font-size:.75rem;"><span class="cv">"dispute timeframe for fraud"</span>
+→ [0.82, -0.31, 0.94, 0.17...]
+
+<span class="cv">"how long to file a chargeback"</span>
+→ [0.81, -0.29, 0.93, 0.15...] <span class="cm">← very close!</span>
+
+<span class="cv">"authorization approval codes"</span>
+→ [0.12,  0.67, -0.44...] <span class="cm">← far away</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Steps 3 & 4 -->
+    <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:12px;padding:18px;margin:16px 0;">
+      <div style="font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--accent);margin-bottom:12px;">Steps 3 & 4 — Vector Database & Similarity Search</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div>
+          <div style="font-size:.78rem;font-weight:700;color:var(--text);margin-bottom:6px;">Step 3 — Store in Vector DB</div>
+          <div class="code-block" style="font-size:.73rem;">ID    Vector           Source
+001   [0.82,-0.31,0.94] Visa_P47
+002   [0.81,-0.29,0.93] Visa_P47
+003   [0.12, 0.67,-0.44] Visa_P12
+004   [0.74,-0.21, 0.88] MC_P33
+005   [0.79,-0.35, 0.91] FraudPolicy
+...   ...               ...
+50,000 chunks total</div>
+          <div style="margin-top:10px;font-size:.78rem;font-weight:700;color:var(--text);">Best for banks: <span style="color:var(--accent);">pgvector</span></div>
+          <div style="font-size:.78rem;color:var(--text-muted);">Runs inside your existing PostgreSQL — no new infrastructure, meets data residency requirements.</div>
+        </div>
+        <div>
+          <div style="font-size:.78rem;font-weight:700;color:var(--text);margin-bottom:6px;">Step 4 — Query Embedding + Search</div>
+          <div class="code-block" style="font-size:.73rem;">User: <span class="cv">"dispute timeframe for fraud?"</span>
+
+→ Embed query → [0.80,-0.28,0.92...]
+
+→ Find nearest vectors:
+
+<span class="cv">Rank 1</span>: ID001 — Score: 0.97
+  "Section 4.7: 120 days for fraud"
+
+<span class="cv">Rank 2</span>: ID005 — Score: 0.94
+  "Fraud dispute: within 120 days"
+
+<span class="cv">Rank 3</span>: ID002 — Score: 0.93
+  "Issuer responds within 30 days"</div>
+          <div style="font-size:.78rem;color:var(--text-muted);margin-top:8px;">Only the top 3–5 most relevant chunks are retrieved. Not all 50,000.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Steps 5 & 6 -->
+    <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:12px;padding:18px;margin:16px 0;">
+      <div style="font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--accent);margin-bottom:12px;">Steps 5 & 6 — Prompt Construction & Generation</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div>
+          <div style="font-size:.78rem;font-weight:700;color:var(--text);margin-bottom:6px;">Step 5 — Assemble Grounded Prompt</div>
+          <div class="code-block" style="font-size:.73rem;"><span class="ck">SYSTEM:</span> <span class="cv">You are a dispute analyst.
+Answer ONLY from provided docs.
+Cite your source. If not in docs,
+say "I cannot find this."</span>
+
+<span class="ck">DOCS:</span>
+<span class="cv">[Doc 1 - Visa P47 S4.7]:
+"120 days from transaction date
+for fraud claims."</span>
+
+<span class="cv">[Doc 2 - Fraud Policy v2.1]:
+"120 calendar days from posting."</span>
+
+<span class="ck">USER:</span> <span class="cv">dispute timeframe for fraud?</span></div>
+        </div>
+        <div>
+          <div style="font-size:.78rem;font-weight:700;color:var(--text);margin-bottom:6px;">Step 6 — Grounded Response</div>
+          <div class="code-block" style="font-size:.73rem;"><span class="cv">"Per Visa Core Rules §4.7 and
+your Fraud Policy v2.1, a
+cardholder must initiate a
+fraud dispute within 120 days
+of the transaction date.
+
+The issuer has 30 days to
+respond once notified.
+
+Sources:
+- Visa Core Rules 2024, P47 §4.7
+- Internal Fraud Policy v2.1
+
+Confidence: High — both sources
+align on the 120-day window."</span></div>
+          <div style="font-size:.78rem;color:var(--green);margin-top:8px;font-weight:700;">Fully grounded. Fully cited. Auditable.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Use Cases -->
+  <div class="card" id="rag-usecases">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);">💳</div>
+      <div>
+        <div class="card-section-label">Topic 5 of 5 (continued)</div>
+        <div class="card-title">RAG Use Cases for Card Processing</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-top:4px;">
+      <div style="background:var(--surface2);border:1px solid rgba(245,158,11,.2);border-radius:12px;padding:16px;border-top:3px solid var(--accent);">
+        <div style="font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--accent);margin-bottom:8px;">Use Case 1 — Scheme Rules Assistant</div>
+        <div style="font-size:.75rem;color:var(--text-dim);margin-bottom:6px;">Docs: Visa Core Rules, MC Rules, interchange tables, fee schedules</div>
+        <div style="font-size:.8rem;color:var(--text-muted);">Query: "Interchange rate for World Elite MC at tier-1 merchant?" → Exact rate with source citation.</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid rgba(79,142,247,.2);border-radius:12px;padding:16px;border-top:3px solid var(--primary);">
+        <div style="font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--primary);margin-bottom:8px;">Use Case 2 — Dispute Resolution Agent</div>
+        <div style="font-size:.75rem;color:var(--text-dim);margin-bottom:6px;">Docs: Chargeback reason codes, compelling evidence requirements, past representments</div>
+        <div style="font-size:.8rem;color:var(--text-muted);">Query: "Disputed under code 10.4. What evidence to fight this?" → Exact checklist with deadlines.</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid rgba(248,113,113,.2);border-radius:12px;padding:16px;border-top:3px solid var(--red);">
+        <div style="font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--red);margin-bottom:8px;">Use Case 3 — Fraud Pattern Detection</div>
+        <div style="font-size:.75rem;color:var(--text-dim);margin-bottom:6px;">Docs: 50,000 past fraud cases (vectorized), each with transaction details + outcome</div>
+        <div style="font-size:.8rem;color:var(--text-muted);">New transaction → finds 5 most similar past fraud cases → "Matches pattern in #4821, #7733 — recommend decline."</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid rgba(159,110,245,.2);border-radius:12px;padding:16px;border-top:3px solid var(--purple);">
+        <div style="font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--purple);margin-bottom:8px;">Use Case 4 — Compliance Q&A</div>
+        <div style="font-size:.75rem;color:var(--text-dim);margin-bottom:6px;">Docs: PCI-DSS requirements, internal compliance policies, audit findings</div>
+        <div style="font-size:.8rem;color:var(--text-muted);">Query: "Can we store CVV in transaction logs?" → "PCI-DSS 3.3 explicitly prohibits CVV post-authorization. Must mask or exclude."</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RAG Failures -->
+  <div class="card" id="rag-failures">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.25);">⚠️</div>
+      <div>
+        <div class="card-section-label">Topic 5 of 5 (continued)</div>
+        <div class="card-title">What Makes RAG Fail — and How to Fix It</div>
+      </div>
+    </div>
+    <table class="analogy-table">
+      <thead><tr><th>Problem</th><th>Why It Happens</th><th>Fix</th></tr></thead>
+      <tbody>
+        <tr><td style="color:#f87171;">Wrong chunks retrieved</td><td>Poor chunking breaks logical rules</td><td style="color:var(--green);">Paragraph/section-based chunking</td></tr>
+        <tr><td style="color:#f87171;">Missing context</td><td>Chunk too small, rule split in half</td><td style="color:var(--green);">Increase chunk size, add overlap</td></tr>
+        <tr><td style="color:#f87171;">Outdated answers</td><td>Old documents still in vector DB</td><td style="color:var(--green);">Version documents, re-index on update</td></tr>
+        <tr><td style="color:#f87171;">No answer found</td><td>Query too specific, no matching chunk</td><td style="color:var(--green);">Add query rewriting step</td></tr>
+        <tr><td style="color:#f87171;">Hallucination despite RAG</td><td>Model ignored retrieved docs</td><td style="color:var(--green);">Strengthen system prompt constraints</td></tr>
+        <tr><td style="color:#f87171;">Slow retrieval</td><td>Too many vectors, no indexing</td><td style="color:var(--green);">Use HNSW indexing in pgvector</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- RAG Architecture -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);">🏗️</div>
+      <div>
+        <div class="card-section-label">Complete Architecture</div>
+        <div class="card-title">The Full RAG System for Your Bank</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0;">
+      <div style="background:var(--surface2);border:1px solid rgba(159,110,245,.3);border-radius:12px;padding:16px;">
+        <div style="font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:#a78bfa;margin-bottom:10px;">📥 Indexing Pipeline (runs offline)</div>
+        <div class="step-flow">
+          <div class="step-item"><div style="display:flex;flex-direction:column;align-items:center;"><div class="step-num" style="background:rgba(159,110,245,.15);border:1px solid rgba(159,110,245,.3);color:#a78bfa;width:28px;height:28px;font-size:.72rem;">1</div><div style="width:1px;height:18px;background:var(--border2);margin:3px 0;"></div></div><div class="step-body" style="padding-top:4px;"><div class="step-label" style="font-size:.78rem;">Source Documents</div><div class="step-desc" style="font-size:.73rem;">Visa Rules, MC Rules, Fraud Policy, PCI-DSS, Past Cases</div></div></div>
+          <div class="step-item"><div style="display:flex;flex-direction:column;align-items:center;"><div class="step-num" style="background:rgba(159,110,245,.15);border:1px solid rgba(159,110,245,.3);color:#a78bfa;width:28px;height:28px;font-size:.72rem;">2</div><div style="width:1px;height:18px;background:var(--border2);margin:3px 0;"></div></div><div class="step-body" style="padding-top:4px;"><div class="step-label" style="font-size:.78rem;">Chunker</div><div class="step-desc" style="font-size:.73rem;">Split into ~1,000 token pieces with overlap</div></div></div>
+          <div class="step-item"><div style="display:flex;flex-direction:column;align-items:center;"><div class="step-num" style="background:rgba(159,110,245,.15);border:1px solid rgba(159,110,245,.3);color:#a78bfa;width:28px;height:28px;font-size:.72rem;">3</div><div style="width:1px;height:18px;background:var(--border2);margin:3px 0;"></div></div><div class="step-body" style="padding-top:4px;"><div class="step-label" style="font-size:.78rem;">Encoder Model</div><div class="step-desc" style="font-size:.73rem;">Convert each chunk → 1,536-dim vector</div></div></div>
+          <div class="step-item"><div style="display:flex;flex-direction:column;align-items:center;"><div class="step-num" style="background:rgba(159,110,245,.15);border:1px solid rgba(159,110,245,.3);color:#a78bfa;width:28px;height:28px;font-size:.72rem;">4</div></div><div class="step-body" style="padding-top:4px;"><div class="step-label" style="font-size:.78rem;">pgvector Database</div><div class="step-desc" style="font-size:.73rem;">Store + index all vectors in PostgreSQL</div></div></div>
+        </div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid rgba(245,158,11,.3);border-radius:12px;padding:16px;">
+        <div style="font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--accent);margin-bottom:10px;">📤 Query Pipeline (runs per question)</div>
+        <div class="step-flow">
+          <div class="step-item"><div style="display:flex;flex-direction:column;align-items:center;"><div class="step-num" style="background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);color:var(--accent);width:28px;height:28px;font-size:.72rem;">1</div><div style="width:1px;height:18px;background:var(--border2);margin:3px 0;"></div></div><div class="step-body" style="padding-top:4px;"><div class="step-label" style="font-size:.78rem;">Analyst Question</div><div class="step-desc" style="font-size:.73rem;">"What is the dispute timeframe for fraud?"</div></div></div>
+          <div class="step-item"><div style="display:flex;flex-direction:column;align-items:center;"><div class="step-num" style="background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);color:var(--accent);width:28px;height:28px;font-size:.72rem;">2</div><div style="width:1px;height:18px;background:var(--border2);margin:3px 0;"></div></div><div class="step-body" style="padding-top:4px;"><div class="step-label" style="font-size:.78rem;">Query Encoder</div><div class="step-desc" style="font-size:.73rem;">Convert question → query vector</div></div></div>
+          <div class="step-item"><div style="display:flex;flex-direction:column;align-items:center;"><div class="step-num" style="background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);color:var(--accent);width:28px;height:28px;font-size:.72rem;">3</div><div style="width:1px;height:18px;background:var(--border2);margin:3px 0;"></div></div><div class="step-body" style="padding-top:4px;"><div class="step-label" style="font-size:.78rem;">pgvector Search</div><div class="step-desc" style="font-size:.73rem;">Return Top 5 closest chunks</div></div></div>
+          <div class="step-item"><div style="display:flex;flex-direction:column;align-items:center;"><div class="step-num" style="background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);color:var(--accent);width:28px;height:28px;font-size:.72rem;">4</div><div style="width:1px;height:18px;background:var(--border2);margin:3px 0;"></div></div><div class="step-body" style="padding-top:4px;"><div class="step-label" style="font-size:.78rem;">Claude (Decoder)</div><div class="step-desc" style="font-size:.73rem;">Reasons from chunks → cited answer + confidence</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════
+       HOW IT ALL CONNECTS DIAGRAM
+       ════════════════════════════ -->
+  <div class="phase-divider" id="four-connected">
+    <span class="pd-badge pd-1">🔗 How All 4 Concepts Connect</span>
+    <div class="pd-line"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(159,110,245,.15);border:1px solid rgba(159,110,245,.25);">🔗</div>
+      <div>
+        <div class="card-section-label">The Big Picture</div>
+        <div class="card-title">Tokens → Transformers → Grounding → RAG</div>
+      </div>
+    </div>
+    <p style="margin-bottom:20px;">Each concept builds on the previous. RAG is the final system that orchestrates all three into a working card processing intelligence layer.</p>
+
+    <!-- Relationship Diagram -->
+    <div style="position:relative;padding:8px 0 0;">
+
+      <!-- Flow nodes -->
+      <div style="display:flex;flex-direction:column;gap:0;align-items:center;">
+
+        <!-- TOKENS -->
+        <div style="width:100%;max-width:620px;background:linear-gradient(135deg,rgba(159,110,245,.12),rgba(159,110,245,.06));border:1px solid rgba(159,110,245,.35);border-radius:14px;padding:18px 22px;position:relative;">
+          <div style="display:flex;align-items:center;gap:14px;">
+            <div style="width:44px;height:44px;background:rgba(159,110,245,.2);border:1px solid rgba(159,110,245,.4);border-radius:10px;display:grid;place-items:center;font-size:1.2rem;flex-shrink:0;">🔤</div>
+            <div style="flex:1;">
+              <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#a78bfa;margin-bottom:2px;">Layer 1 — Foundation</div>
+              <div style="font-size:1rem;font-weight:800;letter-spacing:-.2px;margin-bottom:4px;">Tokens</div>
+              <div style="font-size:.8rem;color:var(--text-muted);">Text breaks into numbered units. Every other concept operates on tokens — they are the atom of AI.</div>
+            </div>
+            <div style="background:rgba(159,110,245,.15);border:1px solid rgba(159,110,245,.3);border-radius:8px;padding:6px 12px;font-size:.72rem;font-weight:700;color:#a78bfa;white-space:nowrap;">~50k vocab</div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+            <span style="font-size:.72rem;background:var(--surface3);border:1px solid var(--border);border-radius:6px;padding:3px 9px;color:var(--text-muted);">Text → Numbers</span>
+            <span style="font-size:.72rem;background:var(--surface3);border:1px solid var(--border);border-radius:6px;padding:3px 9px;color:var(--text-muted);">Context Window = batch limit</span>
+            <span style="font-size:.72rem;background:var(--surface3);border:1px solid var(--border);border-radius:6px;padding:3px 9px;color:var(--text-muted);">Domain jargon costs more</span>
+          </div>
+        </div>
+
+        <!-- Arrow 1 -->
+        <div style="display:flex;flex-direction:column;align-items:center;padding:4px 0;gap:2px;">
+          <div style="width:2px;height:16px;background:linear-gradient(to bottom,rgba(159,110,245,.5),rgba(79,142,247,.5));"></div>
+          <div style="font-size:.68rem;color:var(--text-dim);background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:3px 10px;font-weight:600;">tokenised input feeds into</div>
+          <div style="width:2px;height:16px;background:linear-gradient(to bottom,rgba(79,142,247,.5),rgba(34,211,238,.3));"></div>
+        </div>
+
+        <!-- TRANSFORMERS -->
+        <div style="width:100%;max-width:620px;background:linear-gradient(135deg,rgba(79,142,247,.12),rgba(79,142,247,.06));border:1px solid rgba(79,142,247,.35);border-radius:14px;padding:18px 22px;">
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px;">
+            <div style="width:44px;height:44px;background:rgba(79,142,247,.2);border:1px solid rgba(79,142,247,.4);border-radius:10px;display:grid;place-items:center;font-size:1.2rem;flex-shrink:0;">⚡</div>
+            <div style="flex:1;">
+              <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#60a5fa;margin-bottom:2px;">Layer 2 — Engine</div>
+              <div style="font-size:1rem;font-weight:800;letter-spacing:-.2px;margin-bottom:4px;">Transformers</div>
+              <div style="font-size:.8rem;color:var(--text-muted);">Reads everything at once via Attention. Encoder understands meaning → vector. Decoder generates text → output.</div>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div style="background:rgba(159,110,245,.1);border:1px solid rgba(159,110,245,.25);border-radius:8px;padding:10px 12px;text-align:center;">
+              <div style="font-size:.72rem;font-weight:700;color:#a78bfa;margin-bottom:3px;">ENCODER</div>
+              <div style="font-size:.75rem;color:var(--text-muted);">Reads bidirectionally → rich vector</div>
+              <div style="font-size:.68rem;color:var(--text-dim);margin-top:4px;">Used by RAG to embed docs & queries</div>
+            </div>
+            <div style="background:rgba(79,142,247,.1);border:1px solid rgba(79,142,247,.25);border-radius:8px;padding:10px 12px;text-align:center;">
+              <div style="font-size:.72rem;font-weight:700;color:#60a5fa;margin-bottom:3px;">DECODER</div>
+              <div style="font-size:.75rem;color:var(--text-muted);">Generates left to right → text out</div>
+              <div style="font-size:.68rem;color:var(--text-dim);margin-top:4px;">Used by RAG to generate grounded answers</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Arrow 2 -->
+        <div style="display:flex;flex-direction:column;align-items:center;padding:4px 0;gap:2px;">
+          <div style="width:2px;height:16px;background:linear-gradient(to bottom,rgba(79,142,247,.5),rgba(52,211,153,.5));"></div>
+          <div style="font-size:.68rem;color:var(--text-dim);background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:3px 10px;font-weight:600;">outputs must be constrained by</div>
+          <div style="width:2px;height:16px;background:linear-gradient(to bottom,rgba(52,211,153,.5),rgba(245,158,11,.3));"></div>
+        </div>
+
+        <!-- GROUNDING -->
+        <div style="width:100%;max-width:620px;background:linear-gradient(135deg,rgba(52,211,153,.1),rgba(52,211,153,.05));border:1px solid rgba(52,211,153,.35);border-radius:14px;padding:18px 22px;">
+          <div style="display:flex;align-items:center;gap:14px;">
+            <div style="width:44px;height:44px;background:rgba(52,211,153,.2);border:1px solid rgba(52,211,153,.4);border-radius:10px;display:grid;place-items:center;font-size:1.2rem;flex-shrink:0;">🔒</div>
+            <div style="flex:1;">
+              <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#34d399;margin-bottom:2px;">Layer 3 — Discipline</div>
+              <div style="font-size:1rem;font-weight:800;letter-spacing:-.2px;margin-bottom:4px;">Grounding</div>
+              <div style="font-size:.8rem;color:var(--text-muted);">Anchors model output to verified external sources. Decoder answers only from what you provided — not what it remembers.</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+            <span style="font-size:.72rem;background:var(--surface3);border:1px solid var(--border);border-radius:6px;padding:3px 9px;color:var(--text-muted);">System Prompt Constraints</span>
+            <span style="font-size:.72rem;background:var(--surface3);border:1px solid var(--border);border-radius:6px;padding:3px 9px;color:var(--text-muted);">Tool Use</span>
+            <span style="font-size:.72rem;background:var(--surface3);border:1px solid var(--border);border-radius:6px;padding:3px 9px;color:var(--text-muted);">Source citations enforced</span>
+            <span style="font-size:.72rem;background:var(--surface3);border:1px solid var(--border);border-radius:6px;padding:3px 9px;color:var(--text-muted);">Auditable output</span>
+          </div>
+        </div>
+
+        <!-- Arrow 3 -->
+        <div style="display:flex;flex-direction:column;align-items:center;padding:4px 0;gap:2px;">
+          <div style="width:2px;height:16px;background:linear-gradient(to bottom,rgba(52,211,153,.5),rgba(245,158,11,.5));"></div>
+          <div style="font-size:.68rem;color:var(--text-dim);background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:3px 10px;font-weight:600;">all three orchestrated by</div>
+          <div style="width:2px;height:16px;background:linear-gradient(to bottom,rgba(245,158,11,.5),rgba(245,158,11,.3));"></div>
+        </div>
+
+        <!-- RAG -->
+        <div style="width:100%;max-width:620px;background:linear-gradient(135deg,rgba(245,158,11,.12),rgba(245,158,11,.06));border:2px solid rgba(245,158,11,.4);border-radius:14px;padding:18px 22px;box-shadow:0 0 32px rgba(245,158,11,.12);">
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px;">
+            <div style="width:44px;height:44px;background:rgba(245,158,11,.2);border:1px solid rgba(245,158,11,.5);border-radius:10px;display:grid;place-items:center;font-size:1.2rem;flex-shrink:0;">📚</div>
+            <div style="flex:1;">
+              <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--accent);margin-bottom:2px;">Layer 4 — Orchestrator</div>
+              <div style="font-size:1rem;font-weight:800;letter-spacing:-.2px;margin-bottom:4px;">RAG (Retrieval Augmented Generation)</div>
+              <div style="font-size:.8rem;color:var(--text-muted);">The system that combines Tokens + Transformers + Grounding into a working, trustworthy card processing intelligence layer.</div>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+            <div style="background:rgba(159,110,245,.1);border:1px solid rgba(159,110,245,.2);border-radius:8px;padding:8px 10px;text-align:center;"><div style="font-size:.68rem;font-weight:700;color:#a78bfa;margin-bottom:2px;">TOKENS</div><div style="font-size:.7rem;color:var(--text-dim);">Docs chunked to ~1k tokens</div></div>
+            <div style="background:rgba(79,142,247,.1);border:1px solid rgba(79,142,247,.2);border-radius:8px;padding:8px 10px;text-align:center;"><div style="font-size:.68rem;font-weight:700;color:#60a5fa;margin-bottom:2px;">ENCODER</div><div style="font-size:.7rem;color:var(--text-dim);">Embeds chunks → vectors</div></div>
+            <div style="background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.2);border-radius:8px;padding:8px 10px;text-align:center;"><div style="font-size:.68rem;font-weight:700;color:#34d399;margin-bottom:2px;">GROUNDING</div><div style="font-size:.7rem;color:var(--text-dim);">Decoder cites sources only</div></div>
+          </div>
+        </div>
+
+        <!-- Final output -->
+        <div style="display:flex;flex-direction:column;align-items:center;padding:4px 0;gap:2px;">
+          <div style="width:2px;height:16px;background:rgba(245,158,11,.4);"></div>
+          <div style="font-size:.68rem;color:var(--accent);font-weight:700;">produces</div>
+          <div style="width:2px;height:16px;background:rgba(245,158,11,.4);"></div>
+        </div>
+
+        <div style="width:100%;max-width:620px;background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.35);border-radius:10px;padding:14px 20px;text-align:center;">
+          <div style="font-size:.82rem;font-weight:800;color:#34d399;">✓ Accurate &nbsp;·&nbsp; ✓ Cited &nbsp;·&nbsp; ✓ Traceable &nbsp;·&nbsp; ✓ Auditable</div>
+          <div style="font-size:.75rem;color:var(--text-muted);margin-top:4px;">Card processing intelligence you can trust in production</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════
+       KEY TAKEAWAYS
+       ════════════════════════════ -->
+  <div class="phase-divider" style="margin-top:56px;">
+    <span class="pd-badge pd-1">🎯 Key Takeaways — Week 2</span>
+    <div class="pd-line"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(159,110,245,.15);border:1px solid rgba(159,110,245,.25);">🎯</div>
+      <div>
+        <div class="card-section-label">Summary</div>
+        <div class="card-title">What You Now Know</div>
+      </div>
+    </div>
+
+    <div class="takeaway-grid">
+      <div class="takeaway-item">
+        <div class="takeaway-num">01</div>
+        <div class="takeaway-text"><strong>Tokens ≠ Words.</strong> Domain jargon (BIN, ISO 8583) splits into more tokens, costing more money and latency. Always test token counts.</div>
+      </div>
+      <div class="takeaway-item">
+        <div class="takeaway-num">02</div>
+        <div class="takeaway-text"><strong>Context Windows are hard limits.</strong> Treat them like a batch size — be strategic about what you include. Use RAG for large knowledge bases.</div>
+      </div>
+      <div class="takeaway-item">
+        <div class="takeaway-num">03</div>
+        <div class="takeaway-text"><strong>Attention = relating.</strong> Transformers don't just read words, they figure out how every word relates to every other word simultaneously.</div>
+      </div>
+      <div class="takeaway-item">
+        <div class="takeaway-num">04</div>
+        <div class="takeaway-text"><strong>Encoders understand. Decoders generate.</strong> GPT-4 and Claude are decoder-only. BERT-style models are encoder-only. Know which you need.</div>
+      </div>
+      <div class="takeaway-item">
+        <div class="takeaway-num">05</div>
+        <div class="takeaway-text"><strong>Great AI systems combine both.</strong> Use an encoder to find relevant context, then a decoder to reason and generate the final response.</div>
+      </div>
+      <div class="takeaway-item">
+        <div class="takeaway-num">06</div>
+        <div class="takeaway-text"><strong>Quadratic cost is real.</strong> Attention calculations grow as n². Longer context = exponentially more compute. Design your prompts accordingly.</div>
+      </div>
+      <div class="takeaway-item">
+        <div class="takeaway-num">07</div>
+        <div class="takeaway-text"><strong>Grounding prevents invention.</strong> Without it, models give plausible but wrong answers. Use RAG + Tool Use + System Prompt constraints together for card AI.</div>
+      </div>
+      <div class="takeaway-item">
+        <div class="takeaway-num">08</div>
+        <div class="takeaway-text"><strong>Fine-tune for style, RAG for facts.</strong> Fine tuning embeds domain knowledge but goes stale. RAG fetches current rulebooks and live data every time.</div>
+      </div>
+      <div class="takeaway-item">
+        <div class="takeaway-num">09</div>
+        <div class="takeaway-text"><strong>RAG orchestrates everything.</strong> Tokens → chunk size. Encoder → embeddings. Grounding → constraints. RAG ties them together into a trustworthy, auditable intelligence layer.</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<footer>
+  Week 2 · AI Learning Summary &nbsp;·&nbsp; <span>Robin AI Learnings</span> &nbsp;·&nbsp; AI PM Tool
+</footer>
+
+</body>
+</html>

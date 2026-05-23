@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>All Projects — AI PM Tool</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0b0f1a; --surface: #111827; --surface2: #161d2e; --surface3: #1c2540;
+      --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.13);
+      --text: #f0f4ff; --text-muted: #8b9ab4; --text-dim: #5a6a84;
+      --primary: #4f8ef7; --primary-dim: rgba(79,142,247,0.15);
+      --secondary: #2dd4bf; --secondary-dim: rgba(45,212,191,0.15);
+      --purple: #9f6ef5; --purple-dim: rgba(159,110,245,0.15);
+      --accent: #f59e0b; --accent-dim: rgba(245,158,11,0.15);
+      --green: #34d399; --green-dim: rgba(52,211,153,0.15);
+      --red: #f87171; --red-dim: rgba(248,113,113,0.15);
+      --radius: 14px; --shadow: 0 4px 24px rgba(0,0,0,0.35);
+    }
+    html, body { min-height:100vh; font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); line-height:1.5; }
+    body::before {
+      content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+      background:
+        radial-gradient(ellipse 70% 50% at 15% 15%, rgba(79,142,247,.09) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 45% at 85% 75%, rgba(159,110,245,.09) 0%, transparent 60%);
+    }
+
+    /* ── nav ── */
+    nav {
+      position:sticky; top:0; z-index:20;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:14px 40px; background:rgba(11,15,26,.9);
+      backdrop-filter:blur(14px); border-bottom:1px solid var(--border);
+    }
+    .nav-logo { display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--text); }
+    .nav-logo-icon { width:30px; height:30px; background:linear-gradient(135deg,var(--primary),var(--purple)); border-radius:8px; display:grid; place-items:center; font-size:14px; }
+    .nav-logo-text { font-size:15px; font-weight:700; }
+    .nav-logo-text span { color:var(--primary); }
+    .back-btn { display:flex; align-items:center; gap:6px; font-size:12px; font-weight:600; color:var(--text-muted); text-decoration:none; background:rgba(255,255,255,.04); border:1px solid var(--border); padding:6px 13px; border-radius:8px; transition:all .2s; }
+    .back-btn:hover { color:var(--text); background:rgba(255,255,255,.07); }
+
+    /* ── page layout ── */
+    .page { position:relative; z-index:1; display:flex; flex-direction:column; min-height:100vh; }
+    .content { max-width:1180px; margin:0 auto; width:100%; padding:20px 32px 48px; }
+
+    /* ── page header + KPIs ── */
+    .page-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:14px; }
+    .page-title-block { display:flex; flex-direction:column; gap:3px; }
+    .page-eyebrow { font-size:.68rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--primary); }
+    .page-title { font-size:1.55rem; font-weight:800; letter-spacing:-.5px;
+      background:linear-gradient(135deg,#fff 30%,var(--primary) 70%,var(--purple));
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+
+    .kpi-row { display:flex; align-items:center; gap:0; background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+    .kpi-cell { padding:10px 20px; text-align:center; border-right:1px solid var(--border); }
+    .kpi-cell:last-child { border-right:none; }
+    .kpi-v { font-size:1.3rem; font-weight:800; line-height:1; }
+    .kpi-l { font-size:.62rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:var(--text-dim); margin-top:2px; }
+    .add-btn { display:inline-flex; align-items:center; gap:7px; background:linear-gradient(135deg,var(--purple),var(--primary)); color:#fff; padding:9px 18px; border-radius:10px; font-size:.8rem; font-weight:700; text-decoration:none; box-shadow:0 4px 16px rgba(159,110,245,.3); transition:opacity .2s,transform .2s; white-space:nowrap; }
+    .add-btn:hover { opacity:.9; transform:translateY(-1px); }
+
+    /* ── toolbar ── */
+    .toolbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+    .view-tabs { display:flex; gap:4px; background:var(--surface2); border:1px solid var(--border); padding:3px; border-radius:9px; }
+    .view-tab { font-size:.75rem; font-weight:600; color:var(--text-muted); padding:5px 12px; border-radius:6px; cursor:pointer; transition:all .2s; border:none; background:none; }
+    .view-tab.active { background:var(--surface3); color:var(--text); box-shadow:0 1px 4px rgba(0,0,0,.3); }
+    .toolbar-info { font-size:.75rem; color:var(--text-dim); }
+
+    /* ═══════════════════════════
+       CARD GRID VIEW (default)
+       ═══════════════════════════ */
+    .cards-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(520px,1fr)); gap:16px; }
+
+    .proj-card {
+      background:var(--surface); border:1px solid var(--border); border-radius:16px;
+      padding:20px 22px; display:flex; gap:18px; align-items:stretch;
+      transition:transform .25s cubic-bezier(.34,1.56,.64,1), box-shadow .25s, border-color .25s;
+      position:relative; overflow:hidden;
+    }
+    .proj-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; border-radius:16px 0 0 16px; }
+    .proj-card:hover { transform:translateY(-3px); box-shadow:0 10px 36px rgba(0,0,0,.4); }
+
+    .proj-card.c-blue   { border-color:rgba(79,142,247,.2); }
+    .proj-card.c-blue::before   { background:var(--primary); }
+    .proj-card.c-blue:hover     { border-color:rgba(79,142,247,.4); box-shadow:0 10px 36px rgba(79,142,247,.15); }
+    .proj-card.c-purple { border-color:rgba(159,110,245,.2); }
+    .proj-card.c-purple::before { background:var(--purple); }
+    .proj-card.c-purple:hover   { border-color:rgba(159,110,245,.4); box-shadow:0 10px 36px rgba(159,110,245,.15); }
+    .proj-card.c-teal   { border-color:rgba(45,212,191,.2); }
+    .proj-card.c-teal::before   { background:var(--secondary); }
+    .proj-card.c-teal:hover     { border-color:rgba(45,212,191,.4); box-shadow:0 10px 36px rgba(45,212,191,.15); }
+    .proj-card.c-amber  { border-color:rgba(245,158,11,.2); }
+    .proj-card.c-amber::before  { background:var(--accent); }
+    .proj-card.c-amber:hover    { border-color:rgba(245,158,11,.4); box-shadow:0 10px 36px rgba(245,158,11,.15); }
+
+    /* donut area */
+    .card-donut { flex-shrink:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; width:80px; }
+    .donut-label { font-size:.62rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:var(--text-dim); text-align:center; line-height:1.4; }
+
+    /* card body */
+    .card-body { flex:1; min-width:0; display:flex; flex-direction:column; justify-content:space-between; gap:10px; }
+    .card-top { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+    .card-title { font-size:.97rem; font-weight:800; letter-spacing:-.2px; line-height:1.3; }
+    .card-obj { font-size:.76rem; color:var(--text-muted); line-height:1.5; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .health-badge { flex-shrink:0; font-size:.6rem; font-weight:700; padding:3px 8px; border-radius:999px; text-transform:uppercase; letter-spacing:.7px; white-space:nowrap; }
+
+    /* mini stats strip */
+    .card-stats { display:flex; gap:0; background:var(--surface2); border-radius:8px; overflow:hidden; }
+    .cs-item { flex:1; padding:7px 0; text-align:center; border-right:1px solid var(--border); }
+    .cs-item:last-child { border-right:none; }
+    .cs-v { font-size:.88rem; font-weight:800; line-height:1; }
+    .cs-l { font-size:.58rem; text-transform:uppercase; letter-spacing:.4px; color:var(--text-dim); font-weight:600; margin-top:2px; }
+
+    /* action buttons */
+    .card-actions { display:flex; gap:8px; }
+    .ca-btn { flex:1; display:flex; align-items:center; justify-content:center; gap:6px; padding:8px 10px; border-radius:8px; font-size:.75rem; font-weight:700; text-decoration:none; transition:all .18s; }
+    .ca-btn-prd  { background:var(--primary-dim); border:1px solid rgba(79,142,247,.25); color:var(--primary); }
+    .ca-btn-prd:hover  { background:rgba(79,142,247,.25); border-color:rgba(79,142,247,.5); transform:translateY(-1px); }
+    .ca-btn-stat { background:var(--green-dim); border:1px solid rgba(52,211,153,.25); color:var(--green); }
+    .ca-btn-stat:hover { background:rgba(52,211,153,.25); border-color:rgba(52,211,153,.5); transform:translateY(-1px); }
+
+    /* ═══════════════════════════
+       TABLE VIEW
+       ═══════════════════════════ */
+    #tableView { display:none; }
+    .proj-table { width:100%; border-collapse:separate; border-spacing:0; background:var(--surface); border:1px solid var(--border); border-radius:14px; overflow:hidden; }
+    .proj-table thead tr { background:var(--surface2); }
+    .proj-table th { font-size:.65rem; font-weight:700; text-transform:uppercase; letter-spacing:.8px; color:var(--text-dim); padding:11px 16px; text-align:left; border-bottom:1px solid var(--border2); }
+    .proj-table th:first-child { padding-left:20px; }
+    .proj-table td { padding:14px 16px; font-size:.82rem; border-bottom:1px solid var(--border); vertical-align:middle; }
+    .proj-table td:first-child { padding-left:20px; }
+    .proj-table tbody tr:last-child td { border-bottom:none; }
+    .proj-table tbody tr { transition:background .15s; }
+    .proj-table tbody tr:hover { background:rgba(255,255,255,.025); }
+    .tbl-name { font-weight:700; font-size:.85rem; margin-bottom:3px; }
+    .tbl-obj  { font-size:.72rem; color:var(--text-muted); display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden; }
+    .tbl-mini-bar { height:5px; background:rgba(255,255,255,.07); border-radius:99px; overflow:hidden; margin-top:5px; }
+    .tbl-mini-bar-fill { height:100%; border-radius:99px; }
+    .tbl-actions { display:flex; gap:6px; }
+    .tbl-btn { display:flex; align-items:center; gap:4px; padding:5px 10px; border-radius:6px; font-size:.7rem; font-weight:700; text-decoration:none; transition:all .15s; white-space:nowrap; }
+    .tbl-btn-prd  { background:var(--primary-dim); border:1px solid rgba(79,142,247,.25); color:var(--primary); }
+    .tbl-btn-prd:hover  { background:rgba(79,142,247,.25); }
+    .tbl-btn-stat { background:var(--green-dim); border:1px solid rgba(52,211,153,.25); color:var(--green); }
+    .tbl-btn-stat:hover { background:rgba(52,211,153,.25); }
+
+    /* ── footer ── */
+    footer { margin-top:auto; text-align:center; padding:18px; font-size:.72rem; color:var(--text-dim); border-top:1px solid var(--border); }
+
+    /* ── empty state ── */
+    .empty { text-align:center; padding:60px 24px; color:var(--text-muted); }
+    .empty .e-icon { font-size:2.5rem; margin-bottom:12px; }
+    .empty p { font-size:.85rem; }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <nav>
+    <a class="nav-logo" href="default.html">
+      <div class="nav-logo-icon">🤖</div>
+      <div class="nav-logo-text">AI <span>PM</span> Tool</div>
+    </a>
+    <a class="back-btn" href="default.html">← Dashboard</a>
+  </nav>
+
+  <div class="content">
+
+    <!-- Page header + aggregate KPIs -->
+    <div class="page-header">
+      <div class="page-title-block">
+        <div class="page-eyebrow">Project Hub</div>
+        <div class="page-title">All Projects</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+        <div class="kpi-row" id="kpiRow"></div>
+        <a href="new-project.html" class="add-btn">✨ New Project</a>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="view-tabs">
+        <button class="view-tab active" id="btnCards" onclick="setView('cards')">⊞ Cards</button>
+        <button class="view-tab" id="btnTable" onclick="setView('table')">≡ Table</button>
+      </div>
+      <div class="toolbar-info" id="toolbarInfo"></div>
+    </div>
+
+    <!-- Card Grid View -->
+    <div id="cardView">
+      <div class="cards-grid" id="cardsGrid">
+        <div class="empty"><div class="e-icon">📂</div><p>No projects yet.</p></div>
+      </div>
+    </div>
+
+    <!-- Table View -->
+    <div id="tableView">
+      <table class="proj-table">
+        <thead>
+          <tr>
+            <th>Project</th>
+            <th style="width:64px;text-align:center;">Donut</th>
+            <th style="width:80px;text-align:center;">Progress</th>
+            <th style="width:68px;text-align:center;">Done</th>
+            <th style="width:68px;text-align:center;">To Do</th>
+            <th style="width:56px;text-align:center;">DRIs</th>
+            <th style="width:88px;text-align:center;">Health</th>
+            <th style="width:168px;text-align:center;">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <footer id="footerTs"></footer>
+</div>
+
+<script>
+/* ─── project data ─── */
+const PROJECTS = [
+  {
+    slug: "bin-procurement-for-new-card-launch",
+    title: "BIN Procurement for New Card Launch",
+    objective: "Tracking the status of multiple vendors for timely completion of BIN Procurement.",
+    total: 31, done: 4, ip: 0, todo: 27, progress: 13, dris: 4,
+    updated: "2026-05-19",
+    color: "blue", accent: "#4f8ef7",
+    domain: "💳 Payment Card"
+  },
+  {
+    slug: "reward-rule-creation-api",
+    title: "Reward Rule Creation API",
+    objective: "Tracking the status of Reward Rule Creation API — allows flexibility of reward creation dynamically.",
+    total: 31, done: 4, ip: 0, todo: 27, progress: 13, dris: 4,
+    updated: "2026-05-19",
+    color: "purple", accent: "#9f6ef5",
+    domain: "⚙️ API / Backend"
+  },
+  {
+    slug: "trace-file-log-optimization",
+    title: "Trace File Log Optimization",
+    objective: "Tracking the status of Trace log file optimizations across multiple system components.",
+    total: 31, done: 4, ip: 0, todo: 27, progress: 13, dris: 4,
+    updated: "2026-05-19",
+    color: "teal", accent: "#2dd4bf",
+    domain: "🔧 Infrastructure"
+  },
+  {
+    slug: "on-prem-to-aws-migration",
+    title: "On-Prem to AWS Migration",
+    objective: "Tracking the status of On-Premise to AWS cloud migration across services and data layers.",
+    total: 31, done: 4, ip: 0, todo: 27, progress: 13, dris: 4,
+    updated: "2026-05-19",
+    color: "amber", accent: "#f59e0b",
+    domain: "☁️ Cloud Migration"
+  }
+];
+
+/* ─── helpers ─── */
+function health(pct) {
+  if (pct >= 70) return { label:'On Track',  bg:'rgba(52,211,153,.15)',  fg:'#34d399', bd:'rgba(52,211,153,.3)' };
+  if (pct >= 35) return { label:'At Risk',   bg:'rgba(245,158,11,.15)',  fg:'#f59e0b', bd:'rgba(245,158,11,.3)' };
+  return            { label:'Early Stage', bg:'rgba(79,142,247,.15)',   fg:'#4f8ef7', bd:'rgba(79,142,247,.3)' };
+}
+
+function donutSVG(done, ip, total, accent, size, sw) {
+  const r = (size - sw) / 2;
+  const circ = 2 * Math.PI * r;
+  const cx = size / 2, cy = size / 2;
+  const pctDone = total ? done / total : 0;
+  const pctIp   = total ? ip   / total : 0;
+  const dashDone = pctDone * circ;
+  const dashIp   = pctIp   * circ;
+  const offIp    = circ - dashDone;
+  const pct = total ? Math.round((done + ip) / total * 100) : 0;
+  const fs  = size < 50 ? 9 : 13;
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="${sw}"/>
+    ${ip > 0 ? `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#4f8ef7" stroke-width="${sw}"
+      stroke-dasharray="${dashIp} ${circ - dashIp}" stroke-dashoffset="${offIp}"
+      stroke-linecap="round" transform="rotate(-90 ${cx} ${cy})"/>` : ''}
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${accent}" stroke-width="${sw}"
+      stroke-dasharray="${dashDone} ${circ - dashDone}" stroke-dashoffset="0"
+      stroke-linecap="round" transform="rotate(-90 ${cx} ${cy})"/>
+    <text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="central"
+      font-size="${fs}" font-weight="800" font-family="Inter,sans-serif" fill="#f0f4ff">${pct}%</text>
+  </svg>`;
+}
+
+/* ─── aggregate KPIs ─── */
+function buildKPIs() {
+  const totalMiles = PROJECTS.reduce((s,p) => s + p.total, 0);
+  const totalDone  = PROJECTS.reduce((s,p) => s + p.done,  0);
+  const avgPct     = Math.round(PROJECTS.reduce((s,p) => s + p.progress, 0) / PROJECTS.length);
+  const onTrack    = PROJECTS.filter(p => p.progress >= 70).length;
+  [
+    { v: PROJECTS.length, l: 'Projects',    c: '#4f8ef7' },
+    { v: totalMiles,      l: 'Milestones',  c: '#9f6ef5' },
+    { v: totalDone,       l: 'Completed',   c: '#34d399' },
+    { v: avgPct + '%',    l: 'Avg Progress',c: '#f59e0b' },
+    { v: onTrack,         l: 'On Track',    c: '#34d399' }
+  ].forEach(k => {
+    const cell = document.createElement('div');
+    cell.className = 'kpi-cell';
+    cell.innerHTML = `<div class="kpi-v" style="color:${k.c}">${k.v}</div><div class="kpi-l">${k.l}</div>`;
+    document.getElementById('kpiRow').appendChild(cell);
+  });
+  document.getElementById('toolbarInfo').textContent =
+    `${PROJECTS.length} projects · ${totalMiles} milestones total · Refreshed ${new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}`;
+}
+
+/* ─── card grid ─── */
+function buildCards() {
+  const grid = document.getElementById('cardsGrid');
+  grid.innerHTML = '';
+  PROJECTS.forEach(p => {
+    const h = health(p.progress);
+    const el = document.createElement('div');
+    el.className = `proj-card c-${p.color}`;
+    el.innerHTML = `
+      <div class="card-donut">
+        ${donutSVG(p.done, p.ip, p.total, p.accent, 72, 10)}
+        <div class="donut-label">${p.done} / ${p.total}<br/>steps done</div>
+      </div>
+      <div class="card-body">
+        <div>
+          <div class="card-top">
+            <div>
+              <div class="card-title">${p.title}</div>
+              <div style="font-size:.62rem;font-weight:700;color:${p.accent};margin:3px 0 5px;opacity:.85;">${p.domain}</div>
+            </div>
+            <span class="health-badge" style="background:${h.bg};color:${h.fg};border:1px solid ${h.bd};">${h.label}</span>
+          </div>
+          <div class="card-obj">${p.objective}</div>
+        </div>
+        <div>
+          <div class="card-stats" style="margin-bottom:10px;">
+            <div class="cs-item"><div class="cs-v" style="color:${p.accent}">${p.progress}%</div><div class="cs-l">Progress</div></div>
+            <div class="cs-item"><div class="cs-v" style="color:#34d399">${p.done}</div><div class="cs-l">Done</div></div>
+            <div class="cs-item"><div class="cs-v" style="color:#8b9ab4">${p.todo}</div><div class="cs-l">To Do</div></div>
+            <div class="cs-item"><div class="cs-v">${p.total}</div><div class="cs-l">Steps</div></div>
+            <div class="cs-item"><div class="cs-v" style="color:${p.accent}">${p.dris}</div><div class="cs-l">DRIs</div></div>
+          </div>
+          <div class="card-actions">
+            <a href="projects/${p.slug}/prd.html" class="ca-btn ca-btn-prd">📄 View PRD</a>
+            <a href="projects/${p.slug}/status-tracker.html" class="ca-btn ca-btn-stat">📊 Status Tracker</a>
+          </div>
+        </div>
+      </div>`;
+    grid.appendChild(el);
+  });
+}
+
+/* ─── table view ─── */
+function buildTable() {
+  const tbody = document.getElementById('tableBody');
+  PROJECTS.forEach(p => {
+    const h = health(p.progress);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>
+        <div class="tbl-name" style="color:${p.accent}">${p.title}</div>
+        <div class="tbl-obj">${p.objective}</div>
+        <div style="font-size:.62rem;color:var(--text-dim);margin-top:3px;">${p.domain}</div>
+      </td>
+      <td style="text-align:center;">${donutSVG(p.done, p.ip, p.total, p.accent, 44, 7)}</td>
+      <td style="text-align:center;">
+        <div style="font-size:.85rem;font-weight:800;color:${p.accent};margin-bottom:4px;">${p.progress}%</div>
+        <div class="tbl-mini-bar"><div class="tbl-mini-bar-fill" style="width:${p.progress}%;background:${p.accent};"></div></div>
+      </td>
+      <td style="text-align:center;"><span style="font-size:1rem;font-weight:800;color:#34d399;">${p.done}</span></td>
+      <td style="text-align:center;"><span style="font-size:1rem;font-weight:800;color:#8b9ab4;">${p.todo}</span></td>
+      <td style="text-align:center;"><span style="font-size:.9rem;font-weight:700;color:${p.accent};">${p.dris}</span></td>
+      <td style="text-align:center;"><span class="health-badge" style="background:${h.bg};color:${h.fg};border:1px solid ${h.bd};">${h.label}</span></td>
+      <td>
+        <div class="tbl-actions">
+          <a href="projects/${p.slug}/prd.html" class="tbl-btn tbl-btn-prd">📄 PRD</a>
+          <a href="projects/${p.slug}/status-tracker.html" class="tbl-btn tbl-btn-stat">📊 Status</a>
+        </div>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+/* ─── view toggle ─── */
+function setView(v) {
+  const isCards = v === 'cards';
+  document.getElementById('cardView').style.display  = isCards ? '' : 'none';
+  document.getElementById('tableView').style.display = isCards ? 'none' : '';
+  document.getElementById('btnCards').classList.toggle('active', isCards);
+  document.getElementById('btnTable').classList.toggle('active', !isCards);
+}
+
+/* ─── init ─── */
+buildKPIs();
+buildCards();
+buildTable();
+document.getElementById('footerTs').textContent =
+  `📊 All Projects · Robin AI Learnings · Last refreshed ${new Date().toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})}`;
+</script>
+</body>
+</html>

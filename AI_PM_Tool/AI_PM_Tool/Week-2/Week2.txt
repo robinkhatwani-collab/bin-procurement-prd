@@ -1,0 +1,799 @@
+Week 2 - 
+
+TOKENS - 
+What is Token - 
+A token is the smallest unit of text a model can process — and every cost, every limit, and every architectural decision in AI ultimately comes back to counting tokens. 
+In other words - 
+A token is not exactly a word. It's a chunk of text — could be a whole word, part of a word, or even just punctuation.
+
+Example - Bank breaks a large payment into smaller processing units. The model breaks text into smaller units it can process.
+
+Real Example
+The sentence:
+"Authorization was declined"
+Gets broken into tokens like:
+"Author"  "ization"  " was"  " decl"  "ined"
+That's 5 tokens, not 3 words.
+
+Why does the model need tokens  
+A model can not read text the way humans do. It only uderstand numbers. 
+So the process is: 
+
+Text->Split into Tokens->Each Token get a Number (Token ID) -> Model works with those Number- > Numbers Converted to Text -> Response you read. 
+
+Model never sees the work, it only ever sees the number. 
+
+The Token Vocabulary
+Every model has a fixed vocabulary — typically 50,000 to 100,000 tokens. Common words get their own token. Rare words get split into pieces.
+TextT okens. Count"
+"Visa"  "Visa" 1
+"Mastercard" "Master" + "card" 2"
+
+
+Domain specific jargon costs more token
+
+Context Window - Every model has a context window - The maximum number of tokens it can hold in memory at once. 
+Claude Sonnet  →  200,000 tokens  ≈  150,000 words  ≈  ~500 pages
+GPT-4          →  128,000 tokens  ≈  ~96,000 words   ≈  ~320 pages
+
+Think of the context window like a whiteboard. Once it's full, early content starts falling off. The model can only reason about what's currently on the whiteboard.
+[System Prompt] [Your Documents] [Conversation History] [Your Question] [Answer]
+     ↑                ↑                   ↑                    ↑
+  ~500 tokens     ~50,000 tokens       ~10,000 tokens       ~200 tokens
+  
+                    All of this must fit within the context window
+
+Simple Mental Model
+Concept - Banking Analogy
+Token  - A single transaction entry
+Token ID - The transaction reference number
+Vocabulary - The bank's master transaction code list
+Context Window - The reconciliation batch size limit
+Tokenization- Breaking a bulk payment file into individual records
+
+
+Transformers - 
+
+The Problem Transformers Solved
+Before Transformers (pre-2017), models read text one word at a time, left to right — like reading a sentence with your finger covering everything except the current word.
+"The transaction was declined because the card was expired"
+
+Old models:  The → transaction → was → declined → because...
+             (by the time it reaches "expired" it half-forgot "transaction")
+They were slow and forgot context quickly. Terrible for long documents.
+Transformers solved this by reading everything at once — and more importantly, figuring out which words relate to which other words, regardless of distance.
+
+The Core Idea — Attention
+The breakthrough in Transformers is called the Attention Mechanism.
+It answers one question for every token:
+
+"Which other tokens in this text should I pay attention to when understanding this token?"
+
+Simple Example
+"The card was declined because it was expired"
+When the model processes the word "it" — attention tells it:
+"it"  should pay attention to  →  "card"  (90% attention)
+                                →  "declined" (7% attention)
+                                →  everything else (3%)
+
+
+How It Actually Works — Step by Step
+Let's use a card fraud example:
+Input: "Large transaction in Moscow. Card last used in Atlanta 1 hour ago."
+Step 1 — Tokenize
+"Large" "transaction" "in" "Moscow" "Card" "last" "used" "in" "Atlanta" "1" "hour" "ago"
+   ↓          ↓         ↓     ↓       ↓      ↓      ↓     ↓      ↓       ↓     ↓     ↓
+  892        4421       287   8833    4201   892    3021   287    7741    16    2019   430
+Step 2 — Attention Scores
+
+Every token looks at every other token and asks "how relevant are you to me?"
+"Moscow"  is highly related to  →  "Atlanta"   (geography comparison)
+"1 hour"  is highly related to  →  "Moscow" + "Atlanta"  (time between locations)
+"Large"   is highly related to  →  "transaction"  (describes it)
+Step 3 — Build Understanding
+
+After attention, each token is now enriched with context from related tokens. The model now understands:
+Not just "Moscow" — but "Moscow as a suspicious location given Atlanta 1 hour ago"
+Not just "Large" — but "Large as a risk signal in this geographic context"
+Step 4 — Generate Output
+"This transaction shows geographic impossibility — high fraud risk"
+
+
+
+The Architecture — Simplified
+         Input Tokens
+              ↓
+    ┌─────────────────────┐
+    │   EMBEDDING LAYER   │  Converts token IDs to rich vectors
+    └─────────────────────┘
+              ↓
+    ┌─────────────────────┐
+    │  ATTENTION LAYER 1  │  Finds basic relationships
+    └─────────────────────┘
+              ↓
+    ┌─────────────────────┐
+    │  ATTENTION LAYER 2  │  Finds deeper relationships
+    └─────────────────────┘
+              ↓
+    ┌─────────────────────┐
+    │  ATTENTION LAYER N  │  (GPT-4 has 96 of these layers)
+    └─────────────────────┘
+              ↓
+    ┌─────────────────────┐
+    │    OUTPUT LAYER     │  Predicts next token
+    └─────────────────────┘
+              ↓
+         Output Text
+Each attention layer finds increasingly abstract relationships — early layers find grammar, later layers find meaning and reasoning.
+
+
+Transformers changed everything - 
+
+Why Transformers Changed Everything
+Capability. --  Why It Matters for Card Processing
+Long range attention -- Can connect "card issued in 2019" to "transaction in 2024" across a long document
+Parallel processingReads  -- entire ISO 8583 spec at once, not word by word
+Deep context understanding -- Understands that "decline" in one rule context differs from another
+Scales with data -- More card transaction data = smarter fraud patterns
+
+
+The Limitation You Must Know
+Attention has a cost — every token attends to every other token.
+100 tokens   →   10,000 attention calculations   (fast)
+1,000 tokens →   1,000,000 calculations          (manageable)
+10,000 tokens → 100,000,000 calculations          (expensive)
+100,000 tokens → 10,000,000,000 calculations      (very expensive)
+
+
+This is why context windows have limits — not arbitrary limits, 
+but computational ones. And this is exactly why for your card processing agents, you don't want to dump entire rulebooks into the model blindly.
+
+Mental Model Summary
+Concept -- Card Processing Analogy
+Token - Individual transaction field (amount, MCC, terminal ID)
+Attention - The rules engine checking which fields relate to each other
+Layers - Multiple risk checks stacked on top of each other
+Context Window - The transaction batch size your switch can process
+Transformer - The entire authorization switch — ingests, relates, decides
+
+
+A Transformer reads everything at once, figures out what relates to what, and builds a deep understanding of the whole context — not just the last thing it saw.
+
+
+Encoder and Decoder - 
+Encoder — A deep reader. Sees the whole picture at once. Great at understanding. Outputs meaning, not text.
+
+Decoder — A writer. Builds output one piece at a time. Great at generating. Thinks forward only.
+
+Encoder-Decoder — A translator. Deeply reads one thing, then carefully writes something else based on that understanding.
+
+The Mental Model
+Analogy in Card Processing
+Encoder - The transaction parser — reads the raw ISO 8583 message, understands every field and their relationships, converts to internal format
+Decoder - The authorization engine — takes that understanding and generates a decision + response message
+Encoder-Decoder - The full switch — parses incoming message AND generates the response ISO 8583 message back
+
+
+Family 1 — Encoder Only
+"I just need to understand, not generate"
+Input Text
+    ↓
+┌──────────────────────────┐
+│        ENCODER           │
+│                          │
+│  Reads ALL tokens        │
+│  simultaneously          │
+│                          │
+│  Every token attends     │
+│  to every other token    │
+│  in BOTH directions      │
+│  ← left AND right →      │
+└──────────────────────────┘
+
+Examples: BERT, RoBERTa, sentence-transformers
+Used for:
+
+Text classification (is this transaction fraudulent? yes/no)
+Semantic search (find similar transactions)
+Generating embeddings for vector databases
+Named entity recognition (extract merchant name, amount, location)
+
+Card Processing Use:
+Input:  "Unusual late night purchase at electronics store, 
+         foreign currency, new merchant"
+         
+Encoder Output:  [0.82, -0.31, 0.94, 0.12, ...]  
+                 ↑ This vector captures the meaning
+                 ↑ Used to find similar past fraud cases
+
+
+
+Family 2 — Decoder Only
+"I just need to generate"
+Input Tokens So Far
+    ↓
+┌──────────────────────────┐
+│        DECODER           │
+│                          │
+│  Reads tokens            │
+│  LEFT TO RIGHT only      │
+│                          │
+│  Each token can only     │
+│  attend to tokens        │
+│  BEFORE it →             │
+│  (cannot peek ahead)     │
+└──────────────────────────┘
+    ↓
+Predicts Next Token
+    ↓
+Feeds back in
+    ↓
+Predicts Next Token
+    ↓
+... repeats until done
+
+
+Examples: GPT-4, Claude, Llama, Mistral
+Used for:
+
+Generating text, reports, summaries
+Answering questions
+Writing code
+Reasoning and analysis
+
+Card Processing Use:
+Input Prompt:
+"Transaction: $4,200, Moscow, 11pm, card last used Atlanta 1hr ago.
+Analyze fraud risk and explain."
+
+Decoder generates token by token:
+"This" → "transaction" → "shows" → "geographic" → 
+"impossibility" → "." → "The" → "cardholder" → ...
+
+Final output:
+"This transaction shows geographic impossibility. 
+The cardholder cannot physically travel from Atlanta 
+to Moscow in 1 hour. Recommend decline and alert."
+
+amily 3 — Encoder + Decoder (Seq2Seq)
+"I need to understand one thing deeply, then generate something different"
+Source Input
+    ↓
+┌───────────┐
+│  ENCODER  │  Deeply understands the input
+│           │  Bidirectional — sees full context
+└───────────┘
+      ↓
+  Context Vector
+  (compressed understanding)
+      ↓
+┌───────────┐
+│  DECODER  │  Generates output using that understanding
+│           │  Unidirectional — generates left to right
+└───────────┘
+      ↓
+Target Output
+Examples: T5, BART, original translation models, Whisper (speech→text)
+Used for:
+
+Translation (French → English)
+Summarization (long doc → short summary)
+Speech to text
+Question answering over documents
+
+Card Processing Use:
+Encoder Input:
+"[Full 500-line ISO 8583 transaction log]"
+
+Encoder deeply reads and compresses it ↓
+
+Decoder Output:
+"Summary: 847 transactions processed. 
+ 3 declined for insufficient funds. 
+ 1 flagged for fraud. 
+ Total settled: $2,847,392"
+
+How They Work Together in Your Card Processing Agent
+A well-designed agentic system actually uses both families together:
+┌─────────────────────────────────────────────────────┐
+│           CARD FRAUD DETECTION AGENT                │
+│                                                     │
+│  Step 1 — ENCODER                                   │
+│  "Convert incoming transaction into a vector"       │
+│  Model: sentence-transformers                       │
+│  Job: Create embedding for similarity search        │
+│                    ↓                                │
+│  Step 2 — VECTOR SEARCH                             │
+│  "Find 5 most similar past fraud cases"             │
+│                    ↓                                │
+│  Step 3 — DECODER (Claude)                          │
+│  "Here is the transaction + similar past cases.     │
+│   Reason about fraud risk and generate decision"    │
+│  Model: Claude Sonnet                               │
+│  Job: Reason and generate explanation               │
+│                    ↓                                │
+│  Output: Fraud Score + Human-readable Explanation  │
+└─────────────────────────────────────────────────────┘
+Encoder handles finding. Decoder handles reasoning and explaining.
+
+
+GROUNDING  
+Grounding means anchoring the model's output to verified, specific, external sources — so it cannot freely invent.
+WITHOUT GROUNDING          WITH GROUNDING
+                           
+Model's brain only    →    Model's brain
+                           +
+                           Your actual Visa rulebook
+                           +
+                           Your actual transaction data
+                           +
+                           Your actual policies
+                           
+Output: plausible         Output: accurate
+        but invented              and traceable
+
+Like the difference between asking a consultant from memory versus asking them to answer only from the documents in front of them.
+
+In other words - 
+Grounding is the discipline of ensuring the model only uses what you gave it — not what it thinks it remembers — so every decision is accurate, traceable, and defensible.
+
+Grounding Techniques - 
+Technique 1 — Retrieval Augmented Generation (RAG)
+Most common. Fetch relevant facts, inject into prompt.
+Question: "What is the dispute timeframe for Visa fraud claims?"
+
+Step 1 — Search your document store
+         → Finds page 47 of Visa Core Rules 2024
+
+Step 2 — Inject into prompt
+         "Using ONLY this text: [page 47 content]
+          Answer: What is the dispute timeframe?"
+
+Step 3 — Model answers from that text only
+         "According to Visa Core Rules section 4.7,
+          the dispute timeframe is 120 days from 
+          transaction date."
+Model is now grounded to your document, not its training memory
+
+Technique 2 — Tool Use / Function Calling
+Model calls real systems instead of guessing.
+Question: "What is the current balance on card 4111 XXXX XXXX 1234?"
+
+Without grounding:
+Model guesses or says "I don't know"
+
+With tool use:
+Model calls → get_card_balance(card_id="4111...1234")
+Real system returns → {"balance": 2847.50, "currency": "USD"}
+Model answers → "The current balance is $2,847.50"
+The model never invented the number. It fetched it from the real system.
+Card Processing Tools You'd Build:
+get_transaction_history(card_id, date_range)
+check_velocity_rules(merchant_id, amount)
+lookup_bin_details(bin_number)
+get_scheme_rules(network, rule_type)
+validate_cvv(card_id, cvv)
+
+Technique 3 — System Prompt Constraints
+Rules baked in before the conversation starts.
+SYSTEM PROMPT:
+"You are a card fraud analyst assistant.
+ Rules you must follow:
+ 
+ 1. NEVER give a fraud decision without citing 
+    a specific rule or transaction evidence
+    
+ 2. NEVER state a Visa/Mastercard rule from memory —
+    only from documents provided to you
+    
+ 3. If you are uncertain, say 'I need to verify this'
+    rather than guessing
+    
+ 4. Always end fraud recommendations with:
+    'Confidence: High/Medium/Low — Reason: [why]'"
+This doesn't eliminate hallucination entirely but constrains the space where the model can invent things.
+
+Technique 4 — Fine Tuning
+Train the model on your specific domain data.
+General Model              Fine-tuned Model
+                           
+Knows general finance  →   Knows YOUR bank's
+                           specific products,
+                           policies, codes,
+                           and terminology
+                           
+"chargeback" = general →   "chargeback" = your
+ knowledge                  exact workflow and
+                            reason code mapping
+When to use it for card processing:
+
+Your terminology is highly specific (internal product codes, custom reason codes)
+You need the model to always respond in a specific format
+You have thousands of labeled examples (resolved disputes, fraud cases)
+
+Important caveat: Fine tuning teaches style and knowledge — it does not replace RAG for live data. You still need RAG for current rulebooks and real-time transaction data.
+
+
+Grounding Stack for Your Card Processing Agent
+Here is what a fully grounded agent architecture looks like:
+┌─────────────────────────────────────────────────────────┐
+│            GROUNDED CARD PROCESSING AGENT               │
+│                                                         │
+│  User/System Query                                      │
+│         ↓                                               │
+│  ┌─────────────────┐                                    │
+│  │ SYSTEM PROMPT   │  ← Hard rules, tone, constraints   │
+│  │ CONSTRAINTS     │                                    │
+│  └─────────────────┘                                    │
+│         ↓                                               │
+│  ┌─────────────────┐                                    │
+│  │   RAG LAYER     │  ← Relevant scheme rules,          │
+│  │                 │    policy documents, past cases    │
+│  └─────────────────┘                                    │
+│         ↓                                               │
+│  ┌─────────────────┐                                    │
+│  │   TOOL USE      │  ← Live transaction data,          │
+│  │                 │    real-time card status,           │
+│  │                 │    velocity checks                 │
+│  └─────────────────┘                                    │
+│         ↓                                               │
+│  ┌─────────────────┐                                    │
+│  │  CLAUDE DECODER │  ← Reasons ONLY from above         │
+│  │                 │    Never from training memory      │
+│  └─────────────────┘                                    │
+│         ↓                                               │
+│  Decision + Explanation + Source Citations + Confidence │
+└─────────────────────────────────────────────────────────┘
+Every layer removes one more way the model can invent something.
+
+Grounding vs Hallucination — The Spectrum
+FULLY HALLUCINATED                        FULLY GROUNDED
+        |                                       |
+        ●─────────────────────────────────────●
+        |           |           |              |
+   No sources   System prompt  Tool use    RAG + Tools
+   pure memory  constraints    only        + Constraints
+   
+   "I think     "I must cite   "I fetched   "I found rule
+    the rule     sources"       the data"    V-7.3 in your
+    is..."                                   document and
+                                             fetched live
+                                             transaction data"
+Your goal as architect is to push every agent as far right as possible.
+
+Common Grounding Mistakes in Card AI
+Mistake - Risk - Fix
+Asking model about current scheme rules from memory - Gets outdated rulesR - AG over current rulebooks
+No source citation in fraud decisions  - Not auditable. Force citations in system prompt 
+Trusting model for live card statusI - nvents data - Always use tool call for live data
+One giant prompt with no retrieval - Model picks wrong facts - RAG with precise chunking
+Fine tuning instead of  RAG for live data - Stale knowledge - RAG for live, fine-tune for style
+
+RAG 
+
+What is RAG?
+Retrieval Augmented Generation.
+Three words that tell you exactly what it does:
+
+Retrieval   →   Find the relevant information
+Augmented   →   Add it to the model's context
+Generation  →   Model generates answer from that information
+
+Without RAG, the model answers from training memory — which is static, potentially outdated, and prone to hallucination.
+With RAG, the model answers from your documents, your data, your rules — retrieved fresh every time.
+
+RAG is where all three come together into something you can actually build — a system that retrieves the right document chunks (tokens), understands them deeply (transformer), and answers only from what it found (grounding).
+
+Summary - RAG is the architecture that gives your AI agent a perfect memory — not by training it on everything, but by teaching it to find the right information at the right moment and reason from that alone.
+
+The Problem RAG Solves
+Imagine you have:
+
+Visa Core Rules 2024 — 800 pages
+Mastercard Transaction Processing Rules — 600 pages
+Your bank's internal fraud policies — 200 pages
+5 years of chargeback decisions — 50,000 records
+
+You cannot stuff all of that into a context window every time someone asks a question. It would be:
+Too expensive    →  Millions of tokens per query
+Too slow         →  Model processes all 1,600 pages every time
+Too noisy        →  Model gets confused by irrelevant content
+Context limit    →  Simply won't fit
+RAG solves this by fetching only what is relevant to the specific question being asked.
+
+
+The RAG Pipeline — Full Picture
+═══════════════════════════════════════════════════
+              INDEXING PHASE
+         (Done once, offline)
+═══════════════════════════════════════════════════
+
+Your Documents
+(Visa rules, fraud policies, scheme guides)
+         ↓
+    CHUNKING
+    Split into small pieces
+         ↓
+    EMBEDDING
+    Convert each chunk to a vector
+         ↓
+    VECTOR DATABASE
+    Store all vectors + original text
+
+
+═══════════════════════════════════════════════════
+              RETRIEVAL PHASE
+         (Done at query time, live)
+═══════════════════════════════════════════════════
+
+User Question
+         ↓
+    EMBED THE QUESTION
+    Convert question to same vector format
+         ↓
+    SIMILARITY SEARCH
+    Find chunks most similar to question
+         ↓
+    RETRIEVE TOP CHUNKS
+    Pull the actual text of those chunks
+
+
+═══════════════════════════════════════════════════
+              GENERATION PHASE
+         (Done at query time, live)
+═══════════════════════════════════════════════════
+
+Retrieved Chunks + Original Question
+         ↓
+    BUILD PROMPT
+    "Using these documents, answer this question"
+         ↓
+    CLAUDE (DECODER)
+    Reasons over retrieved content
+         ↓
+    GROUNDED ANSWER
+    With citations, confidence, source references
+
+
+Deep Dive — Each Step
+
+Step 1 — Chunking
+Breaking documents into pieces the model can use
+You cannot embed an 800-page document as one piece. You split it into chunks.
+VISA CORE RULES 2024 — PAGE 47
+
+"Section 4.7 — Dispute Timeframes
+A cardholder must initiate a dispute within 120 days
+of the transaction date for fraud-related claims.
+For service disputes, the timeframe is 540 days.
+Issuers must respond to dispute notifications
+within 30 days of receipt..."
+
+                    ↓  CHUNKING  ↓
+
+Chunk 1:
+"Section 4.7 — Dispute Timeframes. A cardholder must 
+initiate a dispute within 120 days of the transaction 
+date for fraud-related claims."
+
+Chunk 2:
+"For service disputes, the timeframe is 540 days.
+Issuers must respond to dispute notifications
+within 30 days of receipt."
+Chunking Strategy Matters:
+StrategySizeBest ForFixed size512 tokensSimple documentsSentence-basedVariableConversational textParagraph-basedVariablePolicy documentsSemanticVariableTechnical specsHierarchicalParent + childLong rulebooks
+For card processing documents:
+Paragraph-based chunking works best — Visa and Mastercard rules are written in numbered sections. Each section = one chunk. Preserves logical boundaries.
+✓ Good chunk:   One complete rule section
+✗ Bad chunk:    Cuts a rule in half
+✗ Bad chunk:    Combines 5 unrelated rules
+
+Step 2 — Embedding
+Converting text chunks into vectors (numbers)
+This is where the Encoder you learned comes in.
+Chunk Text
+"Cardholder must initiate dispute within 120 days"
+         ↓
+    ENCODER MODEL
+    (e.g. text-embedding-3-large)
+         ↓
+Vector: [0.82, -0.31, 0.94, 0.17, -0.55, 0.73, ...]
+        ←————————— 1,536 numbers ————————————→
+The magic: similar meaning = similar vector
+"dispute timeframe for fraud"     → [0.82, -0.31, 0.94...]
+"how long to file a chargeback"   → [0.81, -0.29, 0.93...]  ← very close!
+"authorization approval codes"    → [0.12,  0.67, -0.44...] ← far away
+This is why search works semantically — not by keyword matching, but by meaning proximity.
+
+
+Step 3 — Vector Database
+Storing and searching vectors at scale
+A vector database is purpose-built to store millions of vectors and find the nearest ones to a query vector instantly.
+┌─────────────────────────────────────────┐
+│           VECTOR DATABASE               │
+│                                         │
+│  ID    Vector              Source       │
+│  001   [0.82,-0.31,0.94]  Visa_P47_C1  │
+│  002   [0.81,-0.29,0.93]  Visa_P47_C2  │
+│  003   [0.12, 0.67,-0.44] Visa_P12_C1  │
+│  004   [0.74,-0.21, 0.88] MC_P33_C4    │
+│  005   [0.79,-0.35, 0.91] FraudPolicy  │
+│  ...   ...                ...          │
+│  50,000 chunks total                   │
+└─────────────────────────────────────────┘
+Popular Vector Databases:
+DatabaseBest ForBank RelevancepgvectorPostgreSQL extensionAlready in your stackPineconeManaged cloudFast prototypeWeaviateOpen sourceSelf-hosted optionQdrantHigh performanceProduction gradeChromaLocal developmentTesting only
+For a bank: pgvector is the most practical — it runs inside your existing PostgreSQL database, no new infrastructure, meets data residency requirements.
+
+Step 4 — Query Embedding + Similarity Search
+Finding what's relevant to the question
+User asks:
+"What is the timeframe for disputing a fraud transaction?"
+
+         ↓  EMBED THE QUESTION
+
+Query vector: [0.80, -0.28, 0.92, 0.15, -0.52...]
+
+         ↓  SEARCH VECTOR DATABASE
+
+Find top 3 closest vectors:
+
+Rank 1: ID 001 — [0.82,-0.31,0.94] — Score: 0.97 ← very similar
+        "Section 4.7: 120 days for fraud disputes"
+
+Rank 2: ID 005 — [0.79,-0.35,0.91] — Score: 0.94
+        "Fraud dispute policy: initiation within 120 days"
+
+Rank 3: ID 002 — [0.81,-0.29,0.93] — Score: 0.93
+        "Issuer must respond within 30 days of receipt"
+Only the top 3-5 most relevant chunks are retrieved. Not all 50,000.
+
+Step 5 — Prompt Construction
+Assembling the grounded prompt
+SYSTEM:
+You are a card dispute analyst. Answer ONLY from 
+the provided documents. Always cite your source.
+If the answer is not in the documents, say 
+"I cannot find this in the provided rules."
+
+RETRIEVED DOCUMENTS:
+[Doc 1 - Visa Core Rules P47]:
+"Section 4.7: A cardholder must initiate a dispute 
+within 120 days of transaction date for fraud claims."
+
+[Doc 2 - Fraud Policy v2.1]:
+"Fraud dispute initiation window: 120 calendar days
+from transaction posting date."
+
+[Doc 3 - Visa Core Rules P47]:
+"Issuer must respond to dispute notifications 
+within 30 days of receipt."
+
+USER QUESTION:
+What is the timeframe for disputing a fraud transaction?
+Step 6 — Generation
+Model answers from retrieved content only
+CLAUDE RESPONSE:
+
+"According to Visa Core Rules Section 4.7 and your 
+internal Fraud Policy v2.1, a cardholder must initiate 
+a fraud dispute within 120 days of the transaction date.
+
+Additionally, once a dispute notification is received, 
+the issuer has 30 days to respond per Visa Core Rules.
+
+Sources:
+- Visa Core Rules 2024, Page 47, Section 4.7
+- Internal Fraud Policy v2.1
+
+Confidence: High — Both sources align on the 120-day window."
+Fully grounded. Fully cited. Traceable and auditable.
+
+
+RAG for Your Card Processing Use Cases
+
+Use Case 1 — Scheme Rules Assistant
+Documents indexed:
+- Visa Core Rules 2024
+- Mastercard Transaction Processing Rules
+- Network fee schedules
+- Interchange rate tables
+
+Query: "What is the interchange rate for a World Elite 
+        Mastercard used at a tier-1 merchant?"
+
+RAG fetches: Exact interchange table entry
+Claude answers: Precise rate with source citation
+
+Use Case 2 — Dispute Resolution Agent
+Documents indexed:
+- Chargeback reason codes (Visa + MC)
+- Compelling evidence requirements per reason code
+- Past successful representments
+
+Query: "Transaction disputed under reason code 10.4.
+        What evidence do I need to fight this?"
+
+RAG fetches: Reason code 10.4 requirements
+Claude answers: Exact evidence checklist with deadlines
+
+Use Case 3 — Fraud Pattern Detection
+Documents indexed:
+- 50,000 past fraud cases (vectorized)
+- Each case: transaction details + outcome
+
+Query: New incoming transaction details
+
+RAG fetches: 5 most similar past fraud cases
+Claude answers: "This matches pattern seen in cases 
+                 #4821, #7733, #9102 — all confirmed fraud.
+                 Recommend decline."
+
+Use Case 4 — Compliance Q&A
+Documents indexed:
+- PCI-DSS requirements
+- Internal compliance policies
+- Audit findings history
+
+Query: "Do we need to store CVV in our transaction logs?"
+
+RAG fetches: PCI-DSS requirement 3.3
+Claude answers: "PCI-DSS 3.3 explicitly prohibits storing
+                 CVV post-authorization. Your logs must
+                 mask or exclude this field."
+
+
+What Makes RAG Fail — And How to Fix It
+ProblemWhy It HappensFixWrong chunks retrievedPoor chunking breaks logical rulesUse paragraph/section-based chunkingMissing contextChunk too small, rule split in halfIncrease chunk size, use overlapOutdated answersOld documents in vector DBVersion your documents, re-index on updateNo answer foundQuery too specific, no matching chunkAdd query rewriting stepHallucination despite RAGModel ignored retrieved docsStrengthen system prompt constraintsSlow retrievalToo many vectors, no indexingUse HNSW indexing in pgvector
+
+The Complete RAG Architecture for Your Bank
+┌──────────────────────────────────────────────────────────────┐
+│                    INDEXING PIPELINE                         │
+│                                                              │
+│  Visa Rules ──┐                                              │
+│  MC Rules  ──┤                                              │
+│  Fraud Policy─┤→ Chunker → Encoder → pgvector Database      │
+│  Past Cases  ──┤                                              │
+│  PCI-DSS   ──┘                                              │
+└──────────────────────────────────────────────────────────────┘
+                              ↓
+┌──────────────────────────────────────────────────────────────┐
+│                    QUERY PIPELINE                            │
+│                                                              │
+│  Analyst Question                                            │
+│         ↓                                                    │
+│  Query Encoder → pgvector Search → Top 5 Chunks             │
+│                                          ↓                   │
+│                              System Prompt + Chunks          │
+│                                          ↓                   │
+│                                   Claude (Decoder)           │
+│                                          ↓                   │
+│                         Cited Answer + Confidence Score      │
+└──────────────────────────────────────────────────────────────┘
+
+Bringing All Four Topics Together
+TOKENS
+"Visa rulebook chunks split into
+ ~1,000 token pieces — right size
+ for context and cost"
+         ↓
+TRANSFORMERS
+"Encoder converts each chunk
+ to a vector capturing meaning.
+ Decoder reasons over retrieved
+ chunks to generate answers."
+         ↓
+GROUNDING
+"Model answers ONLY from
+ retrieved chunks. Never
+ from training memory.
+ Every answer cited."
+         ↓
+RAG
+"The system that orchestrates
+ all of the above into a
+ working, trustworthy
+ card processing intelligence layer"
+
+You now have the complete foundation:
+TopicWhat You LearnedTokensHow text becomes numbers — the unit of everythingTransformersHow models read (Encoder) and write (Decoder) using attentionGroundingHow to make model outputs trustworthy and traceableRAGHow to build a system that retrieves and reasons from your own documents

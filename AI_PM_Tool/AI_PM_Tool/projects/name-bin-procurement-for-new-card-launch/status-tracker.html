@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Status Tracker — Name :- Bin Procurement For New Card Launch</title>
+  <style>
+
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0b0f1a; --surface: #111827; --surface2: #161d2e; --surface3: #1c2540;
+      --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.13);
+      --text: #f0f4ff; --text-muted: #8b9ab4; --text-dim: #5a6a84;
+      --primary: #4f8ef7; --primary-dim: rgba(79,142,247,0.15);
+      --secondary: #2dd4bf; --secondary-dim: rgba(45,212,191,0.15);
+      --purple: #9f6ef5; --purple-dim: rgba(159,110,245,0.15);
+      --accent: #f59e0b; --accent-dim: rgba(245,158,11,0.15);
+      --green: #34d399; --green-dim: rgba(52,211,153,0.15);
+      --red: #f87171; --red-dim: rgba(248,113,113,0.15);
+      --radius: 14px; --shadow: 0 4px 24px rgba(0,0,0,0.35);
+    }
+    html, body { min-height: 100vh; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 70% 50% at 15% 15%, rgba(79,142,247,.09) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 45% at 85% 75%, rgba(159,110,245,.09) 0%, transparent 60%);
+      pointer-events: none; z-index: 0;
+    }
+    .page { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; }
+    nav {
+      position: sticky; top: 0; z-index: 20;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 48px; background: rgba(11,15,26,.85);
+      backdrop-filter: blur(14px); border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+    .nav-logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, var(--primary), var(--purple)); border-radius: 8px; display: grid; place-items: center; font-size: 15px; }
+    .nav-logo-text { font-size: 15px; font-weight: 700; }
+    .nav-logo-text span { color: var(--primary); }
+    .back-btn { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--text-muted); text-decoration: none; background: rgba(255,255,255,.04); border: 1px solid var(--border); padding: 7px 14px; border-radius: 9px; transition: all .2s; }
+    .back-btn:hover { color: var(--text); background: rgba(255,255,255,.07); }
+    main { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 48px 32px 80px; width: 100%; }
+    .card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 26px; box-shadow: var(--shadow); margin-bottom: 20px; }
+    .card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 10px; }
+    .card p { color: var(--text-muted); font-size: 0.93rem; }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 18px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; }
+    .callout { border-radius: var(--radius); padding: 18px 22px; margin-bottom: 18px; border-left: 4px solid; }
+    .callout-blue   { background: rgba(37,99,235,.1);  border-color: var(--primary); }
+    .callout-green  { background: rgba(5,150,105,.1);  border-color: var(--green); }
+    .callout-amber  { background: rgba(217,119,6,.1);  border-color: var(--accent); }
+    .callout-purple { background: rgba(124,58,237,.1); border-color: var(--purple); }
+    .callout h4 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; opacity: .6; font-weight: 700; }
+    .callout p { font-size: 0.91rem; color: var(--text-muted); }
+    .callout strong { color: var(--text); }
+    .tag { border-radius: 999px; padding: 3px 12px; font-size: 0.78rem; font-weight: 600; }
+    .tag-blue   { background: var(--primary-dim); color: #93c5fd; }
+    .tag-green  { background: var(--green-dim);   color: #6ee7b7; }
+    .tag-amber  { background: var(--accent-dim);  color: #fcd34d; }
+    .tag-purple { background: var(--purple-dim);  color: #c4b5fd; }
+    .tag-red    { background: var(--red-dim);      color: #fca5a5; }
+    footer { margin-top: auto; text-align: center; padding: 24px; font-size: 12px; color: var(--text-muted); border-top: 1px solid var(--border); }
+
+    .hero { background: linear-gradient(135deg, #071a12 0%, #0a1f2e 50%, #1a0f3a 100%); border-bottom: 1px solid var(--border); padding: 52px 40px 44px; text-align: center; position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(52,211,153,.15) 0%, transparent 70%); pointer-events: none; }
+    .hero .badge { position: relative; display: inline-block; background: rgba(52,211,153,.15); border: 1px solid rgba(52,211,153,.35); border-radius: 999px; padding: 5px 16px; font-size: .75rem; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 16px; color: var(--green); font-weight: 600; }
+    .hero h1 { position: relative; font-size: clamp(1.8rem, 3.5vw, 2.6rem); font-weight: 800; letter-spacing: -.5px; margin-bottom: 12px; }
+    .hero p { position: relative; font-size: 1rem; color: var(--text-muted); max-width: 620px; margin: 0 auto 22px; }
+    .hero-stats { position: relative; display: inline-flex; align-items: center; gap: 20px; background: rgba(255,255,255,.06); border: 1px solid var(--border2); border-radius: 12px; padding: 10px 22px; flex-wrap: wrap; justify-content: center; }
+    .stat { text-align: center; }
+    .stat .val { font-size: 1.5rem; font-weight: 800; }
+    .stat .lbl { font-size: .7rem; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: .5px; }
+    .stat-div { width: 1px; height: 28px; background: var(--border2); }
+    .section-head { display: flex; align-items: center; gap: 12px; margin: 40px 0 18px; }
+    .section-head h2 { font-size: 1.25rem; font-weight: 700; }
+    .section-icon { width: 38px; height: 38px; border-radius: 11px; background: var(--surface2); border: 1px solid var(--border); display: grid; place-items: center; font-size: 1rem; flex-shrink: 0; }
+    .progress-block { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; }
+    .progress-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: .88rem; }
+    .progress-track { height: 10px; background: rgba(255,255,255,.06); border-radius: 99px; overflow: hidden; }
+    .progress-fill  { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--green), var(--secondary)); box-shadow: 0 0 14px rgba(52,211,153,.4); transition: width .6s ease; }
+    .stat-pills { display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+    .stat-pill { display: flex; align-items: center; gap: 7px; font-size: .83rem; font-weight: 600; padding: 6px 14px; border-radius: 10px; }
+    .pill-done  { background: var(--green-dim); color: var(--green); }
+    .pill-prog  { background: var(--primary-dim); color: var(--primary); }
+    .pill-todo  { background: rgba(255,255,255,.05); color: var(--text-muted); border: 1px solid var(--border); }
+    .dri-grid { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 4px; }
+    .dri-pill { display: flex; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; min-width: 200px; }
+    .dri-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--purple)); display: grid; place-items: center; font-size: .9rem; font-weight: 700; flex-shrink: 0; color: white; }
+    .dri-name  { font-size: .88rem; font-weight: 700; }
+    .dri-email { font-size: .78rem; color: var(--primary); text-decoration: none; }
+    .dri-email:hover { text-decoration: underline; }
+    .step-card { display: flex; gap: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; margin-bottom: 12px; transition: border-color .2s; }
+    .step-card.status-done       { border-left: 4px solid var(--green); }
+    .step-card.status-inprogress { border-left: 4px solid var(--primary); background: rgba(79,142,247,.04); }
+    .step-card.status-todo       { border-left: 4px solid var(--border2); }
+    .step-left { flex-shrink: 0; }
+    .step-num  { width: 32px; height: 32px; border-radius: 8px; background: var(--surface2); border: 1px solid var(--border); display: grid; place-items: center; font-size: .8rem; font-weight: 700; color: var(--text-dim); }
+    .step-body { flex: 1; min-width: 0; }
+    .step-top  { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+    .step-title { font-size: .93rem; font-weight: 600; }
+    .step-meta  { display: flex; gap: 16px; flex-wrap: wrap; font-size: .8rem; color: var(--text-muted); margin-bottom: 4px; }
+    .step-meta strong { color: var(--text); }
+    .step-dep   { font-size: .78rem; color: var(--accent); margin-top: 4px; }
+    .step-notes { font-size: .78rem; color: var(--text-dim); margin-top: 4px; font-style: italic; }
+    .step-comp  { font-size: .78rem; color: var(--green); }
+    .status-badge { display: inline-block; font-size: .72rem; font-weight: 600; padding: 3px 10px; border-radius: 999px; white-space: nowrap; flex-shrink: 0; }
+    .status-done       { background: var(--green-dim); color: var(--green); }
+    .status-inprogress { background: var(--primary-dim); color: var(--primary); }
+    .status-todo       { background: rgba(255,255,255,.06); color: var(--text-muted); }
+    .filter-bar { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    .filter-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted); padding: 7px 16px; border-radius: 9px; font-size: .8rem; font-weight: 600; cursor: pointer; transition: all .2s; }
+    .filter-btn:hover, .filter-btn.active { background: rgba(79,142,247,.15); border-color: rgba(79,142,247,.4); color: var(--primary); }
+    .last-updated { font-size: .75rem; color: var(--text-dim); margin-top: 4px; }
+  </style>
+</head>
+<body>
+<div class="page">
+  <nav>
+    <a class="nav-logo" href="../../default.html">
+      <div class="nav-logo-icon">🤖</div>
+      <div class="nav-logo-text">AI <span>PM</span> Tool</div>
+    </a>
+    <a class="back-btn" href="../../projects.html">← All Projects</a>
+  </nav>
+
+  <header class="hero">
+    <div class="badge">Status Tracker</div>
+    <h1>📊 Name :- Bin Procurement For New Card Launch</h1>
+    <p>Project Name :- BIN Procurement for New Card Launch</p>
+    <div class="hero-stats">
+      <div class="stat"><div class="val" style="color:var(--green);">1</div><div class="lbl">Done</div></div>
+      <div class="stat-div"></div>
+      <div class="stat"><div class="val" style="color:var(--primary);">1</div><div class="lbl">In Progress</div></div>
+      <div class="stat-div"></div>
+      <div class="stat"><div class="val" style="color:var(--text-muted);">30</div><div class="lbl">To Do</div></div>
+      <div class="stat-div"></div>
+      <div class="stat"><div class="val">3%</div><div class="lbl">Complete</div></div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- PROGRESS -->
+    <div class="progress-block">
+      <div class="progress-row">
+        <span style="font-weight:700;">Overall Progress</span>
+        <span style="color:var(--green);font-weight:700;font-size:1.1rem;">3%</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" style="width:3%"></div></div>
+      <div class="stat-pills">
+        <div class="stat-pill pill-done">✅ 1 Done</div>
+        <div class="stat-pill pill-prog">🔄 1 In Progress</div>
+        <div class="stat-pill pill-todo">⏳ 30 To Do</div>
+      </div>
+      <div class="last-updated">Last updated: May 19, 2026 at 08:23 &nbsp;·&nbsp; Re-upload Excel to refresh</div>
+    </div>
+
+    <!-- DRIs -->
+    <div class="section-head">
+      <div class="section-icon">👥</div>
+      <div><h2>DRI Team</h2></div>
+    </div>
+    <div class="dri-grid"><div class="dri-pill"><div class="dri-avatar">D</div><div><div class="dri-name">DRI</div><a class="dri-email" href="mailto:DRI Email">DRI Email</a></div></div><div class="dri-pill"><div class="dri-avatar">R</div><div><div class="dri-name">Robin</div><a class="dri-email" href="mailto:robin.khatwani2@gmail.com">robin.khatwani2@gmail.com</a></div></div><div class="dri-pill"><div class="dri-avatar">M</div><div><div class="dri-name">Monu</div><a class="dri-email" href="mailto:robin.khatwani2@gmail.com">robin.khatwani2@gmail.com</a></div></div><div class="dri-pill"><div class="dri-avatar">A</div><div><div class="dri-name">Ajay</div><a class="dri-email" href="mailto:robin.khatwani2@gmail.com">robin.khatwani2@gmail.com</a></div></div><div class="dri-pill"><div class="dri-avatar">J</div><div><div class="dri-name">John</div><a class="dri-email" href="mailto:robin.khatwani2@gmail.com">robin.khatwani2@gmail.com</a></div></div><div class="dri-pill"><div class="dri-avatar">D</div><div><div class="dri-name">Down</div><a class="dri-email" href="mailto:robin.khatwani2@gmail.com">robin.khatwani2@gmail.com</a></div></div></div>
+
+    <!-- MILESTONES -->
+    <div class="section-head">
+      <div class="section-icon">🗂️</div>
+      <div><h2>Milestones (32 steps)</h2></div>
+    </div>
+
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="filterSteps('all', this)">All (32)</button>
+      <button class="filter-btn" onclick="filterSteps('in-progress', this)">🔄 In Progress (1)</button>
+      <button class="filter-btn" onclick="filterSteps('done', this)">✅ Done (1)</button>
+      <button class="filter-btn" onclick="filterSteps('todo', this)">⏳ To Do (30)</button>
+    </div>
+
+    <div id="stepsContainer">
+      
+        <div class="step-card status-todo">
+          <div class="step-left">
+            <div class="step-num">Steps</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <div class="step-title">Description</div>
+              <span class="status-badge status-todo">⏳ To Do</span>
+            </div>
+            <div class="step-meta">
+              <span>👤 DRI: <strong>DRI</strong></span>
+              <span>🏢 Responsible</span>
+              <span>📅 Est: Estimated Date</span>
+              <div class="step-comp">Completed: Completion Date</div>
+            </div>
+            <div class="step-dep">Depends on: Dependency Steps</div><div class="step-notes">📝 Notes</div>
+          </div>
+        </div>
+        <div class="step-card status-done">
+          <div class="step-left">
+            <div class="step-num">1</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <div class="step-title">Request for Project to Network</div>
+              <span class="status-badge status-done">✅ Done</span>
+            </div>
+            <div class="step-meta">
+              <span>👤 DRI: <strong>Robin</strong></span>
+              <span>🏢 Issuer</span>
+              <span>📅 Est: May 01, 2026</span>
+              <div class="step-comp">Completed: May 01, 2026</div>
+            </div>
+            
+          </div>
+        </div>
+        <div class="step-card status-inprogress">
+          <div class="step-left">
+            <div class="step-num">2</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <div class="step-title">Project Creation and PM Assignment</div>
+              <span class="status-badge status-inprogress">🔄 In Progress</span>
+            </div>
+            <div class="step-meta">
+              <span>👤 DRI: <strong>Monu</strong></span>
+              <span>🏢 Network</span>
+              <span>📅 Est: Jun 05, 2026</span>
+              
+            </div>
+            
+          </div>
+        </div>
+        <div class="step-card status-todo">
+          <div class="step-left">
+            <div class="step-num">3</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <div class="step-title">Project SOW Preparation</div>
+              <span class="status-badge status-todo">⏳ To Do</span>
+            </div>
+            <div class="step-meta">
+              <span>👤 DRI: <strong>Ajay</strong></span>
+              <span>🏢 Issuer</span>
+              <span>📅 Est: Jun 15, 2026</span>
+              
+            </div>
+            
+          </div>
+        </div>
+        <div class="step-card status-todo">
+          <div class="step-left">
+            <div class="step-num">4</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <div class="step-title">Project SOW Approval</div>
+              <span class="status-badge status-todo">⏳ To Do</span>
+            </div>
+            <div class="step-meta">
+              <span>👤 DRI: <strong>John</strong></span>
+              <span>🏢 Issuer</span>
+              <span>📅 Est: Jun 18, 2026</span>
+              
+            </div>
+            
+          </div>
+        </div>
+        <div class="step-card status-todo">
+          <div class="step-left">
+            <div class="step-num">5</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <div class="step-title">Project Plan Proposal</div>
+              <span class="status-badge status-todo">⏳ To Do</span>
+            </div>
+            <div class="step-meta">
+              <span>👤 DRI: <strong>Down</strong></span>
+              <span>🏢 Network</span>
+              <span>📅 Est: Jun 25, 2026</span>
+              
+            </div>
+            
+          </div>
+        </div>
+        <div class="step-card status-todo">
+          <div class="step-left">
+            <div class="step-num">6</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <div class="step-title">Project Plan Approval</div>
+              <span class="status-badge status-todo">⏳ To Do</span>
+            </div>
+            <div class="step-meta">
+              <span>👤 DRI: <strong>Robin</strong></span>
+              <span>🏢 Issuer</span>
+              <span>📅 Est: Jul 01, 2026</span>
+              
+            </div>
+            
+          </div>
+        </div>
+        <div class="step-card status-todo">
+          <div class="step-left">
+            <div class="step-num">7</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <div class="step-title">New Account BIN Ordering</div>
+              <span class="status-badge status-todo">⏳ To Do</span>
+            </div>
+            <div class="step-meta">
+              <span>👤 DRI: <strong>Monu</strong></span>
+              <span>🏢 Issuer</span>
+              <span>📅 Est: Jul 05, 2026</span>
+              
+            </div>
+            
+          </div>
+        </div>
+        <div class="step-card status-todo">
+          <div class="step-left">
+            <div class="step-num">8</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <div class="step-title">New Account BIN Available</div>
+              <span class="status-badge status-todo">⏳ To Do</span>
+            </div>
+            <div class="step-meta">
+              <span>👤 DRI: <strong>Ajay</strong></span>
+              <span>🏢 Network</span>
+              <span>📅 Est: Jul 10, 2026</span>
+              
+            </div>
+            
+          </div>
+        </div>
+        <div class="step-card status-todo">
+          <div class="step-left">
+            <div class="step-num">9</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <div class="step-title">Processor Authorization for Card Keys</div>
+              <span class="status-badge status-todo">⏳ To Do</span>
+            </div>
+            <div class="step-meta">
+              <span>👤 DRI: <strong>John</strong></span>
+              <span>🏢 Issuer</span>
+              <span>📅 Est: Jul 15, 2026</span>
+              
+            </div>
+            
+          </div>
+        </div>
+        <div class="step-card status-todo">
+          <div class="step-left">
+            <div class="step-num">10</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <div class="step-title">Card Keys Generation</div>
+              <span class="status-badge status-todo">⏳ To Do</span>
+            </div>
+            <div class="step-meta">
+              <span>👤 DRI: <strong>Down</strong></span>
+              <span>🏢 Processor</span>
+              <span>📅 Est: Jul 20, 2026</span>
+              
+            </div>
+            
+          </div>
+        </div>
+        <div class="step-card status-todo">
+          <div class="step-left">
+            <div class="step-num">11</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <div class="step-title">Card Keys Exchange</div>
+              <span class="status-badge status-todo">⏳ To Do</span>
+            </div>
+            <div class="step-meta">
+              <span>👤 DRI: <strong>Robin</strong></span>
+              <span>🏢 Network and Processor</span>
+              <span>📅 Est: Jul 31, 2026</span>
+              
+            </div>
+            
+          </div>
+        </div>
+        <div class="step-card status-todo">
+          <div class="step-left">
+            <div class="step-num">12</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <div class="step-title">Key Updates in Processor System</div>
+              <span class="status-badge status-todo">⏳ To Do</span>
+            </div>
+            <div class="step-meta">
+              <span>👤 DRI: <strong>Monu</strong></span>
+              <span>🏢 Processor</span>
+              <span>📅 Est: Aug 05, 2026</span>
+              
+            </div>
+            
+          </div>
+        </div>
+        <div class="step-card status-todo">
+          <div class="step-left">
+            <div class="step-num">13</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <div class="step-title">Key Updates in Network System</div>
+              <span class="status-badge status-todo">⏳ To Do</span>
+            </div>
+            <div class="step-meta">
+              <span>👤 DRI: <strong>Ajay</strong></span>
+              <span>🏢 Network</span>
+              <span>📅 Est: Aug 08, 2026</span>
+              
+            </div>
+            
+          </div>
+        </div>
+        <div class="step-card status-todo">
+          <div class="step-left">
+            <div class="step-num">14</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <div class="step-title">Non Liability Letter to Network</div>
+              <span class="status-badge status-todo">⏳ To Do</span>
+            </div>
+            <div class="step-meta">
+              <span>👤 DRI: <strong>John</strong></span>
+              <span>🏢 Issuer</span>
+              <span>📅 Est: Aug 12, 2026</span>
+              
+            </div>
+            
+          </div>
+        </div>
+        <div class="step-card status-todo">
+          <div class="step-left">
+            <div class="step-num">15</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <div class="step-title">Network Settlement End Point Initiation</div>
+              <span class="status-badge status-todo">⏳ To Do</span>
+            </div>
+            <div class="step-meta">
+              <span>👤 DRI: <strong>Down</strong></span>
+              <span>🏢 Network</span>
+              <span>📅 Est: Aug 12, 2026</span>
+              
+            </div>
+            
+          </div>
+        </div>
+        <div class="step-card status-todo">
+          <div class="step-left">
+            <div class="step-num">16</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <div class="step-title">Network Settlement End Point Approval</div>
+              <span class="status-badge status-todo">⏳ To Do</span>
+            </div>
+            <div class="step-meta">
+              <span>👤 DRI: <strong>Robin</strong></span>
+              <span>🏢 Issuer</span>
+              <span>📅 Est: Aug 20, 2026</span>
+              
+            </div>
+            
+          </div>
+        </div>
+        <div class="step-card status-todo">
+          <div class="step-left">
+            <div class="step-num">17</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <div class="step-title">File Encryption Key Exchange</div>
+              <span class="status-badge status-todo">⏳ To Do</span>
+            </div>
+            <div class="step-meta">
+              <span>👤 DRI: <strong>Monu</strong></span>
+              <span>🏢 Network and Processor</span>
+              <span>📅 Est: Aug 25, 2026</span>
+              
+            </div>
+            
+          </div>
+        </div>
+        <div class="step-card status-todo">
+          <div class="step-left">
+            <div class="step-num">18</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <div class="step-title">Account BIN Setup in Blocked State</div>
+              <span class="status-badge status-todo">⏳ To Do</span>
+            </div>
+            <div class="step-meta">
+              <span>👤 DRI: <strong>Ajay</strong></span>
+              <span>🏢 Network</span>
+              <span>📅 Est: Aug 28, 2026</span>
+              
+            </div>
+            
+          </div>
+        </div>
+        <div class="step-card status-todo">
+          <div class="step-left">
+            <div class="step-num">19</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <div class="step-title">Account BIN and Settlement End Point Go Live</div>
+              <span class="status-badge status-todo">⏳ To Do</span>
+            </div>
+            <div class="step-meta">
+              <span>👤 DRI: <strong>John</strong></span>
+              <span>🏢 Network</span>
+              <span>📅 Est: Aug 31, 2026</span>
+              
+            </div>
+            
+          </div>
+        </div>
+        <div class="step-card status-todo">
+          <div class="step-left">
+            <div class="step-num">20</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <div class="step-title">MDES Project Enablement</div>
+              <span class="status-badge status-todo">⏳ To Do</span>
+            </div>
+            <div class="step-meta">
+              <span>👤 DRI: <strong>Down</strong></span>
+              <span>🏢 Network</span>
+              <span>📅 Est: Sep 02, 2026</span>
+              
+            </div>
+            
+          </div>
+        </div>
+        <div class="step-card status-todo">
+          <div class="step-left">
+            <div class="step-num">21</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <div class="step-title">Token BIN Assignment</div>
+              <span class="status-badge status-todo">⏳ To Do</span>
+            </div>
+            <div class="step-meta">
+              <span>👤 DRI: <strong>Robin</strong></span>
+              <span>🏢 Network</span>
+              <span>📅 Est: Sep 04, 2026</span>
+              
+            </div>
+            
+          </div>
+        </div>
+        <div class="step-card status-todo">
+          <div class="step-left">
+            <div class="step-num">22</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <div class="step-title">Token BIN Live</div>
+              <span class="status-badge status-todo">⏳ To Do</span>
+            </div>
+            <div class="step-meta">
+              <span>👤 DRI: <strong>Monu</strong></span>
+              <span>🏢 Network</span>
+              <span>📅 Est: Sep 08, 2026</span>
+              
+            </div>
+            
+          </div>
+        </div>
+        <div class="step-card status-todo">
+          <div class="step-left">
+            <div class="step-num">23</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <div class="step-title">Account BIN Block Removal Initiation</div>
+              <span class="status-badge status-todo">⏳ To Do</span>
+            </div>
+            <div class="step-meta">
+              <span>👤 DRI: <strong>Ajay</strong></span>
+              <span>🏢 Issuer</span>
+              <span>📅 Est: Sep 09, 2026</span>
+              
+            </div>
+            
+          </div>
+        </div>
+        <div class="step-card status-todo">
+          <div class="step-left">
+            <div class="step-num">24</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <div class="step-title">Account BIN Block Removal Completion</div>
+              <span class="status-badge status-todo">⏳ To Do</span>
+            </div>
+            <div class="step-meta">
+              <span>👤 DRI: <strong>John</strong></span>
+              <span>🏢 Network</span>
+              <span>📅 Est: Sep 13, 2026</span>
+              
+            </div>
+            
+          </div>
+        </div>
+        <div class="step-card status-todo">
+          <div class="step-left">
+            <div class="step-num">25</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <div class="step-title">Account Setup and Card Ordering</div>
+              <span class="status-badge status-todo">⏳ To Do</span>
+            </div>
+            <div class="step-meta">
+              <span>👤 DRI: <strong>Down</strong></span>
+              <span>🏢 Issuer and Processor</span>
+              <span>📅 Est: Sep 20, 2026</span>
+              
+            </div>
+            
+          </div>
+        </div>
+        <div class="step-card status-todo">
+          <div class="step-left">
+            <div class="step-num">26</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <div class="step-title">Card Fulfillment and Personalization</div>
+              <span class="status-badge status-todo">⏳ To Do</span>
+            </div>
+            <div class="step-meta">
+              <span>👤 DRI: <strong>Robin</strong></span>
+              <span>🏢 Embosser and Processor</span>
+              <span>📅 Est: Sep 25, 2026</span>
+              
+            </div>
+            
+          </div>
+        </div>
+        <div class="step-card status-todo">
+          <div class="step-left">
+            <div class="step-num">27</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <div class="step-title">Card Shipping</div>
+              <span class="status-badge status-todo">⏳ To Do</span>
+            </div>
+            <div class="step-meta">
+              <span>👤 DRI: <strong>Monu</strong></span>
+              <span>🏢 Embosser</span>
+              <span>📅 Est: Sep 28, 2026</span>
+              
+            </div>
+            
+          </div>
+        </div>
+        <div class="step-card status-todo">
+          <div class="step-left">
+            <div class="step-num">28</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <div class="step-title">Card Receiving  and Activation</div>
+              <span class="status-badge status-todo">⏳ To Do</span>
+            </div>
+            <div class="step-meta">
+              <span>👤 DRI: <strong>Ajay</strong></span>
+              <span>🏢 Issuer and Processor</span>
+              <span>📅 Est: Sep 30, 2026</span>
+              
+            </div>
+            
+          </div>
+        </div>
+        <div class="step-card status-todo">
+          <div class="step-left">
+            <div class="step-num">29</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <div class="step-title">Card Transaction Validation</div>
+              <span class="status-badge status-todo">⏳ To Do</span>
+            </div>
+            <div class="step-meta">
+              <span>👤 DRI: <strong>John</strong></span>
+              <span>🏢 Issuer and Processor</span>
+              <span>📅 Est: Oct 02, 2026</span>
+              
+            </div>
+            
+          </div>
+        </div>
+        <div class="step-card status-todo">
+          <div class="step-left">
+            <div class="step-num">30</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <div class="step-title">Settlement Verification</div>
+              <span class="status-badge status-todo">⏳ To Do</span>
+            </div>
+            <div class="step-meta">
+              <span>👤 DRI: <strong>Down</strong></span>
+              <span>🏢 Issuer and Processor</span>
+              <span>📅 Est: Oct 07, 2026</span>
+              
+            </div>
+            
+          </div>
+        </div>
+        <div class="step-card status-todo">
+          <div class="step-left">
+            <div class="step-num">31</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <div class="step-title">Project Close</div>
+              <span class="status-badge status-todo">⏳ To Do</span>
+            </div>
+            <div class="step-meta">
+              <span>👤 DRI: <strong>Robin</strong></span>
+              <span>🏢 Issuer</span>
+              <span>📅 Est: Oct 10, 2026</span>
+              
+            </div>
+            
+          </div>
+        </div>
+    </div>
+
+  </main>
+  <footer><p>📊 Status Tracker — Name :- Bin Procurement For New Card Launch &nbsp;·&nbsp; Robin AI Learnings &nbsp;·&nbsp; May 19, 2026 at 08:23</p></footer>
+</div>
+<script>
+  function filterSteps(filter, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.step-card').forEach(card => {
+      if (filter === 'all') { card.style.display = ''; return; }
+      const show = (filter === 'in-progress' && card.classList.contains('status-inprogress')) ||
+                   (filter === 'done'        && card.classList.contains('status-done'))       ||
+                   (filter === 'todo'        && card.classList.contains('status-todo'));
+      card.style.display = show ? '' : 'none';
+    });
+  }
+</script>
+</body>
+</html>

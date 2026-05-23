@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Week 1 – AI Learning Summary</title>
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-light: #ede9fe;
+      --secondary: #0ea5e9;
+      --secondary-light: #e0f2fe;
+      --accent: #f59e0b;
+      --accent-light: #fef3c7;
+      --green: #10b981;
+      --green-light: #d1fae5;
+      --red: #ef4444;
+      --red-light: #fee2e2;
+      --purple: #8b5cf6;
+      --purple-light: #ede9fe;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --radius: 14px;
+      --shadow: 0 4px 20px rgba(0,0,0,0.07);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+
+    /* ── HERO ── */
+    .hero { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #0ea5e9 100%); color: white; padding: 60px 40px 50px; text-align: center; }
+    .hero .badge { display: inline-block; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); border-radius: 999px; padding: 6px 18px; font-size: 0.8rem; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 18px; }
+    .hero h1 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; margin-bottom: 14px; }
+    .hero p { font-size: 1.1rem; opacity: 0.88; max-width: 600px; margin: 0 auto 28px; }
+    .hero .topics-count { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.15); border-radius: 999px; padding: 8px 20px; font-size: 0.95rem; }
+
+    /* ── LEARNING PATH ── */
+    .path-wrapper { background: white; border-bottom: 1px solid var(--border); padding: 32px 40px; }
+    .path-wrapper h2 { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 20px; font-weight: 600; }
+    .path-phases { display: flex; gap: 0; flex-wrap: wrap; }
+    .phase-block { flex: 1; min-width: 150px; position: relative; }
+    .phase-block:not(:last-child)::after { content: '›'; position: absolute; right: -10px; top: 50%; transform: translateY(-50%); font-size: 1.4rem; color: #cbd5e1; z-index: 1; }
+    .phase-inner { background: var(--bg); border-radius: 10px; padding: 12px 14px; margin: 0 18px 0 0; }
+    .phase-block:last-child .phase-inner { margin-right: 0; }
+    .phase-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 6px; }
+    .phase-topics { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
+    .phase-topics a { color: var(--text-muted); text-decoration: none; display: block; padding: 1px 0; transition: color 0.2s; }
+    .phase-topics a:hover { color: var(--primary); }
+    .ph1 .phase-label { color: #7c3aed; }
+    .ph1 .phase-inner { border-left: 4px solid #7c3aed; }
+    .ph2 .phase-label { color: #1d4ed8; }
+    .ph2 .phase-inner { border-left: 4px solid #1d4ed8; }
+    .ph3 .phase-label { color: #0891b2; }
+    .ph3 .phase-inner { border-left: 4px solid #0891b2; }
+    .ph4 .phase-label { color: #059669; }
+    .ph4 .phase-inner { border-left: 4px solid #059669; }
+    .ph5 .phase-label { color: #d97706; }
+    .ph5 .phase-inner { border-left: 4px solid #d97706; }
+
+    /* ── MAIN ── */
+    main { max-width: 1100px; margin: 0 auto; padding: 48px 32px; }
+
+    /* ── PHASE DIVIDER ── */
+    .phase-divider { display: flex; align-items: center; gap: 14px; margin: 52px 0 32px; }
+    .phase-divider .pd-badge { border-radius: 999px; padding: 6px 18px; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; white-space: nowrap; }
+    .phase-divider .pd-line { flex: 1; height: 1px; background: var(--border); }
+    .pd-1 { background: #ede9fe; color: #7c3aed; }
+    .pd-2 { background: #dbeafe; color: #1d4ed8; }
+    .pd-3 { background: #cffafe; color: #0891b2; }
+    .pd-4 { background: #d1fae5; color: #059669; }
+    .pd-5 { background: #fef3c7; color: #d97706; }
+
+    /* ── SECTION ── */
+    .section { margin-bottom: 64px; scroll-margin-top: 80px; }
+    .section-header { display: flex; align-items: center; gap: 14px; margin-bottom: 28px; }
+    .section-icon { width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+    .section-header h2 { font-size: 1.55rem; font-weight: 700; }
+    .section-header .section-num { font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 2px; }
+
+    /* ── CARD ── */
+    .card { background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border); padding: 28px; box-shadow: var(--shadow); margin-bottom: 20px; }
+    .card h3 { font-size: 1.08rem; font-weight: 700; margin-bottom: 10px; }
+    .card p { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 8px; }
+
+    /* ── GRID ── */
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+
+    /* ── CALLOUT ── */
+    .callout { border-radius: var(--radius); padding: 22px 28px; margin-bottom: 20px; border-left: 5px solid; }
+    .callout-purple { background: var(--purple-light); border-color: var(--purple); }
+    .callout-blue   { background: var(--secondary-light); border-color: var(--secondary); }
+    .callout-green  { background: var(--green-light); border-color: var(--green); }
+    .callout-amber  { background: var(--accent-light); border-color: var(--accent); }
+    .callout h4 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; opacity: 0.7; }
+    .callout p, .callout li { font-size: 0.95rem; }
+
+    /* ── TAGS ── */
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .tag { border-radius: 999px; padding: 4px 14px; font-size: 0.8rem; font-weight: 600; }
+    .tag-purple { background: var(--purple-light); color: var(--purple); }
+    .tag-blue   { background: var(--secondary-light); color: #0369a1; }
+    .tag-green  { background: var(--green-light); color: #065f46; }
+    .tag-amber  { background: var(--accent-light); color: #92400e; }
+    .tag-red    { background: var(--red-light); color: #991b1b; }
+
+    /* ── EQUATION BOX ── */
+    .equation-box { background: linear-gradient(135deg, #1e1b4b, #312e81); color: white; border-radius: var(--radius); padding: 32px; text-align: center; margin: 20px 0; }
+    .equation-box .eq { font-size: 2.2rem; font-weight: 800; letter-spacing: 2px; margin-bottom: 14px; font-family: 'Courier New', monospace; }
+    .equation-box p { opacity: 0.8; font-size: 0.95rem; }
+    .eq-legend { display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; margin-top: 16px; }
+    .eq-legend span { background: rgba(255,255,255,0.12); border-radius: 8px; padding: 6px 16px; font-size: 0.88rem; }
+
+    /* ── SPAM BOX ── */
+    .spam-box { background: #0f172a; color: #e2e8f0; border-radius: var(--radius); padding: 24px 28px; font-family: 'Courier New', monospace; font-size: 0.88rem; line-height: 1.9; margin: 16px 0; overflow-x: auto; }
+    .spam-box .highlight { color: #f59e0b; }
+    .spam-box .spam-signal { color: #f87171; }
+    .spam-box .not-spam { color: #34d399; }
+    .spam-box .result { color: #a78bfa; font-weight: bold; }
+
+    /* ── COMPARISON TABLE ── */
+    .comparison-table { width: 100%; border-collapse: collapse; font-size: 0.92rem; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+    .comparison-table th { padding: 14px 18px; text-align: left; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.8px; }
+    .comparison-table th:first-child { background: #f1f5f9; color: var(--text-muted); }
+    .comparison-table th.rule { background: #eff6ff; color: #1d4ed8; }
+    .comparison-table th.ml   { background: #fdf4ff; color: #7e22ce; }
+    .comparison-table td { padding: 13px 18px; border-top: 1px solid var(--border); vertical-align: top; }
+    .comparison-table td:first-child { font-weight: 600; color: var(--text-muted); background: #fafafa; }
+    .comparison-table tr:hover td { background: #fafafa; }
+
+    /* ── AI TYPE CARDS ── */
+    .ai-type-card { border-radius: var(--radius); padding: 26px; border: 1px solid var(--border); }
+    .ai-type-card .type-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; margin-bottom: 8px; }
+    .ai-type-card h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 8px; }
+    .ai-type-card .io-row { display: flex; align-items: center; gap: 10px; margin: 14px 0 10px; font-size: 0.88rem; }
+    .io-pill { background: rgba(0,0,0,0.06); border-radius: 8px; padding: 5px 12px; font-weight: 600; }
+    .io-arrow { font-size: 1.1rem; opacity: 0.5; }
+    .ai-type-card p { font-size: 0.9rem; color: var(--text-muted); }
+    .ai-type-card .examples { margin-top: 12px; font-size: 0.83rem; }
+    .ai-type-card .examples strong { display: block; margin-bottom: 4px; }
+    .card-predictive { background: linear-gradient(135deg, #eff6ff, #dbeafe); border-color: #93c5fd; }
+    .card-generative { background: linear-gradient(135deg, #fdf4ff, #ede9fe); border-color: #c4b5fd; }
+    .card-agentic    { background: linear-gradient(135deg, #f0fdf4, #dcfce7); border-color: #86efac; }
+
+    /* ── ML CARDS ── */
+    .ml-card { background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border); padding: 28px; box-shadow: var(--shadow); }
+    .ml-card .ml-icon { font-size: 2rem; margin-bottom: 12px; }
+    .ml-card h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 10px; }
+    .ml-card p  { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 14px; }
+    .ml-card .flow { background: #f8fafc; border-radius: 8px; padding: 10px 14px; font-size: 0.85rem; font-family: monospace; margin-bottom: 14px; color: var(--primary); }
+    .ml-card ul { padding-left: 18px; font-size: 0.88rem; color: var(--text-muted); }
+    .ml-card li { margin-bottom: 3px; }
+    .ml-card .sub-head { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin: 12px 0 6px; font-weight: 700; }
+
+    /* ── METRIC CARDS ── */
+    .metric-card { background: var(--card-bg); border-radius: 10px; border: 1px solid var(--border); padding: 18px; text-align: center; }
+    .metric-card .num { font-size: 1.5rem; font-weight: 800; margin-bottom: 4px; }
+    .metric-card .label { font-size: 0.82rem; color: var(--text-muted); }
+
+    /* ── PROMPT STEPS ── */
+    .prompt-step { display: flex; gap: 16px; margin-bottom: 16px; align-items: flex-start; }
+    .step-circle { width: 32px; height: 32px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; flex-shrink: 0; margin-top: 2px; }
+    .step-content h4 { font-size: 0.97rem; font-weight: 700; margin-bottom: 3px; }
+    .step-content p  { font-size: 0.88rem; color: var(--text-muted); }
+
+    /* ── SUMMARY HERO ── */
+    .summary-hero { background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; border-radius: var(--radius); padding: 36px 40px; margin-bottom: 20px; }
+    .summary-hero h3 { font-size: 1.1rem; opacity: 0.7; margin-bottom: 12px; }
+    .summary-hero p  { font-size: 1.07rem; line-height: 1.8; }
+
+    /* ── FRAMEWORK STEPS ── */
+    .framework-step { display: flex; align-items: flex-start; gap: 16px; background: white; border-radius: 12px; border: 1px solid var(--border); padding: 20px 24px; margin-bottom: 12px; }
+    .fw-num { width: 36px; height: 36px; border-radius: 10px; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1rem; flex-shrink: 0; }
+    .fw-body h4 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+    .fw-body p  { font-size: 0.88rem; color: var(--text-muted); }
+
+    /* ── FOOTER ── */
+    footer { text-align: center; padding: 36px; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.88rem; }
+
+    @media (max-width: 680px) {
+      .hero { padding: 40px 20px; }
+      main  { padding: 32px 16px; }
+      .path-wrapper { padding: 20px; }
+      .phase-block:not(:last-child)::after { display: none; }
+      .phase-inner { margin-right: 0; margin-bottom: 10px; }
+      .equation-box .eq { font-size: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══ HERO ═══ -->
+<header class="hero">
+  <div class="badge">AI Foundations · Week 1</div>
+  <h1>🤖 Introduction to Artificial Intelligence</h1>
+  <p>A step-by-step learning journey — from what AI is, to how it works, to building real AI products</p>
+  <div class="topics-count">📚 10 Topics &nbsp;·&nbsp; 5 Learning Phases &nbsp;·&nbsp; Beginner to Builder</div>
+</header>
+
+<!-- ═══ LEARNING PATH MAP ═══ -->
+<nav class="path-wrapper">
+  <h2>🗺️ Your Learning Path</h2>
+  <div class="path-phases">
+    <div class="phase-block ph1">
+      <div class="phase-inner">
+        <div class="phase-label">Phase 1 · Understand AI</div>
+        <div class="phase-topics">
+          <a href="#what-is-ai">1. What is AI?</a>
+          <a href="#types-of-ai">2. Types of AI</a>
+        </div>
+      </div>
+    </div>
+    <div class="phase-block ph2">
+      <div class="phase-inner">
+        <div class="phase-label">Phase 2 · How Machines Learn</div>
+        <div class="phase-topics">
+          <a href="#rule-vs-ml">3. Rule-Based vs ML</a>
+          <a href="#equation">4. The AI Equation</a>
+          <a href="#ml-models">5. ML Models</a>
+        </div>
+      </div>
+    </div>
+    <div class="phase-block ph3">
+      <div class="phase-inner">
+        <div class="phase-label">Phase 3 · Build &amp; Evaluate</div>
+        <div class="phase-topics">
+          <a href="#what-ai-needs">6. What AI Needs</a>
+          <a href="#inference">7. Inference &amp; Assessment</a>
+        </div>
+      </div>
+    </div>
+    <div class="phase-block ph4">
+      <div class="phase-inner">
+        <div class="phase-label">Phase 4 · Use AI</div>
+        <div class="phase-topics">
+          <a href="#prompt-engineering">8. Prompt Engineering</a>
+          <a href="#choosing-model">9. Choosing a Model</a>
+        </div>
+      </div>
+    </div>
+    <div class="phase-block ph5">
+      <div class="phase-inner">
+        <div class="phase-label">Phase 5 · Build AI Products</div>
+        <div class="phase-topics">
+          <a href="#ai-pm">10. AI PM Approach</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<main>
+
+<!-- ════════════════════════════════════════
+     PHASE 1 · UNDERSTAND AI
+════════════════════════════════════════ -->
+<div class="phase-divider">
+  <span class="pd-badge pd-1">🟣 Phase 1 — Understand AI</span>
+  <div class="pd-line"></div>
+</div>
+
+<!-- ═══ 1. WHAT IS AI ═══ -->
+<section class="section" id="what-is-ai">
+  <div class="section-header">
+    <div class="section-icon" style="background:#ede9fe;">🧠</div>
+    <div>
+      <span class="section-num">Topic 1 of 10</span>
+      <h2>What is Artificial Intelligence?</h2>
+    </div>
+  </div>
+
+  <div class="callout callout-purple">
+    <h4>Definition</h4>
+    <p>The ability of a machine to perform tasks that require <strong>human-like intelligence</strong> — learning, reasoning, and deciding.</p>
+  </div>
+
+  <div class="grid-4">
+    <div class="card" style="border-top:4px solid #4f46e5;">
+      <div style="font-size:1.8rem;margin-bottom:10px;">📖</div>
+      <h3>Learning</h3>
+      <p>Improve from data and experience over time</p>
+    </div>
+    <div class="card" style="border-top:4px solid #0ea5e9;">
+      <div style="font-size:1.8rem;margin-bottom:10px;">💡</div>
+      <h3>Reasoning</h3>
+      <p>Draw logical conclusions from information</p>
+    </div>
+    <div class="card" style="border-top:4px solid #10b981;">
+      <div style="font-size:1.8rem;margin-bottom:10px;">👁️</div>
+      <h3>Perception</h3>
+      <p>Interpret text, images, audio, and data</p>
+    </div>
+    <div class="card" style="border-top:4px solid #f59e0b;">
+      <div style="font-size:1.8rem;margin-bottom:10px;">🎯</div>
+      <h3>Decision-Making</h3>
+      <p>Choose actions to achieve specific goals</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 2. TYPES OF AI ═══ -->
+<section class="section" id="types-of-ai">
+  <div class="section-header">
+    <div class="section-icon" style="background:#dcfce7;">🚀</div>
+    <div>
+      <span class="section-num">Topic 2 of 10</span>
+      <h2>Types of AI — The Progression</h2>
+    </div>
+  </div>
+
+  <div class="callout callout-green">
+    <h4>📈 Useful Progression to Remember</h4>
+    <p><strong>Predict → Create → Act</strong> &nbsp;— Each generation of AI became more capable by doing more than the last.</p>
+  </div>
+
+  <div class="grid-3">
+    <div class="ai-type-card card-predictive">
+      <div class="type-label" style="color:#1d4ed8;">01 · Predictive AI</div>
+      <h3>🔮 Predict</h3>
+      <div class="io-row">
+        <span class="io-pill">Data In</span>
+        <span class="io-arrow">→</span>
+        <span class="io-pill">Prediction Out</span>
+      </div>
+      <p>Looks <strong>backward</strong> — learns from historical data to make forecasts or classifications. Doesn't create anything new.</p>
+      <div class="examples"><strong>Examples:</strong> Credit scores, spam filters, rain chances</div>
+      <div class="tags">
+        <span class="tag tag-blue">Structured Data In</span>
+        <span class="tag tag-blue">Score / Label Out</span>
+      </div>
+    </div>
+
+    <div class="ai-type-card card-generative">
+      <div class="type-label" style="color:#7e22ce;">02 · Generative AI</div>
+      <h3>✨ Create</h3>
+      <div class="io-row">
+        <span class="io-pill">Prompt In</span>
+        <span class="io-arrow">→</span>
+        <span class="io-pill">Content Out</span>
+      </div>
+      <p>Creates something <strong>new</strong> from a prompt. Trained on massive datasets — produces text, images, code, or audio.</p>
+      <div class="examples"><strong>Examples:</strong> ChatGPT, Claude, GitHub Copilot, Sora (Video)</div>
+      <div class="tags">
+        <span class="tag tag-purple">Natural Language In</span>
+        <span class="tag tag-purple">New Content Out</span>
+      </div>
+    </div>
+
+    <div class="ai-type-card card-agentic">
+      <div class="type-label" style="color:#065f46;">03 · Agentic AI</div>
+      <h3>⚡ Act</h3>
+      <div class="io-row">
+        <span class="io-pill">Goal In</span>
+        <span class="io-arrow">→</span>
+        <span class="io-pill">Actions Out</span>
+      </div>
+      <p>Takes <strong>autonomous action</strong>. Combines reasoning with tools (web search, APIs, code) to complete multi-step tasks.</p>
+      <div class="examples"><strong>Examples:</strong> AI research agents, auto-coding agents, AI workflows</div>
+      <div class="tags">
+        <span class="tag tag-green">High-Level Goal In</span>
+        <span class="tag tag-green">Real-World Actions Out</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════
+     PHASE 2 · HOW MACHINES LEARN
+════════════════════════════════════════ -->
+<div class="phase-divider">
+  <span class="pd-badge pd-2">🔵 Phase 2 — How Machines Learn</span>
+  <div class="pd-line"></div>
+</div>
+
+<!-- ═══ 3. RULE-BASED VS ML ═══ -->
+<section class="section" id="rule-vs-ml">
+  <div class="section-header">
+    <div class="section-icon" style="background:#fee2e2;">⚖️</div>
+    <div>
+      <span class="section-num">Topic 3 of 10</span>
+      <h2>Rule-Based vs ML Systems</h2>
+    </div>
+  </div>
+
+  <div class="callout callout-blue">
+    <h4>Why this comes before the math</h4>
+    <p>Before diving into equations, it helps to understand <em>why</em> machine learning exists at all. Rule-based systems were the original approach — but they hit hard limits. Understanding those limits explains <strong>why ML was invented</strong>.</p>
+  </div>
+
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th>Dimension</th>
+        <th class="rule">🔧 Rule-Based Systems</th>
+        <th class="ml">🤖 ML-Based Systems</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Decision Method</td>
+        <td>Predefined rules &amp; logic written by humans</td>
+        <td>Learns patterns from data; improves over time</td>
+      </tr>
+      <tr>
+        <td>Data Required</td>
+        <td>Small, structured datasets</td>
+        <td>Large quantities of unstructured data</td>
+      </tr>
+      <tr>
+        <td>Updates</td>
+        <td>Manual rule updates needed by engineers</td>
+        <td>Auto-adapts to new data &amp; changing conditions</td>
+      </tr>
+      <tr>
+        <td>Hardware</td>
+        <td>Standard CPU — runs anywhere</td>
+        <td>Specialized GPU / TPU + high-performance computing</td>
+      </tr>
+      <tr>
+        <td>Complexity</td>
+        <td>Low — logic is explicit and auditable</td>
+        <td>High — uses statistical models &amp; algorithms</td>
+      </tr>
+      <tr>
+        <td>Explainability</td>
+        <td>Fully explainable — logic is human-written</td>
+        <td>"Black box" — consider <strong>second-level classifiers</strong> to improve explainability</td>
+      </tr>
+      <tr>
+        <td>Bias</td>
+        <td>Human bias baked into rules</td>
+        <td>Can be designed to detect and mitigate bias</td>
+      </tr>
+      <tr>
+        <td>Interoperability</td>
+        <td>Generally more interoperable across systems</td>
+        <td>Can be less interoperable; requires careful API design</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="card" style="margin-top:20px;">
+    <h3>🤔 PM Decision Guide: When to Use Which?</h3>
+    <div class="grid-2" style="margin-top:14px;">
+      <div style="background:#eff6ff;border-radius:10px;padding:16px;">
+        <strong style="color:#1d4ed8;">✅ Choose Rule-Based When:</strong>
+        <ul style="margin-top:8px;padding-left:18px;font-size:0.88rem;color:var(--text-muted);">
+          <li>Small, structured data available</li>
+          <li>No ML engineers in the team</li>
+          <li>Low infrastructure budget</li>
+          <li>Need full explainability &amp; auditability</li>
+        </ul>
+      </div>
+      <div style="background:#fdf4ff;border-radius:10px;padding:16px;">
+        <strong style="color:#7e22ce;">✅ Choose ML-Based When:</strong>
+        <ul style="margin-top:8px;padding-left:18px;font-size:0.88rem;color:var(--text-muted);">
+          <li>Large, unstructured data available</li>
+          <li>Anticipating significant growth in scale</li>
+          <li>ML expertise available in team</li>
+          <li>Can leverage pre-trained models to reduce cost</li>
+        </ul>
+      </div>
+    </div>
+    <div style="background:#f8fafc;border-radius:10px;padding:14px;margin-top:14px;border-left:4px solid #f59e0b;">
+      <strong style="font-size:0.9rem;">📌 Always include a Data Collection Strategy in your product plan</strong>
+      <p style="font-size:0.85rem;color:var(--text-muted);margin-top:6px;">Regardless of which approach you choose, your product spec must define <em>how data will be collected</em>. For ML systems with black-box outputs, consider adding <strong>second-level classifiers</strong> to make results explainable to users and stakeholders.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 4. THE EQUATION ═══ -->
+<section class="section" id="equation">
+  <div class="section-header">
+    <div class="section-icon" style="background:#fef3c7;">🔢</div>
+    <div>
+      <span class="section-num">Topic 4 of 10</span>
+      <h2>The Equation Behind All of AI</h2>
+    </div>
+  </div>
+
+  <div class="equation-box">
+    <div class="eq">y = Wx + b</div>
+    <p>This simple equation is the <strong>universal primitive</strong> of all modern AI.<br/>Every neural network, at every layer, runs this equation — repeated billions of times.</p>
+    <div class="eq-legend">
+      <span><strong>W</strong> = Weight (how important)</span>
+      <span><strong>x</strong> = Input Data</span>
+      <span><strong>b</strong> = Bias (default lean)</span>
+      <span><strong>y</strong> = Output (prediction)</span>
+    </div>
+  </div>
+
+  <div class="callout callout-blue">
+    <h4>🔑 Key Insight — Why Deep Learning is Powerful</h4>
+    <p>A single <code>y = Wx + b</code> can only draw a straight line and solve simple problems. The magic of deep learning comes from <strong>stacking many layers</strong> with non-linear activation functions (like ReLU) between each layer. That combination lets the network learn curves, spirals, and patterns of any shape — enough to recognize faces, understand language, or beat world champions at <strong>Go</strong> (the game AlphaGo mastered).</p>
+  </div>
+
+  <div class="callout callout-amber">
+    <h4>💡 GPT = Generative Pre-trained Transformer</h4>
+    <p>Modern large language models like GPT are built on this same fundamental equation, scaled up to billions of parameters with transformer architecture and attention mechanisms layered on top.</p>
+  </div>
+
+  <div class="card">
+    <h3>📧 Real Example: Spam Filter using y = Wx + b</h3>
+    <p style="margin-bottom:14px;">Each word in an email is given a weight (W) reflecting how strongly it signals spam. The bias (b) sets the default — <em>assume innocent until proven guilty</em>.</p>
+    <div class="spam-box">
+<span class="highlight">spam_score</span> = W₁×"free" + W₂×"winner" + W₃×"unsubscribe" + W₄×"meeting" + b
+
+<span class="spam-signal">W("free")        = +2.1  → strong spam signal 🚨</span>
+<span class="spam-signal">W("winner")      = +1.9  → spam signal 🚨</span>
+W("unsubscribe") =  0.3  → weak signal
+<span class="not-spam">W("meeting")     = -1.8  → work email, not spam ✅</span>
+<span class="not-spam">b                = -0.5  → default: assume NOT spam</span>
+
+<span class="highlight">spam_score</span> = 2.1×1 + 1.9×1 + 0.3×0 + (-1.8×0) + (-0.5)
+<span class="highlight">spam_score</span> = 3.5
+
+<span class="result">→ SPAM  (threshold > 0.5) ✉️🚫</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 5. ML MODELS ═══ -->
+<section class="section" id="ml-models">
+  <div class="section-header">
+    <div class="section-icon" style="background:#fce7f3;">📚</div>
+    <div>
+      <span class="section-num">Topic 5 of 10</span>
+      <h2>Machine Learning Models</h2>
+    </div>
+  </div>
+
+  <div class="callout callout-blue">
+    <h4>🔑 Three Things to Build Any ML Product</h4>
+    <p><strong>Data</strong> (the fuel) &nbsp;·&nbsp; <strong>Training</strong> (the learning process) &nbsp;·&nbsp; <strong>Inference</strong> (applying the trained model to new inputs)</p>
+  </div>
+
+  <div class="card" style="margin-bottom:24px;">
+    <h3>🧩 What Exactly is a "Model"?</h3>
+    <p>A model is the <strong>equation y = Wx + b with trained parameter values</strong>. During training, the algorithm runs through many iterations, adjusting the <strong>weights (W)</strong> and <strong>biases (b)</strong> based on data. Once training is complete, this final equation — with its learned parameters locked in — is the model. It is then used to make predictions on new, unseen data.</p>
+    <div style="background:#f8fafc;border-radius:10px;padding:14px;font-family:monospace;font-size:0.88rem;color:#4f46e5;margin-top:12px;">
+      Raw algorithm → many iterations of adjustment → parameters stabilise → <strong>Model ✅</strong>
+    </div>
+  </div>
+
+  <div class="grid-3" style="margin-bottom:28px;">
+
+    <div class="ml-card">
+      <div class="ml-icon">🏫</div>
+      <h3>Supervised Learning</h3>
+      <p>You teach with <strong>labeled examples</strong> — like a student studying with an answer key. Precise but requires a lot of expensive labeled data.</p>
+      <div class="flow">Input → [Model] → Output → Correct label given</div>
+      <div class="sub-head">Task Types</div>
+      <ul>
+        <li>Classification (cat vs. dog)</li>
+        <li>Regression (predict house price)</li>
+      </ul>
+      <div class="sub-head">Algorithms</div>
+      <ul>
+        <li>Linear / Logistic Regression</li>
+        <li>Decision Trees, Random Forest</li>
+        <li>SVM, Neural Networks</li>
+      </ul>
+      <div class="sub-head">Real-World Uses</div>
+      <div class="tags">
+        <span class="tag tag-blue">Spam Filter</span>
+        <span class="tag tag-blue">Image Recognition</span>
+        <span class="tag tag-blue">Loan Prediction</span>
+      </div>
+    </div>
+
+    <div class="ml-card">
+      <div class="ml-icon">🔍</div>
+      <h3>Unsupervised Learning</h3>
+      <p>Gets <strong>no labels</strong> at all. Exploratory — the model finds its own structure in raw data. Great for discovering hidden patterns you didn't know existed.</p>
+      <div class="flow">Input → [Model] → Patterns — No labels provided</div>
+      <div class="sub-head">Task Types</div>
+      <ul>
+        <li>Clustering (group similar items)</li>
+        <li>Dimensionality reduction (compress)</li>
+      </ul>
+      <div class="sub-head">Algorithms</div>
+      <ul>
+        <li>K-Means Clustering, DBSCAN</li>
+        <li>PCA, t-SNE</li>
+        <li>Autoencoders</li>
+      </ul>
+      <div class="sub-head">Real-World Uses</div>
+      <div class="tags">
+        <span class="tag tag-purple">Customer Segmentation</span>
+        <span class="tag tag-purple">Anomaly Detection</span>
+        <span class="tag tag-purple">Recommendations</span>
+      </div>
+    </div>
+
+    <div class="ml-card">
+      <div class="ml-icon">🏆</div>
+      <h3>Reinforcement Learning</h3>
+      <p>No dataset at all — an agent takes <strong>actions</strong>, receives rewards or penalties, and gradually learns the best strategy through experience. Fundamentally different from the other two.</p>
+      <div class="flow">Action → Reward / Penalty → Agent updates strategy</div>
+      <div class="sub-head">Task Types</div>
+      <ul>
+        <li>Policy optimization (best sequence of actions)</li>
+        <li>Game playing &amp; robotic control</li>
+      </ul>
+      <div class="sub-head">Algorithms</div>
+      <ul>
+        <li>Q-Learning, Deep Q-Network (DQN)</li>
+        <li>PPO (Proximal Policy Optimization)</li>
+        <li>A3C (Asynchronous Advantage Actor-Critic)</li>
+        <li><strong>RLHF</strong> — used in LLMs!</li>
+      </ul>
+      <div class="sub-head">Real-World Uses</div>
+      <div class="tags">
+        <span class="tag tag-green">AlphaGo (Go)</span>
+        <span class="tag tag-green">Robotics Control</span>
+        <span class="tag tag-green">Ad Bidding</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout callout-amber">
+    <h4>🌟 Special: RLHF — How ChatGPT Was Made Human-Friendly</h4>
+    <p><strong>Reinforcement Learning from Human Feedback (RLHF)</strong>: When an LLM answers a question, human reviewers rate the response. That feedback trains a <strong>reward model</strong>, which is then used to fine-tune the LLM so its outputs align with human expectations — factual, helpful, and safe.</p>
+    <p style="margin-top:10px;"><em>The 5 building blocks: Observe state → Pick action → Receive reward → Update policy (strategy) → Repeat millions of times until highly optimised.</em></p>
+  </div>
+
+  <div class="card">
+    <h3>📖 Case Study: How ChatGPT Uses All Three Learning Types</h3>
+    <div class="grid-3" style="margin-top:16px;">
+      <div style="background:#eff6ff;border-radius:10px;padding:16px;">
+        <strong style="color:#1d4ed8;">1. Unsupervised Pre-training (GPT-3)</strong>
+        <p style="font-size:0.88rem;margin-top:6px;color:var(--text-muted);">Trained on massive text by predicting the next word — no labels needed. The original GPT-3 had <strong>175B parameters</strong> and was only used by a few hundred people when first open-sourced.</p>
+      </div>
+      <div style="background:#fdf4ff;border-radius:10px;padding:16px;">
+        <strong style="color:#7e22ce;">2. Supervised Fine-tuning (→ ChatGPT)</strong>
+        <p style="font-size:0.88rem;margin-top:6px;color:var(--text-muted);">Fine-tuned on (prompt → correct response) pairs so the model learns to follow instructions: "act as a PM", "generate SQL", etc. This is the leap from raw GPT-3 → ChatGPT.</p>
+      </div>
+      <div style="background:#f0fdf4;border-radius:10px;padding:16px;">
+        <strong style="color:#065f46;">3. Reinforcement via RLHF</strong>
+        <p style="font-size:0.88rem;margin-top:6px;color:var(--text-muted);">Human reviewers rate responses → feedback trains a reward model → the LLM is updated to match human expectations. Makes answers feel natural, helpful, and safe.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="border-left:5px solid #0ea5e9; margin-top:4px;">
+    <h3>📋 PM Guide: How to Think About Data</h3>
+    <div class="grid-2" style="margin-top:14px;">
+      <div style="background:#eff6ff;border-radius:10px;padding:14px;">
+        <strong style="color:#1d4ed8;">🎯 Define Scope Upfront</strong>
+        <p style="font-size:0.87rem;margin-top:6px;color:var(--text-muted);">Be clear about what your system will and won't do from the start. This saves significant time and cost downstream.</p>
+      </div>
+      <div style="background:#fdf4ff;border-radius:10px;padding:14px;">
+        <strong style="color:#7e22ce;">🔒 Privacy &amp; Compliance</strong>
+        <p style="font-size:0.87rem;margin-top:6px;color:var(--text-muted);">Know the law — <strong>GDPR</strong> (Europe) and <strong>CCPA</strong> (California). What can you collect? How long can you store it? Where?</p>
+      </div>
+      <div style="background:#f0fdf4;border-radius:10px;padding:14px;">
+        <strong style="color:#065f46;">🗃️ Data Sourcing</strong>
+        <p style="font-size:0.87rem;margin-top:6px;color:var(--text-muted);">Identify your sources and evaluate them — <strong>trusted vs. non-trusted</strong> data sources have very different implications for model quality.</p>
+      </div>
+      <div style="background:#fef3c7;border-radius:10px;padding:14px;">
+        <strong style="color:#92400e;">💰 Cost Evaluation</strong>
+        <p style="font-size:0.87rem;margin-top:6px;color:var(--text-muted);">Evaluate the cost to <strong>build and maintain</strong> your data pipeline upfront — data is expensive to label, store, and keep fresh.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════
+     PHASE 3 · BUILD & EVALUATE
+════════════════════════════════════════ -->
+<div class="phase-divider">
+  <span class="pd-badge pd-3">🔵 Phase 3 — Build &amp; Evaluate AI Systems</span>
+  <div class="pd-line"></div>
+</div>
+
+<!-- ═══ 6. WHAT AI NEEDS ═══ -->
+<section class="section" id="what-ai-needs">
+  <div class="section-header">
+    <div class="section-icon" style="background:#e0f2fe;">⚙️</div>
+    <div>
+      <span class="section-num">Topic 6 of 10</span>
+      <h2>What an AI System Needs</h2>
+    </div>
+  </div>
+
+  <div class="summary-hero">
+    <h3>💬 The Core Summary</h3>
+    <p>"AI is the ability of machines to learn, reason, perceive, and make decisions in ways that mimic human intelligence. In practice, building a reliable AI system (Agents) requires four key pillars: <strong>Knowledge</strong> (what it knows), <strong>Data</strong> (what it learns from), <strong>Tools</strong> (what it can act with), and <strong>Guardrails</strong> (how it stays safe and ethical)."</p>
+  </div>
+
+  <div class="grid-2">
+    <div class="card" style="border-left:5px solid #4f46e5;">
+      <div style="font-size:1.6rem;margin-bottom:8px;">🗂️</div>
+      <h3>Knowledge</h3>
+      <p>Domain understanding the model encodes — via training, RAG (Retrieval-Augmented Generation), or knowledge graphs.</p>
+    </div>
+    <div class="card" style="border-left:5px solid #0ea5e9;">
+      <div style="font-size:1.6rem;margin-bottom:8px;">📊</div>
+      <h3>Data</h3>
+      <p>The fuel for training and fine-tuning ML models. Essential for modern AI systems.</p>
+    </div>
+    <div class="card" style="border-left:5px solid #10b981;">
+      <div style="font-size:1.6rem;margin-bottom:8px;">🔧</div>
+      <h3>Tools</h3>
+      <p>APIs, search, code execution — they extend what the model can do beyond generating text.</p>
+    </div>
+    <div class="card" style="border-left:5px solid #f59e0b;">
+      <div style="font-size:1.6rem;margin-bottom:8px;">🛡️</div>
+      <h3>Guardrails</h3>
+      <p>Safety, ethics, and compliance rules applied around the model. This is the governance layer — not AI itself.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 7. INFERENCE & ASSESSMENT ═══ -->
+<section class="section" id="inference">
+  <div class="section-header">
+    <div class="section-icon" style="background:#d1fae5;">📊</div>
+    <div>
+      <span class="section-num">Topic 7 of 10</span>
+      <h2>Inference &amp; Model Assessment</h2>
+    </div>
+  </div>
+
+  <div class="callout callout-green">
+    <h4>What is Inference?</h4>
+    <p>After training, you make the model available to customers. <strong>Inference</strong> is the process of sending new input to the trained model and receiving a prediction. It is the logical process of drawing a conclusion based on knowledge or expertise — the "production" phase of an AI system.</p>
+  </div>
+
+  <div class="grid-3">
+    <div class="metric-card" style="border-top:4px solid #10b981;">
+      <div class="num" style="color:#10b981;">Accuracy</div>
+      <div style="font-size:1.2rem;margin:8px 0;">Correct Predictions ÷ Total</div>
+      <div class="label">How often is the model correct overall?</div>
+    </div>
+    <div class="metric-card" style="border-top:4px solid #0ea5e9;">
+      <div class="num" style="color:#0ea5e9;">Recall</div>
+      <div style="font-size:1.2rem;margin:8px 0;">TP ÷ (TP + FN)</div>
+      <div class="label">How many real positives did we catch? (Avoids missing things)</div>
+    </div>
+    <div class="metric-card" style="border-top:4px solid #4f46e5;">
+      <div class="num" style="color:#4f46e5;">Precision</div>
+      <div style="font-size:1.2rem;margin:8px 0;">TP ÷ (TP + FP)</div>
+      <div class="label">Of predicted positives, how many were actually correct?</div>
+    </div>
+  </div>
+
+  <div class="callout callout-amber" style="margin-top:20px;">
+    <h4>⚠️ PM Tip — Set Benchmarks Based on Customer Needs</h4>
+    <p>For example, automating a task requires <strong>high precision</strong> — you need to be confident the model is correctly identifying outcomes before removing human oversight. Always align your benchmarks to what matters most to your customer.</p>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════
+     PHASE 4 · USE AI
+════════════════════════════════════════ -->
+<div class="phase-divider">
+  <span class="pd-badge pd-4">🟢 Phase 4 — Use AI Effectively</span>
+  <div class="pd-line"></div>
+</div>
+
+<!-- ═══ 8. PROMPT ENGINEERING ═══ -->
+<section class="section" id="prompt-engineering">
+  <div class="section-header">
+    <div class="section-icon" style="background:#fce7f3;">✍️</div>
+    <div>
+      <span class="section-num">Topic 8 of 10</span>
+      <h2>Prompt Engineering</h2>
+    </div>
+  </div>
+
+  <div class="callout callout-purple">
+    <h4>What is a Prompt?</h4>
+    <p>A <strong>prompt</strong> is a set of instructions provided to an AI model to get the best output. The quality of your prompt directly determines the quality of the AI's response.</p>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3>🏆 10 Best Practices</h3>
+      <div style="margin-top:16px;">
+        <div class="prompt-step"><div class="step-circle">1</div><div class="step-content"><h4>Be Specific</h4><p>Include all relevant details and context in your request</p></div></div>
+        <div class="prompt-step"><div class="step-circle">2</div><div class="step-content"><h4>Supply Examples</h4><p>Give the model sample input/output pairs for context</p></div></div>
+        <div class="prompt-step"><div class="step-circle">3</div><div class="step-content"><h4>Include Relevant Data</h4><p>Provide the data the model needs to reason with</p></div></div>
+        <div class="prompt-step"><div class="step-circle">4</div><div class="step-content"><h4>Specify Output Format</h4><p>e.g., "Respond in JSON" or "Use bullet points"</p></div></div>
+        <div class="prompt-step"><div class="step-circle">5</div><div class="step-content"><h4>Use Positive Instructions</h4><p>Tell it what TO do, not just what not to do</p></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>&nbsp;</h3>
+      <div style="margin-top:16px;">
+        <div class="prompt-step"><div class="step-circle">6</div><div class="step-content"><h4>Assign a Persona</h4><p>"You are an expert product manager…"</p></div></div>
+        <div class="prompt-step"><div class="step-circle">7</div><div class="step-content"><h4>Chain of Thought</h4><p>"Think step by step before answering"</p></div></div>
+        <div class="prompt-step"><div class="step-circle">8</div><div class="step-content"><h4>Break Down Complex Tasks</h4><p>Split large tasks into smaller, specific sub-tasks</p></div></div>
+        <div class="prompt-step"><div class="step-circle">9</div><div class="step-content"><h4>Acknowledge Limitations</h4><p>Tell the model what it might not know</p></div></div>
+        <div class="prompt-step"><div class="step-circle" style="background:#f59e0b;">10</div><div class="step-content"><h4>Take an Experimental Approach</h4><p>Iterate and test — prompting is a craft, not a formula</p></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:4px;">
+    <h3>📐 The RITG Prompt Framework</h3>
+    <p style="margin-bottom:16px;">Structure every important prompt using these four components:</p>
+    <div class="grid-4">
+      <div style="background:#ede9fe;border-radius:10px;padding:16px;">
+        <strong style="color:#7c3aed;">R — Role</strong>
+        <p style="font-size:0.85rem;margin-top:6px;color:var(--text-muted);">Define the persona or frame of reference. e.g., "You are a senior data scientist…"</p>
+      </div>
+      <div style="background:#dbeafe;border-radius:10px;padding:16px;">
+        <strong style="color:#1d4ed8;">I — Instruction</strong>
+        <p style="font-size:0.85rem;margin-top:6px;color:var(--text-muted);">Set the overall goal for the task. e.g., "Analyze the following customer feedback…"</p>
+      </div>
+      <div style="background:#dcfce7;border-radius:10px;padding:16px;">
+        <strong style="color:#065f46;">T — Task</strong>
+        <p style="font-size:0.85rem;margin-top:6px;color:var(--text-muted);">List step-by-step specific activities for the model to perform</p>
+      </div>
+      <div style="background:#fef3c7;border-radius:10px;padding:16px;">
+        <strong style="color:#92400e;">G — Guardrails</strong>
+        <p style="font-size:0.85rem;margin-top:6px;color:var(--text-muted);">Set boundaries: preferred tone, output format, and fallback if there is ambiguity</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 9. CHOOSING THE RIGHT MODEL ═══ -->
+<section class="section" id="choosing-model">
+  <div class="section-header">
+    <div class="section-icon" style="background:#e0f2fe;">🔬</div>
+    <div>
+      <span class="section-num">Topic 9 of 10</span>
+      <h2>Choosing the Right AI Model</h2>
+    </div>
+  </div>
+
+  <div class="callout callout-blue">
+    <h4>3-Step Framework</h4>
+    <p>A structured way to select the right model for your GenAI application, aligned to your customer journey and business constraints.</p>
+  </div>
+
+  <div class="framework-step">
+    <div class="fw-num" style="background:#0ea5e9;">1</div>
+    <div class="fw-body">
+      <h4>List Tasks &amp; Jobs-to-be-Done</h4>
+      <p>Based on the customer journey, identify every specific task your app needs to perform. Be granular — "summarize a report" and "draft a reply email" are different tasks with different requirements.</p>
+    </div>
+  </div>
+  <div class="framework-step">
+    <div class="fw-num" style="background:#0ea5e9;">2</div>
+    <div class="fw-body">
+      <h4>Create Requirements Across Key Dimensions</h4>
+      <p>For each task, define requirements across: <strong>Reasoning vs. Understanding</strong>, Budget, Latency, Time-to-Market, Tools Needed, and your Team's AI expertise.</p>
+    </div>
+  </div>
+  <div class="framework-step">
+    <div class="fw-num" style="background:#0ea5e9;">3</div>
+    <div class="fw-body">
+      <h4>Look Up Relevant Benchmarks</h4>
+      <p>Find benchmarks that show which model performs best on your specific task. Use <a href="https://artificialanalysis.ai" target="_blank" style="color:var(--primary);">artificialanalysis.ai</a> for model comparisons and always review the model's <strong>Model Card</strong> before committing.</p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:4px;">
+    <h3>📄 What are Model Cards?</h3>
+    <p style="margin-bottom:14px;">Concise documents introduced by Google that provide key information about an ML model. Always review the Model Card before selecting a model for production use.</p>
+    <div class="grid-3">
+      <div class="tags"><span class="tag tag-purple">🎯 Model Purpose &amp; Use Cases</span></div>
+      <div class="tags"><span class="tag tag-blue">📊 Training Data Details</span></div>
+      <div class="tags"><span class="tag tag-green">📈 Performance Metrics</span></div>
+      <div class="tags"><span class="tag tag-amber">⚠️ Limitations</span></div>
+      <div class="tags"><span class="tag tag-red">🛡️ Ethical Considerations</span></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════
+     PHASE 5 · BUILD AI PRODUCTS
+════════════════════════════════════════ -->
+<div class="phase-divider">
+  <span class="pd-badge pd-5">🟡 Phase 5 — Build AI Products (Capstone)</span>
+  <div class="pd-line"></div>
+</div>
+
+<!-- ═══ 10. AI PM APPROACH ═══ -->
+<section class="section" id="ai-pm">
+  <div class="section-header">
+    <div class="section-icon" style="background:#fef3c7;">🎯</div>
+    <div>
+      <span class="section-num">Topic 10 of 10</span>
+      <h2>AI Product Manager Approach</h2>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:24px;">
+    <h3>🎯 Core AI PM Objectives</h3>
+    <div class="grid-2" style="margin-top:14px;">
+      <div style="background:#eff6ff;border-radius:10px;padding:14px;">
+        <strong style="color:#1d4ed8;">a. Translate Business Needs</strong>
+        <p style="font-size:0.87rem;margin-top:6px;color:var(--text-muted);">Turn business problems into clearly defined, solvable AI problems with measurable outcomes.</p>
+      </div>
+      <div style="background:#fdf4ff;border-radius:10px;padding:14px;">
+        <strong style="color:#7e22ce;">b. Target Users &amp; Workflows</strong>
+        <p style="font-size:0.87rem;margin-top:6px;color:var(--text-muted);">Identify the specific users and daily workflows where AI-driven products can create the most value.</p>
+      </div>
+      <div style="background:#f0fdf4;border-radius:10px;padding:14px;">
+        <strong style="color:#065f46;">c. Define Success Metrics</strong>
+        <p style="font-size:0.87rem;margin-top:6px;color:var(--text-muted);">Set clear, actionable success metrics for AI solutions before building — time saved, accuracy, cost reduction.</p>
+      </div>
+      <div style="background:#fef3c7;border-radius:10px;padding:14px;">
+        <strong style="color:#92400e;">d. Build Your MOAT</strong>
+        <p style="font-size:0.87rem;margin-top:6px;color:var(--text-muted);"><strong>M</strong>argin · <strong>O</strong>perations · <strong>A</strong>dvantage · <strong>T</strong>eam — the four dimensions of durable competitive advantage.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout callout-amber">
+    <h4>🏅 MOAT Framework</h4>
+    <p><strong>M</strong>argin &nbsp;·&nbsp; <strong>O</strong>perations &nbsp;·&nbsp; <strong>A</strong>dvantage &nbsp;·&nbsp; <strong>T</strong>eam — the four dimensions of building a competitive AI product that is hard to copy.</p>
+  </div>
+
+  <div class="framework-step">
+    <div class="fw-num">1</div>
+    <div class="fw-body">
+      <h4>Identify Opportunities</h4>
+      <p>Focus on <strong>repetitive daily or weekly tasks</strong> that are core to the business. Ensure sufficient data &amp; resources exist, verify regulatory compliance, and confirm the solution can scale with minimal human intervention.</p>
+    </div>
+  </div>
+  <div class="framework-step">
+    <div class="fw-num">2</div>
+    <div class="fw-body">
+      <h4>Articulate the Problem</h4>
+      <p>Define the customer persona &amp; their challenges. Articulate <strong>measurable consequences</strong> of the problem. Highlight gaps in current SaaS or rule-based solutions, and explain why generic AI tools (ChatGPT, Copilot) fall short.</p>
+    </div>
+  </div>
+  <div class="framework-step">
+    <div class="fw-num">3</div>
+    <div class="fw-body">
+      <h4>Identify the Solution</h4>
+      <p>Introduce your solution and what it offers users. Account for AI limitations (hallucinations, reasoning, planning). Plan for <strong>human oversight</strong> with quality assurance until AI results are reliable. Build MOAT through deep integrations.</p>
+    </div>
+  </div>
+  <div class="framework-step">
+    <div class="fw-num">4</div>
+    <div class="fw-body">
+      <h4>Define Success Metrics</h4>
+      <p>Focus on time saved, cost reduction, and accuracy improvement. Use the two-tier metrics framework below.</p>
+      <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div style="background:#f0fdf4;border-radius:8px;padding:12px;">
+          <strong style="font-size:0.82rem;color:#065f46;display:block;margin-bottom:6px;">🟢 LEVEL 1 — Primary Metrics</strong>
+          <ul style="padding-left:16px;font-size:0.83rem;color:#374151;">
+            <li>Error Rate (%)</li>
+            <li>User Feedback</li>
+            <li>Helpfulness</li>
+            <li>Honesty (Accuracy of Facts)</li>
+            <li>Harmlessness</li>
+          </ul>
+        </div>
+        <div style="background:#eff6ff;border-radius:8px;padding:12px;">
+          <strong style="font-size:0.82rem;color:#1d4ed8;display:block;margin-bottom:6px;">🔵 LEVEL 2 — Secondary Metrics</strong>
+          <ul style="padding-left:16px;font-size:0.83rem;color:#374151;">
+            <li>Cloud / AI Infrastructure Cost</li>
+            <li>Avg Tokens Consumed Per Job</li>
+            <li>Latency — P95 / P99 Response Time</li>
+            <li>Throughput — TPM / QPS / TPS</li>
+            <li>Recovery Rate &amp; Resilience</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══ KEY TAKEAWAYS ═══ -->
+<section style="background:linear-gradient(135deg,#0f172a,#1e1b4b);border-radius:20px;padding:40px;color:white;margin-bottom:40px;">
+  <h2 style="font-size:1.6rem;margin-bottom:8px;">🎓 Week 1 — Key Takeaways</h2>
+  <p style="opacity:0.6;font-size:0.88rem;margin-bottom:28px;">One line per phase to lock in the learning</p>
+  <div class="grid-2" style="gap:16px;">
+    <div style="background:rgba(255,255,255,0.08);border-radius:12px;padding:18px;border-left:4px solid #a78bfa;">
+      <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;opacity:0.5;margin-bottom:6px;">Phase 1 · Understand AI</div>
+      <strong>AI = Learn + Reason + Perceive + Decide</strong>
+      <p style="font-size:0.88rem;opacity:0.7;margin-top:6px;">Three types: Predictive (predict) → Generative (create) → Agentic (act)</p>
+    </div>
+    <div style="background:rgba(255,255,255,0.08);border-radius:12px;padding:18px;border-left:4px solid #60a5fa;">
+      <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;opacity:0.5;margin-bottom:6px;">Phase 2 · How Machines Learn</div>
+      <strong>Rules hit limits → ML learns from data via y = Wx + b</strong>
+      <p style="font-size:0.88rem;opacity:0.7;margin-top:6px;">Three learning styles: Supervised (labels), Unsupervised (patterns), RL (trial &amp; reward)</p>
+    </div>
+    <div style="background:rgba(255,255,255,0.08);border-radius:12px;padding:18px;border-left:4px solid #34d399;">
+      <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;opacity:0.5;margin-bottom:6px;">Phase 3 · Build &amp; Evaluate</div>
+      <strong>AI needs Knowledge + Data + Tools + Guardrails</strong>
+      <p style="font-size:0.88rem;opacity:0.7;margin-top:6px;">Evaluate with Accuracy, Recall, and Precision — set thresholds based on customer needs</p>
+    </div>
+    <div style="background:rgba(255,255,255,0.08);border-radius:12px;padding:18px;border-left:4px solid #fbbf24;">
+      <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;opacity:0.5;margin-bottom:6px;">Phase 4 · Use AI</div>
+      <strong>Prompt = Role + Instruction + Task + Guardrails</strong>
+      <p style="font-size:0.88rem;opacity:0.7;margin-top:6px;">Choose the right model using task requirements, benchmarks, and Model Cards</p>
+    </div>
+    <div style="background:rgba(255,255,255,0.08);border-radius:12px;padding:18px;border-left:4px solid #f87171;grid-column:span 2;">
+      <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;opacity:0.5;margin-bottom:6px;">Phase 5 · Build AI Products (Capstone)</div>
+      <strong>PM Approach: Identify → Articulate → Solve → Measure</strong>
+      <p style="font-size:0.88rem;opacity:0.7;margin-top:6px;">Define core objectives, build your MOAT, and track both Level 1 (primary) and Level 2 (infrastructure/latency) metrics from day one.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <p>📚 Week 1 — AI Foundations &nbsp;·&nbsp; Robin AI Learnings &nbsp;·&nbsp; Step-by-Step Beginner Guide</p>
+  <p style="margin-top:6px;font-size:0.8rem;">Phase 1: What is AI · Types of AI &nbsp;|&nbsp; Phase 2: Rule-Based vs ML · The AI Equation · ML Models &nbsp;|&nbsp; Phase 3: What AI Needs · Inference &amp; Assessment &nbsp;|&nbsp; Phase 4: Prompt Engineering · Choosing a Model &nbsp;|&nbsp; Phase 5: AI PM Approach</p>
+</footer>
+
+</body>
+</html>

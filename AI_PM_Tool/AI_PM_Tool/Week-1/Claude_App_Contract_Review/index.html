@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contract Review</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ── Header ─────────────────────────────────────────────── -->
+<header>
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+    <polyline points="14 2 14 8 20 8"/>
+    <line x1="16" y1="13" x2="8" y2="13"/>
+    <line x1="16" y1="17" x2="8" y2="17"/>
+  </svg>
+  <h1>Contract Review</h1>
+  <span class="badge">Beta</span>
+</header>
+
+<!-- ── Two-column workspace ───────────────────────────────── -->
+<div class="workspace">
+
+  <!-- Left: Contract viewer -->
+  <div class="contract-panel">
+    <div class="panel-label">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+      </svg>
+      Contract
+    </div>
+
+    <!-- Upload zone -->
+    <div class="upload-zone" id="upload-zone">
+      <div class="upload-icon-wrap">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="16 16 12 12 8 16"/>
+          <line x1="12" y1="12" x2="12" y2="21"/>
+          <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>
+        </svg>
+      </div>
+      <h2>Upload your contract</h2>
+      <p>Drag and drop a PDF here, or click below to browse your files.</p>
+      <button class="btn-primary" onclick="event.stopPropagation(); document.getElementById('file-input').click()">
+        Choose PDF
+      </button>
+      <span class="file-types">PDF files only</span>
+    </div>
+
+    <!-- PDF viewer (shown after upload) -->
+    <div id="pdf-viewer">
+      <div class="viewer-bar">
+        <span class="file-chip">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+          </svg>
+          <span id="file-label">contract.pdf</span>
+        </span>
+        <button class="btn-ghost" onclick="removeFile()">Remove</button>
+      </div>
+      <iframe id="pdf-frame" title="Contract PDF"></iframe>
+    </div>
+
+    <input type="file" id="file-input" accept="application/pdf" />
+  </div>
+
+  <!-- Right: Chat panel -->
+  <div class="chat-panel">
+    <div class="panel-label">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      </svg>
+      Chat
+    </div>
+
+    <div class="messages" id="messages">
+      <!-- Empty state -->
+      <div class="empty-state" id="empty-state">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        <h3>Ask about your contract</h3>
+        <p>Upload a PDF and ask questions about clauses, obligations, risks, or key dates.</p>
+        <div class="suggestions">
+          <button class="suggestion-chip" onclick="useSuggestion('What are the key obligations for each party?')">
+            What are the key obligations for each party?
+          </button>
+          <button class="suggestion-chip" onclick="useSuggestion('Are there any auto-renewal clauses?')">
+            Are there any auto-renewal clauses?
+          </button>
+          <button class="suggestion-chip" onclick="useSuggestion('What are the termination conditions?')">
+            What are the termination conditions?
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-area">
+      <div class="input-row">
+        <textarea id="chat-input" rows="1" placeholder="Ask anything about this contract…"></textarea>
+        <button id="send-btn" onclick="sendMessage()" disabled>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"/>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+        </button>
+      </div>
+      <p class="input-hint">Enter to send &nbsp;·&nbsp; Shift+Enter for new line</p>
+    </div>
+  </div>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
