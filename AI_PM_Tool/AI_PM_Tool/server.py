@@ -15,8 +15,21 @@ from datetime import datetime
 from pathlib import Path
 
 PORT = 8080
-BASE_DIR = Path(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR    = Path(os.path.dirname(os.path.abspath(__file__)))
 PROJECTS_DIR = BASE_DIR / "projects"
+
+# ── RAG engine (lazy-loaded after deps are installed at startup) ───────────────
+_rag_engine = None
+
+def get_rag_engine():
+    global _rag_engine
+    if _rag_engine is None:
+        try:
+            from rag_engine import RAGEngine
+            _rag_engine = RAGEngine(BASE_DIR)
+        except Exception as exc:
+            print(f"  ⚠  RAG engine unavailable: {exc}")
+    return _rag_engine
 
 # ── helpers ───────────────────────────────────────────────────────────────────
 
@@ -1155,11 +1168,18 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         if self.path == "/" or self.path == "":
             self.path = "/default.html"
+        elif self.path == "/api/index-status":
+            self.handle_index_status()
+            return
         return super().do_GET()
 
     def do_POST(self):
         if self.path == "/upload-project":
             self.handle_upload()
+        elif self.path == "/api/chat":
+            self.handle_chat()
+        elif self.path == "/api/reindex":
+            self.handle_reindex()
         else:
             self.send_error(404)
 
@@ -1256,28 +1276,164 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(err.encode())
 
+    # ── RAG endpoints ────────────────────────────────────────────────────────
+
+    def _json_ok(self, data: dict, status: int = 200):
+        body = json.dumps(data).encode()
+        self.send_response(status)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.end_headers()
+        self.wfile.write(body)
+
+    def handle_index_status(self):
+        engine = get_rag_engine()
+        if engine is None:
+            self._json_ok({"indexed": False, "chunk_count": 0,
+                           "error": "RAG engine not available — run pip install -r requirements.txt"})
+            return
+        self._json_ok(engine.status())
+
+    def handle_reindex(self):
+        engine = get_rag_engine()
+        if engine is None:
+            self._json_ok({"error": "RAG engine not available"}, status=500)
+            return
+        try:
+            stats = engine.index_all(force=True)
+            self._json_ok({"success": True, "stats": stats})
+        except Exception as e:
+            self._json_ok({"error": str(e)}, status=500)
+
+    def handle_chat(self):
+        try:
+            length  = int(self.headers.get("Content-Length", 0))
+            body    = json.loads(self.rfile.read(length))
+            message = body.get("message", "").strip()
+            history = body.get("history", [])
+
+            if not message:
+                raise ValueError("Empty message")
+
+            engine = get_rag_engine()
+            if engine is None:
+                raise RuntimeError(
+                    "RAG engine not available. "
+                    "Run: pip install -r requirements.txt and restart the server."
+                )
+
+            # Retrieve top-5 relevant chunks from the vector store
+            chunks = engine.retrieve(message, top_k=5)
+
+            if not chunks:
+                self._json_ok({
+                    "reply": (
+                        "I couldn't find relevant content in the project documents. "
+                        "Try re-indexing via the chat menu or ask about a specific project."
+                    ),
+                    "sources": [],
+                })
+                return
+
+            # Build context block from retrieved chunks
+            context = "\n\n---\n\n".join(
+                f"[{c['page_type']} — {c['project']} | {c['section']}]\n{c['text']}"
+                for c in chunks
+            )
+
+            system_prompt = (
+                "You are a project assistant embedded in Robin's AI PM Tool dashboard. "
+                "Your knowledge is STRICTLY LIMITED to the project documents provided in the context below. "
+                "These documents cover: project PRDs (requirements, objectives, stakeholders, milestones), "
+                "project status trackers (tasks, DRIs, progress), and AI/PM learning summaries (Week 1–6). "
+                "\n\nRULES:\n"
+                "1. Answer ONLY from the provided context — never fabricate data.\n"
+                "2. If the answer is not in the context, say exactly: "
+                "\"I don't have that information in the current project documents.\"\n"
+                "3. Always cite which project or document section you are drawing from.\n"
+                "4. Be concise and specific — this is a PM dashboard, not a general assistant.\n"
+                "5. For status questions, reference actual numbers (tasks, %, DRIs) from the context."
+            )
+
+            # Build conversation for Claude (last 6 turns max)
+            messages = [{"role": t["role"], "content": t["content"]} for t in history[-6:]]
+            messages.append({
+                "role": "user",
+                "content": (
+                    f"Context from project documents:\n\n{context}"
+                    f"\n\n---\n\nQuestion: {message}"
+                ),
+            })
+
+            import anthropic
+            client   = anthropic.Anthropic()
+            response = client.messages.create(
+                model      = "claude-haiku-4-5-20251001",
+                max_tokens = 1024,
+                system     = system_prompt,
+                messages   = messages,
+            )
+
+            reply   = response.content[0].text
+            sources = [
+                {
+                    "source":    c["source"],
+                    "page_type": c["page_type"],
+                    "project":   c["project"],
+                    "section":   c["section"],
+                    "score":     c["score"],
+                }
+                for c in chunks[:3]
+            ]
+            self._json_ok({"reply": reply, "sources": sources})
+
+        except Exception as e:
+            self._json_ok({"error": str(e)}, status=500)
+
+    # ─────────────────────────────────────────────────────────────────────────
+
     def log_message(self, format, *args):
         print(f"  {self.address_string()} → {args[0]}")
 
 
 if __name__ == "__main__":
-    # Ensure openpyxl is available
-    try:
-        import openpyxl
-    except ImportError:
-        print("Installing openpyxl...")
-        import subprocess
-        result = subprocess.run(
-            ["python3", "-m", "pip", "install", "openpyxl", "-q"],
-            capture_output=True
-        )
-        if result.returncode != 0:
-            subprocess.run(["pip3", "install", "openpyxl", "-q"])
-        print("openpyxl installed — ready.")
+    import subprocess, sys
 
-    # Build initial projects hub if it doesn't exist
+    # ── Auto-install Python dependencies ──────────────────────────────────────
+    _deps = {
+        "openpyxl":       "openpyxl",
+        "bs4":            "beautifulsoup4",
+        "chromadb":       "chromadb",
+        "anthropic":      "anthropic",
+    }
+    for import_name, pkg_name in _deps.items():
+        try:
+            __import__(import_name)
+        except ImportError:
+            print(f"  Installing {pkg_name}…")
+            subprocess.run(
+                [sys.executable, "-m", "pip", "install", pkg_name, "-q"],
+                check=False,
+            )
+
+    # ── Build initial projects hub if it doesn't exist ────────────────────────
     if not (BASE_DIR / "projects.html").exists():
         rebuild_projects_hub()
+
+    # ── Index project HTML pages into ChromaDB (skips if already indexed) ─────
+    print("\n  Initialising RAG engine…")
+    _engine = get_rag_engine()
+    if _engine:
+        try:
+            _stats = _engine.index_all(force=False)
+            if _stats.get("skipped"):
+                print(f"  ✓  RAG index already loaded ({_stats['chunk_count']} chunks).")
+            else:
+                print(f"  ✓  Indexed {_stats['chunks']} chunks from {_stats['files']} project pages.")
+        except Exception as _e:
+            print(f"  ⚠  RAG indexing failed: {_e}")
+    else:
+        print("  ⚠  RAG engine could not be initialised — chatbot will be unavailable.")
 
     with socketserver.TCPServer(("", PORT), Handler) as httpd:
         httpd.allow_reuse_address = True
@@ -1285,6 +1441,7 @@ if __name__ == "__main__":
         print(f"📁  Serving from: {BASE_DIR}")
         print(f"🌐  Landing page: default.html")
         print(f"📤  Upload endpoint: POST /upload-project")
+        print(f"💬  Chat endpoint:   POST /api/chat")
         print(f"\n   Press Ctrl+C to stop.\n")
         try:
             httpd.serve_forever()

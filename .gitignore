@@ -17,6 +17,9 @@ build/
 *.plist
 setup_autostart.sh
 
+# RAG / vector store (local, auto-generated — do not commit)
+chromadb_store/
+
 # Sensitive / personal data files
 *.xlsx
 *.xls
