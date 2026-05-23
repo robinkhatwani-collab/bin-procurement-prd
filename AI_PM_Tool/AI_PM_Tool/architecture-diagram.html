@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Architecture Diagram — AI PM Tool</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #0b0f1a;
+      --surface:      #111827;
+      --surface2:     #161d2e;
+      --surface3:     #1c2540;
+      --border:       rgba(255,255,255,0.08);
+      --border2:      rgba(255,255,255,0.13);
+      --text:         #f0f4ff;
+      --text-muted:   #8b9ab4;
+      --text-dim:     #5a6a84;
+      --primary:      #4f8ef7;
+      --secondary:    #2dd4bf;
+      --purple:       #9f6ef5;
+      --accent:       #f59e0b;
+      --green:        #34d399;
+      --red:          #f87171;
+      --rose:         #f472b6;
+      --glow-blue:    rgba(79,142,247,0.22);
+      --glow-purple:  rgba(159,110,245,0.22);
+      --glow-teal:    rgba(45,212,191,0.22);
+      --glow-amber:   rgba(245,158,11,0.22);
+      --glow-green:   rgba(52,211,153,0.22);
+      --glow-rose:    rgba(244,114,182,0.22);
+      --primary-dim:  rgba(79,142,247,0.13);
+      --purple-dim:   rgba(159,110,245,0.13);
+      --secondary-dim:rgba(45,212,191,0.13);
+      --accent-dim:   rgba(245,158,11,0.13);
+      --green-dim:    rgba(52,211,153,0.13);
+      --rose-dim:     rgba(244,114,182,0.13);
+      --radius:       14px;
+      --shadow:       0 4px 24px rgba(0,0,0,0.35);
+    }
+
+    html, body {
+      min-height: 100vh;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 70% 50% at 15% 15%, rgba(79,142,247,.09) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 45% at 85% 75%, rgba(159,110,245,.09) 0%, transparent 60%);
+      pointer-events: none; z-index: 0;
+    }
+
+    .page { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* ── Nav ── */
+    nav {
+      position: sticky; top: 0; z-index: 20;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 48px;
+      background: rgba(11,15,26,.88);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+    .nav-logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, var(--primary), var(--purple)); border-radius: 8px; display: grid; place-items: center; font-size: 15px; }
+    .nav-logo-text { font-size: 15px; font-weight: 700; }
+    .nav-logo-text span { color: var(--primary); }
+    .back-btn { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--text-muted); text-decoration: none; background: rgba(255,255,255,.04); border: 1px solid var(--border); padding: 7px 14px; border-radius: 9px; transition: all .2s; }
+    .back-btn:hover { color: var(--text); background: rgba(255,255,255,.07); }
+
+    /* ── Layout ── */
+    main { max-width: 1200px; margin: 0 auto; padding: 48px 32px 80px; width: 100%; }
+
+    /* ── Hero ── */
+    .hero { text-align: center; margin-bottom: 60px; }
+    .hero-badge {
+      display: inline-block;
+      background: var(--purple-dim);
+      border: 1px solid rgba(159,110,245,.3);
+      color: var(--purple);
+      font-size: .72rem; font-weight: 700;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      padding: 5px 16px; border-radius: 99px; margin-bottom: 18px;
+    }
+    .hero h1 {
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      font-weight: 800; letter-spacing: -.8px; margin-bottom: 14px;
+      background: linear-gradient(135deg, #fff 25%, var(--primary) 65%, var(--purple));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .hero p { font-size: .95rem; color: var(--text-muted); max-width: 640px; margin: 0 auto; }
+
+    /* ── Section headers ── */
+    .section { margin-bottom: 56px; }
+    .sec-head { display: flex; align-items: center; gap: 14px; margin-bottom: 26px; }
+    .sec-icon { width: 40px; height: 40px; border-radius: 11px; display: grid; place-items: center; font-size: 19px; flex-shrink: 0; }
+    .sec-head h2 { font-size: 1.15rem; font-weight: 700; }
+    .sec-head p  { font-size: .78rem; color: var(--text-muted); margin-top: 2px; }
+
+    /* ── Shared card shell ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 28px;
+    }
+
+    /* ══════════════════════════════════════════════════
+       1. SYSTEM ARCHITECTURE
+       ══════════════════════════════════════════════════ */
+    .arch-layer-label {
+      font-size: .66rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 1.3px; color: var(--text-dim); margin-bottom: 8px;
+    }
+    .arch-nodes {
+      display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 4px;
+    }
+    .anode {
+      display: flex; align-items: center; gap: 7px;
+      padding: 8px 14px; border-radius: 10px; border: 1px solid;
+      font-size: .78rem; font-weight: 600; white-space: nowrap;
+    }
+    .anode-sub { font-size: .68rem; font-weight: 400; opacity: .65; }
+
+    .anode-blue   { background: var(--primary-dim);   border-color: rgba(79,142,247,.3);  color: #93c5fd; }
+    .anode-amber  { background: var(--accent-dim);    border-color: rgba(245,158,11,.3);  color: #fcd34d; }
+    .anode-teal   { background: var(--secondary-dim); border-color: rgba(45,212,191,.3);  color: #5eead4; }
+    .anode-purple { background: var(--purple-dim);    border-color: rgba(159,110,245,.3); color: #c4b5fd; }
+    .anode-rose   { background: var(--rose-dim);      border-color: rgba(244,114,182,.3); color: #f9a8d4; }
+
+    .arch-bridge {
+      display: flex; align-items: center; gap: 10px;
+      margin: 10px 0; color: var(--text-dim);
+    }
+    .arch-bridge-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--border2), transparent); }
+    .arch-bridge-label {
+      font-size: .65rem; font-weight: 600;
+      background: var(--surface2); border: 1px solid var(--border);
+      padding: 3px 10px; border-radius: 6px; color: var(--text-muted);
+      white-space: nowrap;
+    }
+    .arch-arrows { text-align: center; font-size: 18px; color: var(--text-dim); margin: -4px 0 4px; }
+
+    /* ══════════════════════════════════════════════════
+       2. USER JOURNEY TIMELINE
+       ══════════════════════════════════════════════════ */
+    .timeline {
+      display: flex; align-items: flex-start;
+      overflow-x: auto; padding-bottom: 8px; gap: 0;
+    }
+    .t-step {
+      display: flex; flex-direction: column; align-items: center;
+      flex: 1; min-width: 136px; position: relative;
+    }
+    /* Connector line spans between circles */
+    .t-step:not(:last-child)::after {
+      content: ''; position: absolute;
+      top: 21px; left: 50%; width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, var(--border2), var(--border));
+      z-index: 0;
+    }
+    .t-circle {
+      width: 42px; height: 42px; border-radius: 50%;
+      display: grid; place-items: center;
+      font-size: 17px; border: 2px solid;
+      position: relative; z-index: 1;
+      background: var(--surface);
+    }
+    .t-num {
+      position: absolute; top: -5px; right: -5px;
+      width: 17px; height: 17px; border-radius: 50%;
+      font-size: 9px; font-weight: 800;
+      display: grid; place-items: center; z-index: 2;
+    }
+    .t-body { text-align: center; margin-top: 10px; padding: 0 6px; }
+    .t-title { font-size: .76rem; font-weight: 700; margin-bottom: 3px; }
+    .t-desc  { font-size: .67rem; color: var(--text-muted); line-height: 1.4; }
+    .t-tag   {
+      display: inline-block; margin-top: 5px;
+      font-size: .6rem; font-weight: 700; letter-spacing: .5px;
+      text-transform: uppercase; padding: 2px 7px; border-radius: 99px; border: 1px solid;
+    }
+
+    /* per-colour variants */
+    .t-blue   .t-circle { border-color: rgba(79,142,247,.5);  background: rgba(79,142,247,.08); }
+    .t-blue   .t-num    { background: var(--primary);  color:#fff; }
+    .t-blue   .t-title  { color: #93c5fd; }
+    .t-blue   .t-tag    { background: var(--primary-dim);  color:#93c5fd; border-color: rgba(79,142,247,.25); }
+
+    .t-purple .t-circle { border-color: rgba(159,110,245,.5); background: rgba(159,110,245,.08); }
+    .t-purple .t-num    { background: var(--purple);   color:#fff; }
+    .t-purple .t-title  { color: #c4b5fd; }
+    .t-purple .t-tag    { background: var(--purple-dim);   color:#c4b5fd; border-color: rgba(159,110,245,.25); }
+
+    .t-amber  .t-circle { border-color: rgba(245,158,11,.5);  background: rgba(245,158,11,.08); }
+    .t-amber  .t-num    { background: var(--accent);   color:#000; }
+    .t-amber  .t-title  { color: #fcd34d; }
+    .t-amber  .t-tag    { background: var(--accent-dim);   color:#fcd34d; border-color: rgba(245,158,11,.25); }
+
+    .t-green  .t-circle { border-color: rgba(52,211,153,.5);  background: rgba(52,211,153,.08); }
+    .t-green  .t-num    { background: var(--green);    color:#000; }
+    .t-green  .t-title  { color: #6ee7b7; }
+    .t-green  .t-tag    { background: var(--green-dim);    color:#6ee7b7; border-color: rgba(52,211,153,.25); }
+
+    .t-teal   .t-circle { border-color: rgba(45,212,191,.5);  background: rgba(45,212,191,.08); }
+    .t-teal   .t-num    { background: var(--secondary);color:#000; }
+    .t-teal   .t-title  { color: #5eead4; }
+    .t-teal   .t-tag    { background: var(--secondary-dim); color:#5eead4; border-color: rgba(45,212,191,.25); }
+
+    .t-rose   .t-circle { border-color: rgba(244,114,182,.5); background: rgba(244,114,182,.08); }
+    .t-rose   .t-num    { background: var(--rose);     color:#000; }
+    .t-rose   .t-title  { color: #f9a8d4; }
+    .t-rose   .t-tag    { background: var(--rose-dim);     color:#f9a8d4; border-color: rgba(244,114,182,.25); }
+
+    /* ══════════════════════════════════════════════════
+       3. DEEP-DIVE FLOWS
+       ══════════════════════════════════════════════════ */
+    .flows-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+    }
+    @media (max-width: 900px) { .flows-grid { grid-template-columns: 1fr; } }
+
+    .flow-card { display: flex; flex-direction: column; }
+    .flow-head { margin-bottom: 18px; }
+    .flow-head-row { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+    .flow-icon { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; font-size: 14px; }
+    .flow-title { font-size: .88rem; font-weight: 700; }
+    .flow-sub   { font-size: .73rem; color: var(--text-muted); }
+
+    .phase-label {
+      font-size: .62rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 1.2px; color: var(--text-dim);
+      margin: 14px 0 10px; padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* Vertical step list */
+    .vstep { display: flex; gap: 12px; align-items: flex-start; }
+    .vstep-left { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; width: 26px; }
+    .vdot {
+      width: 26px; height: 26px; border-radius: 50%;
+      display: grid; place-items: center;
+      font-size: 11px; font-weight: 700; border: 1px solid; flex-shrink: 0;
+    }
+    .vline { width: 2px; flex: 1; min-height: 14px; background: var(--border2); margin: 3px 0; }
+    .vstep-body { padding-bottom: 14px; flex: 1; }
+    .vstep-title { font-size: .78rem; font-weight: 700; margin-bottom: 2px; }
+    .vstep-desc  { font-size: .71rem; color: var(--text-muted); line-height: 1.5; }
+    .vstep-code  {
+      display: inline-block; margin-top: 5px;
+      font-size: .65rem; font-family: 'SF Mono','Fira Code',monospace;
+      background: var(--surface2); border: 1px solid var(--border);
+      padding: 3px 8px; border-radius: 6px; color: var(--text-muted);
+    }
+    .vstep:last-child .vstep-body { padding-bottom: 0; }
+
+    /* dot colour variants */
+    .vd-blue   { background: var(--primary-dim);   border-color: rgba(79,142,247,.35);  color: #93c5fd; }
+    .vd-purple { background: var(--purple-dim);    border-color: rgba(159,110,245,.35); color: #c4b5fd; }
+    .vd-teal   { background: var(--secondary-dim); border-color: rgba(45,212,191,.35);  color: #5eead4; }
+    .vd-amber  { background: var(--accent-dim);    border-color: rgba(245,158,11,.35);  color: #fcd34d; }
+    .vd-green  { background: var(--green-dim);     border-color: rgba(52,211,153,.35);  color: #6ee7b7; }
+    .vd-rose   { background: var(--rose-dim);      border-color: rgba(244,114,182,.35); color: #f9a8d4; }
+
+    /* ══════════════════════════════════════════════════
+       4. SCOPE ENFORCEMENT
+       ══════════════════════════════════════════════════ */
+    .scope-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+    }
+    @media (max-width: 720px) { .scope-grid { grid-template-columns: 1fr; } }
+
+    .scope-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+    }
+    .scope-head {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 12px;
+      font-size: .82rem; font-weight: 700;
+    }
+    .scope-badge {
+      font-size: .62rem; font-weight: 700; letter-spacing: .5px;
+      text-transform: uppercase; padding: 2px 8px; border-radius: 99px;
+    }
+    .scope-list { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+    .scope-list li {
+      display: flex; align-items: flex-start; gap: 8px;
+      font-size: .76rem; color: var(--text-muted); line-height: 1.5;
+    }
+    .scope-list li .dot { flex-shrink: 0; width: 6px; height: 6px; border-radius: 50%; margin-top: 5px; }
+
+    /* ══════════════════════════════════════════════════
+       5. TECH STACK
+       ══════════════════════════════════════════════════ */
+    .tech-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px;
+    }
+    .tech-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px 18px;
+      display: flex; gap: 12px; align-items: flex-start;
+    }
+    .tech-icon { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; font-size: 17px; flex-shrink: 0; }
+    .tech-name { font-size: .82rem; font-weight: 700; margin-bottom: 3px; }
+    .tech-role { font-size: .71rem; color: var(--text-muted); line-height: 1.45; }
+
+    /* ── Footer ── */
+    footer {
+      margin-top: auto; text-align: center; padding: 24px;
+      font-size: 12px; color: var(--text-muted);
+      border-top: 1px solid var(--border);
+    }
+    footer span { color: var(--primary); }
+
+    @media (max-width: 640px) {
+      nav  { padding: 14px 20px; }
+      main { padding: 32px 16px 60px; }
+      .t-step { min-width: 110px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Nav -->
+  <nav>
+    <a class="nav-logo" href="default.html">
+      <div class="nav-logo-icon">🤖</div>
+      <div class="nav-logo-text">AI <span>PM</span> Tool</div>
+    </a>
+    <a class="back-btn" href="default.html">← Dashboard</a>
+  </nav>
+
+  <main>
+
+    <!-- ── Hero ── -->
+    <div class="hero">
+      <div class="hero-badge">System Architecture</div>
+      <h1>AI PM Tool — Design Diagram</h1>
+      <p>How AI agents generate project pages, how RAG powers the chatbot, and the full user journey from Excel upload to intelligent Q&A.</p>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════
+         SECTION 1 — SYSTEM ARCHITECTURE
+         ══════════════════════════════════════════════════ -->
+    <div class="section">
+      <div class="sec-head">
+        <div class="sec-icon" style="background:rgba(79,142,247,.12);border:1px solid rgba(79,142,247,.25);">🏗️</div>
+        <div>
+          <h2>System Architecture</h2>
+          <p>Four-layer stack — Browser · Python Server · Local Storage · Anthropic Cloud</p>
+        </div>
+      </div>
+
+      <div class="card">
+
+        <!-- Layer 1 -->
+        <div style="margin-bottom:6px">
+          <div class="arch-layer-label">Layer 1 — User Interface · Browser (HTML + Vanilla JS)</div>
+          <div class="arch-nodes">
+            <div class="anode anode-blue">🖥️ default.html <span class="anode-sub">Dashboard</span></div>
+            <div class="anode anode-blue">💬 Chat Widget <span class="anode-sub">Vanilla JS FAB</span></div>
+            <div class="anode anode-blue">📋 new-project.html <span class="anode-sub">Upload Form</span></div>
+            <div class="anode anode-blue">📊 projects.html <span class="anode-sub">Project Hub</span></div>
+            <div class="anode anode-blue">📄 prd.html <span class="anode-sub">AI-Generated</span></div>
+            <div class="anode anode-blue">✅ status-tracker.html <span class="anode-sub">AI-Generated</span></div>
+            <div class="anode anode-blue">🧠 ai-learning.html <span class="anode-sub">Week Cards</span></div>
+          </div>
+        </div>
+
+        <div class="arch-bridge">
+          <div class="arch-bridge-line"></div>
+          <div class="arch-bridge-label">GET (static pages) · POST /upload-project · POST /api/chat · POST /api/reindex · GET /api/index-status</div>
+          <div class="arch-bridge-line"></div>
+        </div>
+        <div class="arch-arrows">⇅</div>
+
+        <!-- Layer 2 -->
+        <div style="margin:6px 0">
+          <div class="arch-layer-label">Layer 2 — Python HTTP Server · port 8080 · server.py + rag_engine.py</div>
+          <div class="arch-nodes">
+            <div class="anode anode-amber">⚙️ Request Handler <span class="anode-sub">do_GET / do_POST</span></div>
+            <div class="anode anode-amber">📦 Excel Parser <span class="anode-sub">parse_excel() · openpyxl</span></div>
+            <div class="anode anode-amber">🤖 PRD Generator <span class="anode-sub">generate_prd()</span></div>
+            <div class="anode anode-amber">📋 Tracker Generator <span class="anode-sub">generate_tracker()</span></div>
+            <div class="anode anode-amber">🔄 Hub Rebuilder <span class="anode-sub">rebuild_projects_hub()</span></div>
+            <div class="anode anode-rose">🔍 RAG Engine <span class="anode-sub">rag_engine.py</span></div>
+            <div class="anode anode-rose">🌿 HTML Parser <span class="anode-sub">BeautifulSoup4</span></div>
+            <div class="anode anode-rose">✂️ Section Chunker <span class="anode-sub">h2/h3 boundaries</span></div>
+          </div>
+        </div>
+
+        <div class="arch-bridge">
+          <div class="arch-bridge-line"></div>
+          <div class="arch-bridge-label">File read/write · chromadb.upsert / query · anthropic.messages.create()</div>
+          <div class="arch-bridge-line"></div>
+        </div>
+        <div class="arch-arrows">⇅</div>
+
+        <!-- Layer 3 -->
+        <div style="margin:6px 0">
+          <div class="arch-layer-label">Layer 3 — Local Storage · File System + Vector Database</div>
+          <div class="arch-nodes">
+            <div class="anode anode-teal">🗄️ ChromaDB <span class="anode-sub">chromadb_store/ · ONNX MiniLM embeddings</span></div>
+            <div class="anode anode-teal">📁 projects/{slug}/ <span class="anode-sub">prd.html + status-tracker.html</span></div>
+            <div class="anode anode-teal">📑 registry.json <span class="anode-sub">Project index</span></div>
+            <div class="anode anode-teal">📚 Week1–6_Learning_Summary.html <span class="anode-sub">Indexed for RAG</span></div>
+          </div>
+        </div>
+
+        <div class="arch-bridge">
+          <div class="arch-bridge-line"></div>
+          <div class="arch-bridge-label">ANTHROPIC_API_KEY · HTTPS · Anthropic SDK · claude-haiku-4-5-20251001</div>
+          <div class="arch-bridge-line"></div>
+        </div>
+        <div class="arch-arrows">⇅</div>
+
+        <!-- Layer 4 -->
+        <div style="margin-top:6px">
+          <div class="arch-layer-label">Layer 4 — External AI · Anthropic Cloud</div>
+          <div class="arch-nodes">
+            <div class="anode anode-purple">✨ Claude Haiku <span class="anode-sub">Chat generation · scoped to retrieved context</span></div>
+            <div class="anode anode-purple" style="opacity:.6">🔢 Embeddings <span class="anode-sub">ONNX MiniLM (local — no API call needed)</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════
+         SECTION 2 — USER JOURNEY
+         ══════════════════════════════════════════════════ -->
+    <div class="section">
+      <div class="sec-head">
+        <div class="sec-icon" style="background:rgba(45,212,191,.12);border:1px solid rgba(45,212,191,.25);">🗺️</div>
+        <div>
+          <h2>User Journey</h2>
+          <p>End-to-end flow from opening the dashboard to asking the RAG chatbot</p>
+        </div>
+      </div>
+
+      <div class="card" style="padding:28px 20px 28px;">
+        <div class="timeline">
+
+          <div class="t-step t-blue">
+            <div class="t-circle">🖥️<div class="t-num">1</div></div>
+            <div class="t-body">
+              <div class="t-title">Dashboard</div>
+              <div class="t-desc">Opens default.html<br/>Sees 3 action cards</div>
+              <div class="t-tag">Entry Point</div>
+            </div>
+          </div>
+
+          <div class="t-step t-purple">
+            <div class="t-circle">✨<div class="t-num">2</div></div>
+            <div class="t-body">
+              <div class="t-title">Add Project</div>
+              <div class="t-desc">Clicks card → lands<br/>on upload form</div>
+              <div class="t-tag">new-project.html</div>
+            </div>
+          </div>
+
+          <div class="t-step t-amber">
+            <div class="t-circle">📤<div class="t-num">3</div></div>
+            <div class="t-body">
+              <div class="t-title">Upload Excel</div>
+              <div class="t-desc">Submits .xlsx with<br/>tasks, DRIs, dates</div>
+              <div class="t-tag">POST /upload-project</div>
+            </div>
+          </div>
+
+          <div class="t-step t-amber">
+            <div class="t-circle">🤖<div class="t-num">4</div></div>
+            <div class="t-body">
+              <div class="t-title">AI Generates</div>
+              <div class="t-desc">Server builds PRD<br/>+ Status Tracker</div>
+              <div class="t-tag">AI Agent</div>
+            </div>
+          </div>
+
+          <div class="t-step t-green">
+            <div class="t-circle">📊<div class="t-num">5</div></div>
+            <div class="t-body">
+              <div class="t-title">View Project</div>
+              <div class="t-desc">Hub shows PRD<br/>+ Tracker cards</div>
+              <div class="t-tag">projects.html</div>
+            </div>
+          </div>
+
+          <div class="t-step t-teal">
+            <div class="t-circle">📚<div class="t-num">6</div></div>
+            <div class="t-body">
+              <div class="t-title">AI Learning</div>
+              <div class="t-desc">Explores Week 1–6<br/>learning summaries</div>
+              <div class="t-tag">ai-learning.html</div>
+            </div>
+          </div>
+
+          <div class="t-step t-rose">
+            <div class="t-circle">💬<div class="t-num">7</div></div>
+            <div class="t-body">
+              <div class="t-title">Ask Chatbot</div>
+              <div class="t-desc">Types question → RAG<br/>retrieves → Claude answers</div>
+              <div class="t-tag">RAG + Claude</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════
+         SECTION 3 — DEEP-DIVE FLOWS
+         ══════════════════════════════════════════════════ -->
+    <div class="section">
+      <div class="sec-head">
+        <div class="sec-icon" style="background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.25);">⚡</div>
+        <div>
+          <h2>Deep-Dive: AI Agent &amp; RAG Pipeline</h2>
+          <p>Step-by-step internals of PRD generation and vector search</p>
+        </div>
+      </div>
+
+      <div class="flows-grid">
+
+        <!-- ── Flow A: AI Agent ── -->
+        <div class="card flow-card" style="border-color:rgba(245,158,11,.22);">
+          <div class="flow-head">
+            <div class="flow-head-row">
+              <div class="flow-icon" style="background:var(--accent-dim);border:1px solid rgba(245,158,11,.3)">🤖</div>
+              <div class="flow-title" style="color:#fcd34d">AI Agent — Project Page Generation</div>
+            </div>
+            <div class="flow-sub">Triggered by POST /upload-project with a .xlsx file</div>
+          </div>
+
+          <div class="vstep">
+            <div class="vstep-left"><div class="vdot vd-blue">1</div><div class="vline"></div></div>
+            <div class="vstep-body">
+              <div class="vstep-title" style="color:#93c5fd">Receive Excel Upload</div>
+              <div class="vstep-desc">Browser sends multipart POST with .xlsx, genPrd &amp; genTracker flags. Server reads file bytes into a temp file.</div>
+              <div class="vstep-code">POST /upload-project · multipart/form-data</div>
+            </div>
+          </div>
+
+          <div class="vstep">
+            <div class="vstep-left"><div class="vdot vd-amber">2</div><div class="vline"></div></div>
+            <div class="vstep-body">
+              <div class="vstep-title" style="color:#fcd34d">Parse Excel · openpyxl</div>
+              <div class="vstep-desc">Reads metadata rows (project name, objective) then task rows (step description, DRI, due date, status, priority). Calculates progress % and unique DRI count.</div>
+              <div class="vstep-code">parse_excel(tmp_path) → { title, tasks[], dris[], progress }</div>
+            </div>
+          </div>
+
+          <div class="vstep">
+            <div class="vstep-left"><div class="vdot vd-purple">3</div><div class="vline"></div></div>
+            <div class="vstep-body">
+              <div class="vstep-title" style="color:#c4b5fd">Slugify &amp; Structure</div>
+              <div class="vstep-desc">Normalises project name into a URL-safe slug. Builds the data dict used by both generators. No external AI call — pure Python template logic.</div>
+              <div class="vstep-code">slugify("BIN Procurement…") → "bin-procurement-for-new-card-launch"</div>
+            </div>
+          </div>
+
+          <div class="vstep">
+            <div class="vstep-left"><div class="vdot vd-amber">4</div><div class="vline"></div></div>
+            <div class="vstep-body">
+              <div class="vstep-title" style="color:#fcd34d">Generate PRD · generate_prd()</div>
+              <div class="vstep-desc">Renders a full dark-theme HTML page with: hero stats, objective callout, stakeholder table, task milestone timeline, risk register, and acceptance criteria.</div>
+              <div class="vstep-code">generate_prd(data, url_prefix) → prd.html string</div>
+            </div>
+          </div>
+
+          <div class="vstep">
+            <div class="vstep-left"><div class="vdot vd-amber">5</div><div class="vline"></div></div>
+            <div class="vstep-body">
+              <div class="vstep-title" style="color:#fcd34d">Generate Status Tracker · generate_tracker()</div>
+              <div class="vstep-desc">Builds an interactive task board with status badges (Done / In Progress / Blocked / Not Started), DRI chips, progress bar, priority tags, and due dates.</div>
+              <div class="vstep-code">generate_tracker(data) → status-tracker.html string</div>
+            </div>
+          </div>
+
+          <div class="vstep">
+            <div class="vstep-left"><div class="vdot vd-teal">6</div><div class="vline"></div></div>
+            <div class="vstep-body">
+              <div class="vstep-title" style="color:#5eead4">Save &amp; Update Registry</div>
+              <div class="vstep-desc">Writes HTML files to projects/{slug}/. Updates registry.json with title, progress stats, and DRI count. Calls rebuild_projects_hub() to regenerate projects.html.</div>
+              <div class="vstep-code">projects/{slug}/prd.html + status-tracker.html</div>
+            </div>
+          </div>
+
+          <div class="vstep">
+            <div class="vstep-left"><div class="vdot vd-green">7</div></div>
+            <div class="vstep-body" style="padding-bottom:0">
+              <div class="vstep-title" style="color:#6ee7b7">JSON Response → Browser Redirects</div>
+              <div class="vstep-desc">Returns { success, prdUrl, trackerUrl, stepsCount, dris }. Browser shows confirmation and direct links to view the new PRD and tracker.</div>
+              <div class="vstep-code">{ "success": true, "prdUrl": "/projects/..." }</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ── Flow B: RAG Pipeline ── -->
+        <div class="card flow-card" style="border-color:rgba(244,114,182,.22);">
+          <div class="flow-head">
+            <div class="flow-head-row">
+              <div class="flow-icon" style="background:var(--rose-dim);border:1px solid rgba(244,114,182,.3)">🔍</div>
+              <div class="flow-title" style="color:#f9a8d4">RAG Pipeline — Chatbot Q&amp;A</div>
+            </div>
+            <div class="flow-sub">Phase A: indexing at server startup · Phase B: retrieval per question</div>
+          </div>
+
+          <div class="phase-label">Phase A — Indexing (once at server start · index_all())</div>
+
+          <div class="vstep">
+            <div class="vstep-left"><div class="vdot vd-teal">1</div><div class="vline"></div></div>
+            <div class="vstep-body">
+              <div class="vstep-title" style="color:#5eead4">Discover Project Pages</div>
+              <div class="vstep-desc">_discover_pages() scans projects/*/prd.html, projects/*/status-tracker.html, and Week1–6_Learning_Summary.html. Navigation pages (default, ai-learning) excluded — no useful content.</div>
+              <div class="vstep-code">_discover_pages() → ["projects/bin-procurement.../prd.html", ...]</div>
+            </div>
+          </div>
+
+          <div class="vstep">
+            <div class="vstep-left"><div class="vdot vd-rose">2</div><div class="vline"></div></div>
+            <div class="vstep-body">
+              <div class="vstep-title" style="color:#f9a8d4">Parse &amp; Strip HTML</div>
+              <div class="vstep-desc">BeautifulSoup removes all &lt;script&gt;, &lt;style&gt;, &lt;nav&gt;, &lt;footer&gt;, &lt;head&gt; tags. Only visible text content remains, preserving semantic structure.</div>
+              <div class="vstep-code">BeautifulSoup(html) → clean text with headings intact</div>
+            </div>
+          </div>
+
+          <div class="vstep">
+            <div class="vstep-left"><div class="vdot vd-rose">3</div><div class="vline"></div></div>
+            <div class="vstep-body">
+              <div class="vstep-title" style="color:#f9a8d4">Section Chunking by Heading</div>
+              <div class="vstep-desc">Each h2/h3 heading = chunk boundary. Collects all text between current and next heading (≤1800 chars). Metadata per chunk: source, page_type, project name, section title.</div>
+              <div class="vstep-code">{ text, source, page_type:"PRD", project:"BIN Procurement", section:"Problem Statement" }</div>
+            </div>
+          </div>
+
+          <div class="vstep">
+            <div class="vstep-left"><div class="vdot vd-purple">4</div></div>
+            <div class="vstep-body" style="padding-bottom:0">
+              <div class="vstep-title" style="color:#c4b5fd">Embed &amp; Store in ChromaDB</div>
+              <div class="vstep-desc">ChromaDB embeds each chunk with ONNX MiniLM-L6-v2 (local, no API, 384-dim vectors). Persisted to chromadb_store/ with cosine-similarity HNSW index. Skips re-index if already loaded.</div>
+              <div class="vstep-code">collection.upsert(ids, documents, metadatas) → ~30–60 chunks</div>
+            </div>
+          </div>
+
+          <div class="phase-label">Phase B — Retrieval (per user question · retrieve())</div>
+
+          <div class="vstep">
+            <div class="vstep-left"><div class="vdot vd-blue">5</div><div class="vline"></div></div>
+            <div class="vstep-body">
+              <div class="vstep-title" style="color:#93c5fd">User Sends Question</div>
+              <div class="vstep-desc">Chat widget POSTs { message, history } to /api/chat. Server extracts the query string and conversation history (last 6 turns).</div>
+              <div class="vstep-code">POST /api/chat → { message: "What's the BIN project status?" }</div>
+            </div>
+          </div>
+
+          <div class="vstep">
+            <div class="vstep-left"><div class="vdot vd-rose">6</div><div class="vline"></div></div>
+            <div class="vstep-body">
+              <div class="vstep-title" style="color:#f9a8d4">Semantic Search · Cosine Similarity</div>
+              <div class="vstep-desc">Query embedded with same ONNX model. ChromaDB returns top-5 chunks by cosine similarity. Each chunk includes its score (0–1) and full metadata.</div>
+              <div class="vstep-code">collection.query(query_texts=[q], n_results=5) → chunks + scores</div>
+            </div>
+          </div>
+
+          <div class="vstep">
+            <div class="vstep-left"><div class="vdot vd-amber">7</div><div class="vline"></div></div>
+            <div class="vstep-body">
+              <div class="vstep-title" style="color:#fcd34d">Build Scoped Prompt</div>
+              <div class="vstep-desc">Chunks formatted as "[PRD — Project | Section]\ntext". System prompt instructs Claude to answer ONLY from context and say "I don't have that information" if not found.</div>
+              <div class="vstep-code">system: "Answer ONLY from context below. Never fabricate data."</div>
+            </div>
+          </div>
+
+          <div class="vstep">
+            <div class="vstep-left"><div class="vdot vd-purple">8</div><div class="vline"></div></div>
+            <div class="vstep-body">
+              <div class="vstep-title" style="color:#c4b5fd">Claude Haiku Generates Answer</div>
+              <div class="vstep-desc">Anthropic SDK calls claude-haiku-4-5-20251001 with system prompt + context + question. Max 1024 tokens. Conversation history included for multi-turn context.</div>
+              <div class="vstep-code">client.messages.create(model="claude-haiku-4-5-20251001")</div>
+            </div>
+          </div>
+
+          <div class="vstep">
+            <div class="vstep-left"><div class="vdot vd-green">9</div></div>
+            <div class="vstep-body" style="padding-bottom:0">
+              <div class="vstep-title" style="color:#6ee7b7">Return Answer + Source Citations</div>
+              <div class="vstep-desc">JSON { reply, sources[] } sent to browser. Chat widget renders response text and source chips showing page_type · project name with relevance score on hover.</div>
+              <div class="vstep-code">{ reply: "...", sources: [{ page_type:"PRD", project:"BIN...", score:0.87 }] }</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════
+         SECTION 4 — SCOPE ENFORCEMENT
+         ══════════════════════════════════════════════════ -->
+    <div class="section">
+      <div class="sec-head">
+        <div class="sec-icon" style="background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.25);">🔒</div>
+        <div>
+          <h2>RAG Scope Enforcement — Two Layers</h2>
+          <p>How the chatbot is prevented from answering outside project documents</p>
+        </div>
+      </div>
+
+      <div class="scope-grid">
+
+        <div class="scope-card" style="border-color:rgba(244,114,182,.2);">
+          <div class="scope-head">
+            <span style="font-size:18px">🗄️</span>
+            <span style="color:#f9a8d4">Layer 1 — Retrieval Scope (ChromaDB)</span>
+            <span class="scope-badge" style="background:var(--rose-dim);color:#f9a8d4;border:1px solid rgba(244,114,182,.25)">Vector DB</span>
+          </div>
+          <ul class="scope-list">
+            <li><span class="dot" style="background:#f472b6"></span>Only project HTML pages are indexed — PRDs, status trackers, learning summaries</li>
+            <li><span class="dot" style="background:#f472b6"></span>Navigation pages (default.html, ai-learning.html, projects.html) are explicitly excluded</li>
+            <li><span class="dot" style="background:#f472b6"></span>_discover_pages() defines the exact whitelist — new pages must be added intentionally</li>
+            <li><span class="dot" style="background:#f472b6"></span>Claude never sees content from outside this index — retrieval is the first gate</li>
+            <li><span class="dot" style="background:#f472b6"></span>Re-index button in chat header refreshes after new projects are uploaded</li>
+          </ul>
+        </div>
+
+        <div class="scope-card" style="border-color:rgba(159,110,245,.2);">
+          <div class="scope-head">
+            <span style="font-size:18px">✨</span>
+            <span style="color:#c4b5fd">Layer 2 — Generation Scope (System Prompt)</span>
+            <span class="scope-badge" style="background:var(--purple-dim);color:#c4b5fd;border:1px solid rgba(159,110,245,.25)">LLM Guard</span>
+          </div>
+          <ul class="scope-list">
+            <li><span class="dot" style="background:#9f6ef5"></span>"Answer ONLY from the project documents provided as context below"</li>
+            <li><span class="dot" style="background:#9f6ef5"></span>"If the answer is not in the context, say: I don't have that information"</li>
+            <li><span class="dot" style="background:#9f6ef5"></span>"Never fabricate data — always cite which project or document you reference"</li>
+            <li><span class="dot" style="background:#9f6ef5"></span>"For status questions, reference actual numbers (tasks, %, DRIs) from context"</li>
+            <li><span class="dot" style="background:#9f6ef5"></span>Source chips shown in UI make provenance visible to the user on every answer</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════
+         SECTION 5 — TECH STACK
+         ══════════════════════════════════════════════════ -->
+    <div class="section">
+      <div class="sec-head">
+        <div class="sec-icon" style="background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.25);">🔧</div>
+        <div>
+          <h2>Technology Stack</h2>
+          <p>Every tool, its role, and why it was chosen</p>
+        </div>
+      </div>
+
+      <div class="tech-grid">
+
+        <div class="tech-card">
+          <div class="tech-icon" style="background:rgba(79,142,247,.12);border:1px solid rgba(79,142,247,.25)">🐍</div>
+          <div>
+            <div class="tech-name" style="color:#93c5fd">Python stdlib HTTP Server</div>
+            <div class="tech-role">server.py — zero-dependency local server. Handles GET (static), POST /upload-project, POST /api/chat, POST /api/reindex. Auto-installs deps at startup.</div>
+          </div>
+        </div>
+
+        <div class="tech-card">
+          <div class="tech-icon" style="background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.25)">📊</div>
+          <div>
+            <div class="tech-name" style="color:#fcd34d">openpyxl</div>
+            <div class="tech-role">Reads .xlsx project files. Extracts metadata rows (project name, objective) and task rows (step, DRI, due date, status, priority) for page generation.</div>
+          </div>
+        </div>
+
+        <div class="tech-card">
+          <div class="tech-icon" style="background:rgba(244,114,182,.12);border:1px solid rgba(244,114,182,.25)">🌿</div>
+          <div>
+            <div class="tech-name" style="color:#f9a8d4">BeautifulSoup4</div>
+            <div class="tech-role">RAG indexer HTML parser. Strips CSS/JS/nav/footer tags, extracts clean body text, and uses h2/h3 headings as semantic chunk boundaries.</div>
+          </div>
+        </div>
+
+        <div class="tech-card">
+          <div class="tech-icon" style="background:rgba(45,212,191,.12);border:1px solid rgba(45,212,191,.25)">🗄️</div>
+          <div>
+            <div class="tech-name" style="color:#5eead4">ChromaDB</div>
+            <div class="tech-role">Local persistent vector database. No external service. Stores HTML chunks with ONNX MiniLM embeddings. Cosine HNSW index. Persisted to chromadb_store/.</div>
+          </div>
+        </div>
+
+        <div class="tech-card">
+          <div class="tech-icon" style="background:rgba(159,110,245,.12);border:1px solid rgba(159,110,245,.25)">🔢</div>
+          <div>
+            <div class="tech-name" style="color:#c4b5fd">ONNX MiniLM-L6-v2</div>
+            <div class="tech-role">Sentence embedding model bundled with ChromaDB. Runs fully locally (22MB, no API call). Converts text chunks and queries into 384-dimensional vectors.</div>
+          </div>
+        </div>
+
+        <div class="tech-card">
+          <div class="tech-icon" style="background:rgba(159,110,245,.12);border:1px solid rgba(159,110,245,.25)">✨</div>
+          <div>
+            <div class="tech-name" style="color:#c4b5fd">Claude Haiku (Anthropic)</div>
+            <div class="tech-role">LLM for chat response generation via Anthropic SDK. Receives retrieved chunks as context. System prompt enforces strict scope. Requires ANTHROPIC_API_KEY.</div>
+          </div>
+        </div>
+
+        <div class="tech-card">
+          <div class="tech-icon" style="background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.25)">🌐</div>
+          <div>
+            <div class="tech-name" style="color:#6ee7b7">Vanilla JS + CSS</div>
+            <div class="tech-role">Zero-framework frontend. Chat widget (FAB, panel, bubbles, source chips, loading dots), live clock, project hub — all plain JS. No build tools or bundlers needed.</div>
+          </div>
+        </div>
+
+        <div class="tech-card">
+          <div class="tech-icon" style="background:rgba(79,142,247,.12);border:1px solid rgba(79,142,247,.25)">📁</div>
+          <div>
+            <div class="tech-name" style="color:#93c5fd">File System as Database</div>
+            <div class="tech-role">Generated HTML pages stored in projects/{slug}/. registry.json tracks all projects. No SQL DB needed — the file system is the source of truth for the project hub.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    AI PM Tool — Architecture Diagram · Built for <span>Robin Khatwani</span> · <span id="yr"></span>
+  </footer>
+
+</div>
+<script>
+  document.getElementById('yr').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
