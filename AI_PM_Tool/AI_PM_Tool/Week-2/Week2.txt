@@ -1,5 +1,63 @@
 Week 2 - 
 
+Project Review
+23 HTML files across 4 categories:
+
+Category	Files	Content
+Project PRDs	4 × projects/*/prd.html	Requirements, objectives, stakeholders, milestones
+Status Trackers	4 × projects/*/status-tracker.html	Task progress, DRIs, blockers
+Learning Summaries	Week1_Learning_Summary.html, Week2_Learning_Summary.html	AI concepts, frameworks
+Navigation/Hub	default.html, ai-learning.html, projects.html	Skip — no content value
+Server: Python, port 8080, already has a do_POST handler — easily extensible.
+
+RAG Architecture Design
+INDEXING PIPELINE (runs once at server start)
+─────────────────────────────────────────────
+ 23 HTML files
+      │
+      ▼ BeautifulSoup (strip all CSS/JS/tags → clean text)
+      │
+      ▼ Section Chunker (split by <h2>/<h3> headings, ~300 words/chunk)
+      │   Each chunk carries metadata:
+      │   { source_file, page_type, project_name, section_title }
+      │
+      ▼ Embedding Model (sentence-transformers: all-MiniLM-L6-v2, local/free)
+      │
+      ▼ ChromaDB (local persistent store → chromadb_store/)
+QUERY PIPELINE (per user message)
+──────────────────────────────────
+ User types a question in the chat widget
+      │
+      ▼ Embed the question (same model)
+      │
+      ▼ ChromaDB cosine similarity → top 5 chunks retrieved
+      │
+      ▼ Build prompt:
+      │   [System: "Only answer from context below. Cite source."]
+      │   [Retrieved chunks with metadata]
+      │   [User question]
+      │
+      ▼ Claude API (claude-haiku-4-5 — fast + cheap)
+      │
+      ▼ Stream response back to chat widget in default.html
+Key Design Decisions
+Why ChromaDB? Runs fully local — no external vector DB service. Persists to disk so re-indexing only happens when HTML files change.
+
+Why sentence-transformers (not Claude embeddings)? Anthropic has no embeddings API. all-MiniLM-L6-v2 is 22MB, runs locally, semantically understands project text well.
+
+Scope enforcement — two layers:
+
+Retrieval layer: ChromaDB only contains chunks from project HTML pages (navigation pages excluded)
+Prompt layer: System prompt explicitly instructs Claude to only answer from provided context, say "I don't have that information" otherwise
+Chunking approach: Split by heading hierarchy, not fixed token count — so each chunk maps to one logical section (e.g. "Problem Statement", "Milestones", "Phase 2 Content"). This gives cleaner retrieval.
+
+What gets built
+rag_engine.py — indexing + retrieval logic (ChromaDB + embeddings)
+server.py — add POST /api/chat and GET /api/index-status endpoints
+default.html — floating chat widget (vanilla JS, matches dark theme)
+requirements.txt — chromadb, beautifulsoup4, anthropic, sentence-transformers
+
+
 TOKENS - 
 What is Token - 
 A token is the smallest unit of text a model can process — and every cost, every limit, and every architectural decision in AI ultimately comes back to counting tokens. 
@@ -797,3 +855,10 @@ RAG
 
 You now have the complete foundation:
 TopicWhat You LearnedTokensHow text becomes numbers — the unit of everythingTransformersHow models read (Encoder) and write (Decoder) using attentionGroundingHow to make model outputs trustworthy and traceableRAGHow to build a system that retrieves and reasons from your own documents
+
+
+AGENTIC RAG
+
+CONTEXT LEARNING and CHALLENGES
+
+
