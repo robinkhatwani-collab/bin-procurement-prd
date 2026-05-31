@@ -4,13 +4,13 @@
 #  Run this script ONCE to enable automatic startup at every login.
 #
 #  Usage:
-#    bash ~/Desktop/Robin\ AI\ Learnings/setup_autostart.sh
+#    bash ~/AI-Learning-Project/setup_autostart.sh
 #
 #  To disable auto-start later, run:
-#    bash ~/Desktop/Robin\ AI\ Learnings/setup_autostart.sh --uninstall
+#    bash ~/AI-Learning-Project/setup_autostart.sh --uninstall
 # ═════════════════════════════════════════════════════════════════════════════
 
-PROJECT_DIR="/Users/robinkhatwani/Desktop/Robin AI Learnings"
+PROJECT_DIR="/Users/robinkhatwani/AI-Learning-Project"
 PLIST_NAME="com.robinkhatwani.bintracker.plist"
 PLIST_SRC="$PROJECT_DIR/$PLIST_NAME"
 PLIST_DST="$HOME/Library/LaunchAgents/$PLIST_NAME"
@@ -125,5 +125,5 @@ echo "  Log file:     $PROJECT_DIR/server.log"
 echo "  Error log:    $PROJECT_DIR/server_error.log"
 echo ""
 echo "  To disable auto-start later:"
-echo "  bash ~/Desktop/Robin\\ AI\\ Learnings/setup_autostart.sh --uninstall"
+echo "  bash ~/AI-Learning-Project/setup_autostart.sh --uninstall"
 echo ""

@@ -4,7 +4,7 @@
 #  Called by launchd at every login.  Logs to server.log in the same folder.
 # ─────────────────────────────────────────────────────────────────────────────
 
-SCRIPT_DIR="/Users/robinkhatwani/Desktop/Robin AI Learnings"
+SCRIPT_DIR="/Users/robinkhatwani/AI-Learning-Project"
 LOG_FILE="$SCRIPT_DIR/server.log"
 
 # ── Locate python3 (covers system, Homebrew Intel, Homebrew Apple Silicon) ──

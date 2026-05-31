@@ -12,12 +12,12 @@
     <key>ProgramArguments</key>
     <array>
         <string>/bin/bash</string>
-        <string>/Users/robinkhatwani/Desktop/Robin AI Learnings/start_server.sh</string>
+        <string>/Users/robinkhatwani/AI-Learning-Project/start_server.sh</string>
     </array>
 
     <!-- Working directory -->
     <key>WorkingDirectory</key>
-    <string>/Users/robinkhatwani/Desktop/Robin AI Learnings</string>
+    <string>/Users/robinkhatwani/AI-Learning-Project</string>
 
     <!-- Start automatically when the agent is loaded (at login) -->
     <key>RunAtLoad</key>
@@ -33,10 +33,10 @@
 
     <!-- Log files (server.py also writes its own stdout here via the wrapper) -->
     <key>StandardOutPath</key>
-    <string>/Users/robinkhatwani/Desktop/Robin AI Learnings/server.log</string>
+    <string>/Users/robinkhatwani/AI-Learning-Project/server.log</string>
 
     <key>StandardErrorPath</key>
-    <string>/Users/robinkhatwani/Desktop/Robin AI Learnings/server_error.log</string>
+    <string>/Users/robinkhatwani/AI-Learning-Project/server_error.log</string>
 
 </dict>
 </plist>

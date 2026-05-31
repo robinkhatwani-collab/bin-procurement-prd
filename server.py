@@ -14,6 +14,7 @@ PORT             = 8080
 BASE_DIR         = os.path.dirname(os.path.abspath(__file__))
 EXCEL_FILENAME   = "Project_Input_BIN_SS.xlsx"
 TRACKER_FILENAME = "Project_StatusTracker.html"
+LANDING_REL      = "AI_PM_Tool/AI_PM_Tool/default.html"   # served at "/"
 LAUNCH_DATE      = date(2026, 10, 10)
 AUTO_REFRESH_S   = 60
 
@@ -455,10 +456,21 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         path = self.path.split('?')[0]
 
-        # Landing page
+        # Landing page → default.html (with injected <base> so its relative links resolve)
         if path in ('/', ''):
-            body = render_landing(datetime.now().strftime('%d %b %Y, %H:%M')).encode('utf-8')
-            self._send_html(body)
+            landing_path = os.path.join(BASE_DIR, LANDING_REL)
+            if os.path.isfile(landing_path):
+                with open(landing_path, encoding='utf-8') as f:
+                    html = f.read()
+                base_tag = '<base href="/%s/">' % os.path.dirname(LANDING_REL)
+                low = html.lower()
+                hidx = low.find('<head')
+                if hidx != -1:
+                    insert_at = html.find('>', hidx) + 1
+                    html = html[:insert_at] + base_tag + html[insert_at:]
+                self._send_html(html.encode('utf-8'))
+            else:
+                self._send_html(render_landing(datetime.now().strftime('%d %b %Y, %H:%M')).encode('utf-8'))
             return
 
         # Favicon
