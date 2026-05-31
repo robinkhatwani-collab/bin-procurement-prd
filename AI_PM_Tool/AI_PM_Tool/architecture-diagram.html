@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Data Flow Diagram — AI PM Tool</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #0b0f1a;
+      --surface:      #111827;
+      --surface2:     #161d2e;
+      --surface3:     #1c2540;
+      --border:       rgba(255,255,255,0.08);
+      --border2:      rgba(255,255,255,0.13);
+      --text:         #f0f4ff;
+      --text-muted:   #8b9ab4;
+      --text-dim:     #5a6a84;
+      --primary:      #4f8ef7;
+      --secondary:    #2dd4bf;
+      --purple:       #9f6ef5;
+      --accent:       #f59e0b;
+      --green:        #34d399;
+      --red:          #f87171;
+      --rose:         #f472b6;
+      --glow-blue:    rgba(79,142,247,0.22);
+      --glow-purple:  rgba(159,110,245,0.22);
+      --glow-teal:    rgba(45,212,191,0.22);
+      --glow-amber:   rgba(245,158,11,0.22);
+      --glow-green:   rgba(52,211,153,0.22);
+      --glow-rose:    rgba(244,114,182,0.22);
+      --radius:       14px;
+      --shadow:       0 4px 24px rgba(0,0,0,0.35);
+    }
+
+    html, body {
+      min-height: 100vh;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 70% 50% at 15% 15%, rgba(79,142,247,.09) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 45% at 85% 75%, rgba(159,110,245,.09) 0%, transparent 60%);
+      pointer-events: none; z-index: 0;
+    }
+
+    /* ── NAV ── */
+    .top-nav {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 32px; height: 62px;
+      background: rgba(11,15,26,0.88);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-weight: 800; font-size: 1rem;
+      color: var(--text); text-decoration: none; letter-spacing: -0.3px;
+    }
+    .nav-logo span { color: var(--primary); }
+    .back-btn {
+      font-size: 0.82rem; font-weight: 600; color: var(--text-muted);
+      text-decoration: none; padding: 6px 14px; border-radius: 8px;
+      border: 1px solid var(--border2); transition: all 0.2s;
+    }
+    .back-btn:hover {
+      color: var(--text);
+      border-color: rgba(255,255,255,0.25);
+      background: rgba(255,255,255,0.05);
+    }
+
+    /* ── MAIN ── */
+    main {
+      position: relative; z-index: 1;
+      padding: 40px 24px 80px;
+      max-width: 1200px; margin: 0 auto;
+    }
+
+    /* ── HERO ── */
+    .hero { text-align: center; margin-bottom: 30px; }
+    .hero-badge {
+      display: inline-block;
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 1.5px;
+      text-transform: uppercase; color: var(--primary);
+      background: rgba(79,142,247,0.1);
+      border: 1px solid rgba(79,142,247,0.25);
+      border-radius: 20px; padding: 5px 16px; margin-bottom: 14px;
+    }
+    .hero h1 {
+      font-size: 2.2rem; font-weight: 800; letter-spacing: -0.8px; margin-bottom: 10px;
+    }
+    .hero p { color: var(--text-muted); font-size: 0.95rem; max-width: 580px; margin: 0 auto; }
+
+    /* ── LEGEND ── */
+    .legend {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      justify-content: center; margin-bottom: 28px;
+    }
+    .legend-chip {
+      display: flex; align-items: center; gap: 7px;
+      font-size: 0.75rem; font-weight: 600;
+      padding: 5px 13px; border-radius: 20px; border: 1px solid;
+    }
+    .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .chip-amber  { color:#f59e0b; background:rgba(245,158,11,0.1);   border-color:rgba(245,158,11,0.3); }
+    .chip-purple { color:#9f6ef5; background:rgba(159,110,245,0.1);  border-color:rgba(159,110,245,0.3); }
+    .chip-teal   { color:#2dd4bf; background:rgba(45,212,191,0.1);   border-color:rgba(45,212,191,0.3); }
+    .chip-rose   { color:#f472b6; background:rgba(244,114,182,0.1);  border-color:rgba(244,114,182,0.3); }
+    .chip-blue   { color:#4f8ef7; background:rgba(79,142,247,0.1);   border-color:rgba(79,142,247,0.3); }
+    .chip-green  { color:#34d399; background:rgba(52,211,153,0.1);   border-color:rgba(52,211,153,0.3); }
+
+    /* ── DIAGRAM WRAPPER ── */
+    .diagram-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 20px;
+      padding: 16px;
+      box-shadow: 0 8px 48px rgba(0,0,0,0.45);
+      overflow: hidden;
+    }
+    .diagram-wrap svg { width: 100%; height: auto; display: block; }
+
+    /* ── SVG FLOW ANIMATIONS ── */
+    @keyframes flow        { from { stroke-dashoffset: 24; } to { stroke-dashoffset: 0; } }
+    @keyframes flow-slow   { from { stroke-dashoffset: 36; } to { stroke-dashoffset: 0; } }
+    @keyframes flow-bridge { from { stroke-dashoffset: 42; } to { stroke-dashoffset: 0; } }
+
+    .fa        { animation: flow        0.85s linear infinite; }
+    .fa-slow   { animation: flow-slow   1.55s linear infinite; }
+    .fa-bridge { animation: flow-bridge 2.20s linear infinite; }
+
+    /* ── SUMMARY CARDS ── */
+    .summary-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 20px; margin-top: 32px;
+    }
+    .s-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 22px;
+    }
+    .s-card .s-icon { font-size: 1.5rem; margin-bottom: 10px; }
+    .s-card h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 8px; }
+    .s-card p  { color: var(--text-muted); font-size: 0.82rem; line-height: 1.6; }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center; padding: 36px 0 16px;
+      color: var(--text-dim); font-size: 0.8rem;
+      position: relative; z-index: 1;
+    }
+
+    @media (max-width: 768px) {
+      .summary-grid { grid-template-columns: 1fr; }
+      main { padding: 24px 16px 60px; }
+      .hero h1 { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <a class="nav-logo" href="default.html">Robin <span>AI</span> Learnings</a>
+  <a class="back-btn" href="default.html">← Dashboard</a>
+</nav>
+
+<main>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-badge">System Architecture</div>
+    <h1>Live Data Flow Diagram</h1>
+    <p>End-to-end flow — from Excel upload through AI generation to the RAG-powered chat assistant</p>
+  </div>
+
+  <!-- LEGEND -->
+  <div class="legend">
+    <div class="legend-chip chip-amber">
+      <div class="legend-dot" style="background:#f59e0b"></div>Project Input
+    </div>
+    <div class="legend-chip chip-purple">
+      <div class="legend-dot" style="background:#9f6ef5"></div>AI · Claude
+    </div>
+    <div class="legend-chip chip-teal">
+      <div class="legend-dot" style="background:#2dd4bf"></div>Storage
+    </div>
+    <div class="legend-chip chip-rose">
+      <div class="legend-dot" style="background:#f472b6"></div>RAG Processing
+    </div>
+    <div class="legend-chip chip-blue">
+      <div class="legend-dot" style="background:#4f8ef7"></div>User Interface
+    </div>
+    <div class="legend-chip chip-green">
+      <div class="legend-dot" style="background:#34d399"></div>Output
+    </div>
+  </div>
+
+  <!-- SVG DIAGRAM -->
+  <div class="diagram-wrap">
+    <!--
+      COORDINATE SYSTEM (viewBox 0 0 1110 975)
+      ─────────────────────────────────────────
+      Left lane  : x=20,  y=55, w=510, h=905  (amber)
+      Right lane : x=580, y=55, w=510, h=905  (rose)
+      Gap center : x=550
+
+      Left nodes : x=60, w=420  →  cx=270, right-edge=480
+      Right nodes: x=620, w=420 →  cx=830, right-edge=1040
+
+      Node height = 62 px
+      Left tops   : 82 187 292 397 502 607 712
+      Right tops  : 82 187 292 397  [sep@487]  515 620 725 830
+
+      Bridge  : M 480,533 C 555,533 555,113 620,113   (N5 → R1)
+      DB loop : M 1040,428 C 1095,428 1095,651 1040,651  (R4 ↔ R6)
+    -->
+    <svg viewBox="0 0 1110 975" xmlns="http://www.w3.org/2000/svg"
+         font-family="Inter, sans-serif">
+      <defs>
+        <!-- Arrowhead markers per colour -->
+        <marker id="a-amber"   markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3z" fill="#f59e0b"/>
+        </marker>
+        <marker id="a-purple"  markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3z" fill="#9f6ef5"/>
+        </marker>
+        <marker id="a-teal"    markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3z" fill="#2dd4bf"/>
+        </marker>
+        <marker id="a-teal-lg" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+          <path d="M0,0 L0,8 L10,4z" fill="#2dd4bf"/>
+        </marker>
+        <marker id="a-rose"    markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3z" fill="#f472b6"/>
+        </marker>
+        <marker id="a-blue"    markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3z" fill="#4f8ef7"/>
+        </marker>
+        <marker id="a-green"   markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3z" fill="#34d399"/>
+        </marker>
+      </defs>
+
+      <!-- ════════════════════════════════════════
+           LANE BACKGROUNDS
+           ════════════════════════════════════════ -->
+      <!-- Left lane: Project Creation -->
+      <rect x="20" y="55" width="510" height="905" rx="16"
+            fill="rgba(245,158,11,0.03)" stroke="rgba(245,158,11,0.22)" stroke-width="1.5"/>
+      <!-- Right lane: RAG Chatbot -->
+      <rect x="580" y="55" width="510" height="905" rx="16"
+            fill="rgba(244,114,182,0.03)" stroke="rgba(244,114,182,0.22)" stroke-width="1.5"/>
+
+      <!-- Lane titles (above rects) -->
+      <text x="275" y="44" text-anchor="middle" font-size="11" font-weight="700"
+            letter-spacing="1.5" fill="rgba(245,158,11,0.78)">🏗  PROJECT CREATION FLOW</text>
+      <text x="835" y="44" text-anchor="middle" font-size="11" font-weight="700"
+            letter-spacing="1.5" fill="rgba(244,114,182,0.78)">💬  RAG CHATBOT FLOW</text>
+
+      <!-- Phase labels inside right lane -->
+      <text x="835" y="75" text-anchor="middle" font-size="10" font-weight="700"
+            letter-spacing="1.2" fill="rgba(45,212,191,0.68)">▲  PHASE A — INDEXING</text>
+
+
+      <!-- ════════════════════════════════════════
+           LEFT LANE — PROJECT CREATION NODES
+           ════════════════════════════════════════
+           x=60, w=420, cx=270, badge cx=458
+           center_y = top + 31
+           title_y  = center_y - 9
+           sub_y    = center_y + 11
+           ════════════════════════════════════════ -->
+
+      <!-- N1 · Upload Excel · amber · top=82 · center=113 -->
+      <rect x="60" y="82" width="420" height="62" rx="10"
+            fill="rgba(245,158,11,0.11)" stroke="#f59e0b" stroke-width="1.5"/>
+      <text x="100" y="113" font-size="20" dominant-baseline="central">📊</text>
+      <text x="133" y="104" font-size="12.5" font-weight="700" fill="#f0f4ff">Upload Excel File</text>
+      <text x="133" y="123" font-size="10.5" fill="#8b9ab4">User drops Project_Input.xlsx into dashboard</text>
+      <circle cx="458" cy="96"  r="12" fill="#f59e0b"/>
+      <text x="458" y="96"  text-anchor="middle" dominant-baseline="central"
+            font-size="10" font-weight="800" fill="#0b0f1a">1</text>
+
+      <!-- N2 · Python Server · amber · top=187 · center=218 -->
+      <rect x="60" y="187" width="420" height="62" rx="10"
+            fill="rgba(245,158,11,0.11)" stroke="#f59e0b" stroke-width="1.5"/>
+      <text x="100" y="218" font-size="20" dominant-baseline="central">🐍</text>
+      <text x="133" y="209" font-size="12.5" font-weight="700" fill="#f0f4ff">Python HTTP Server</text>
+      <text x="133" y="228" font-size="10.5" fill="#8b9ab4">Receives POST /api/upload · port 8080</text>
+      <circle cx="458" cy="201" r="12" fill="#f59e0b"/>
+      <text x="458" y="201" text-anchor="middle" dominant-baseline="central"
+            font-size="10" font-weight="800" fill="#0b0f1a">2</text>
+
+      <!-- N3 · parse_excel() · amber · top=292 · center=323 -->
+      <rect x="60" y="292" width="420" height="62" rx="10"
+            fill="rgba(245,158,11,0.11)" stroke="#f59e0b" stroke-width="1.5"/>
+      <text x="100" y="323" font-size="20" dominant-baseline="central">📝</text>
+      <text x="133" y="314" font-size="12.5" font-weight="700" fill="#f0f4ff">parse_excel()</text>
+      <text x="133" y="333" font-size="10.5" fill="#8b9ab4">openpyxl extracts rows → structured data dict</text>
+      <circle cx="458" cy="306" r="12" fill="#f59e0b"/>
+      <text x="458" y="306" text-anchor="middle" dominant-baseline="central"
+            font-size="10" font-weight="800" fill="#0b0f1a">3</text>
+
+      <!-- N4 · Claude AI Generator · purple · top=397 · center=428 -->
+      <rect x="60" y="397" width="420" height="62" rx="10"
+            fill="rgba(159,110,245,0.11)" stroke="#9f6ef5" stroke-width="1.5"/>
+      <text x="100" y="428" font-size="20" dominant-baseline="central">🤖</text>
+      <text x="133" y="419" font-size="12.5" font-weight="700" fill="#f0f4ff">Claude AI Generator</text>
+      <text x="133" y="438" font-size="10.5" fill="#8b9ab4">Generates PRD · Status Tracker · Summary HTML</text>
+      <circle cx="458" cy="411" r="12" fill="#9f6ef5"/>
+      <text x="458" y="411" text-anchor="middle" dominant-baseline="central"
+            font-size="10" font-weight="800" fill="#fff">4</text>
+
+      <!-- N5 · File System · teal · top=502 · center=533 -->
+      <rect x="60" y="502" width="420" height="62" rx="10"
+            fill="rgba(45,212,191,0.11)" stroke="#2dd4bf" stroke-width="1.5"/>
+      <text x="100" y="533" font-size="20" dominant-baseline="central">💾</text>
+      <text x="133" y="524" font-size="12.5" font-weight="700" fill="#f0f4ff">File System</text>
+      <text x="133" y="543" font-size="10.5" fill="#8b9ab4">Writes prd.html · status-tracker.html to disk</text>
+      <circle cx="458" cy="516" r="12" fill="#2dd4bf"/>
+      <text x="458" y="516" text-anchor="middle" dominant-baseline="central"
+            font-size="10" font-weight="800" fill="#0b0f1a">5</text>
+
+      <!-- N6 · Project Registry · teal · top=607 · center=638 -->
+      <rect x="60" y="607" width="420" height="62" rx="10"
+            fill="rgba(45,212,191,0.11)" stroke="#2dd4bf" stroke-width="1.5"/>
+      <text x="100" y="638" font-size="20" dominant-baseline="central">📋</text>
+      <text x="133" y="629" font-size="12.5" font-weight="700" fill="#f0f4ff">Project Registry + Hub</text>
+      <text x="133" y="648" font-size="10.5" fill="#8b9ab4">Updates projects.json · rebuilds project hub</text>
+      <circle cx="458" cy="621" r="12" fill="#2dd4bf"/>
+      <text x="458" y="621" text-anchor="middle" dominant-baseline="central"
+            font-size="10" font-weight="800" fill="#0b0f1a">6</text>
+
+      <!-- N7 · User Dashboard · green · top=712 · center=743 -->
+      <rect x="60" y="712" width="420" height="62" rx="10"
+            fill="rgba(52,211,153,0.11)" stroke="#34d399" stroke-width="1.5"/>
+      <text x="100" y="743" font-size="20" dominant-baseline="central">👤</text>
+      <text x="133" y="734" font-size="12.5" font-weight="700" fill="#f0f4ff">User Views Dashboard</text>
+      <text x="133" y="753" font-size="10.5" fill="#8b9ab4">Project pages live at localhost:8080/projects/</text>
+      <circle cx="458" cy="726" r="12" fill="#34d399"/>
+      <text x="458" y="726" text-anchor="middle" dominant-baseline="central"
+            font-size="10" font-weight="800" fill="#0b0f1a">7</text>
+
+
+      <!-- ════════════════════════════════════════
+           LEFT LANE — VERTICAL ARROWS
+           (x=270, from bottom of node to top of next)
+           N-bottom = top+62, next-top
+           ════════════════════════════════════════ -->
+      <!-- N1→N2 (amber) -->
+      <line x1="270" y1="144" x2="270" y2="185"
+            stroke="#f59e0b" stroke-width="2" stroke-dasharray="6 4"
+            marker-end="url(#a-amber)" class="fa"/>
+      <!-- N2→N3 (amber) -->
+      <line x1="270" y1="249" x2="270" y2="290"
+            stroke="#f59e0b" stroke-width="2" stroke-dasharray="6 4"
+            marker-end="url(#a-amber)" class="fa"/>
+      <!-- N3→N4 (purple — data entering AI) -->
+      <line x1="270" y1="354" x2="270" y2="395"
+            stroke="#9f6ef5" stroke-width="2" stroke-dasharray="6 4"
+            marker-end="url(#a-purple)" class="fa"/>
+      <!-- N4→N5 (teal — output to storage) -->
+      <line x1="270" y1="459" x2="270" y2="500"
+            stroke="#2dd4bf" stroke-width="2" stroke-dasharray="6 4"
+            marker-end="url(#a-teal)" class="fa"/>
+      <!-- N5→N6 (teal) -->
+      <line x1="270" y1="564" x2="270" y2="605"
+            stroke="#2dd4bf" stroke-width="2" stroke-dasharray="6 4"
+            marker-end="url(#a-teal)" class="fa"/>
+      <!-- N6→N7 (green — delivered to user) -->
+      <line x1="270" y1="669" x2="270" y2="710"
+            stroke="#34d399" stroke-width="2" stroke-dasharray="6 4"
+            marker-end="url(#a-green)" class="fa"/>
+
+
+      <!-- ════════════════════════════════════════
+           RIGHT LANE — RAG CHATBOT NODES
+           x=620, w=420, cx=830, badge cx=1018
+           ════════════════════════════════════════ -->
+
+      <!-- R1 · HTML Pages · teal · top=82 · center=113 -->
+      <rect x="620" y="82" width="420" height="62" rx="10"
+            fill="rgba(45,212,191,0.11)" stroke="#2dd4bf" stroke-width="1.5"/>
+      <text x="660" y="113" font-size="20" dominant-baseline="central">📄</text>
+      <text x="693" y="104" font-size="12.5" font-weight="700" fill="#f0f4ff">HTML Pages</text>
+      <text x="693" y="123" font-size="10.5" fill="#8b9ab4">prd.html · status-tracker.html · week summaries</text>
+      <circle cx="1018" cy="96"  r="12" fill="#2dd4bf"/>
+      <text x="1018" y="96"  text-anchor="middle" dominant-baseline="central"
+            font-size="9.5" font-weight="800" fill="#0b0f1a">A1</text>
+
+      <!-- R2 · BS4 Parser · rose · top=187 · center=218 -->
+      <rect x="620" y="187" width="420" height="62" rx="10"
+            fill="rgba(244,114,182,0.11)" stroke="#f472b6" stroke-width="1.5"/>
+      <text x="660" y="218" font-size="20" dominant-baseline="central">🔍</text>
+      <text x="693" y="209" font-size="12.5" font-weight="700" fill="#f0f4ff">BeautifulSoup4 Parser</text>
+      <text x="693" y="228" font-size="10.5" fill="#8b9ab4">Strips CSS/JS/nav · extracts clean text sections</text>
+      <circle cx="1018" cy="201" r="12" fill="#f472b6"/>
+      <text x="1018" y="201" text-anchor="middle" dominant-baseline="central"
+            font-size="9.5" font-weight="800" fill="#fff">A2</text>
+
+      <!-- R3 · Section Chunks · rose · top=292 · center=323 -->
+      <rect x="620" y="292" width="420" height="62" rx="10"
+            fill="rgba(244,114,182,0.11)" stroke="#f472b6" stroke-width="1.5"/>
+      <text x="660" y="323" font-size="20" dominant-baseline="central">✂️</text>
+      <text x="693" y="314" font-size="12.5" font-weight="700" fill="#f0f4ff">Section Chunks</text>
+      <text x="693" y="333" font-size="10.5" fill="#8b9ab4">Split at h2/h3 headings · max 1800 chars each</text>
+      <circle cx="1018" cy="306" r="12" fill="#f472b6"/>
+      <text x="1018" y="306" text-anchor="middle" dominant-baseline="central"
+            font-size="9.5" font-weight="800" fill="#fff">A3</text>
+
+      <!-- R4 · ChromaDB · teal · top=397 · center=428 -->
+      <rect x="620" y="397" width="420" height="62" rx="10"
+            fill="rgba(45,212,191,0.11)" stroke="#2dd4bf" stroke-width="1.5"/>
+      <text x="660" y="428" font-size="20" dominant-baseline="central">🗄️</text>
+      <text x="693" y="419" font-size="12.5" font-weight="700" fill="#f0f4ff">ChromaDB Vector Store</text>
+      <text x="693" y="438" font-size="10.5" fill="#8b9ab4">ONNX MiniLM embeddings · cosine similarity index</text>
+      <circle cx="1018" cy="411" r="12" fill="#2dd4bf"/>
+      <text x="1018" y="411" text-anchor="middle" dominant-baseline="central"
+            font-size="9.5" font-weight="800" fill="#0b0f1a">A4</text>
+
+      <!-- Phase separator line -->
+      <line x1="590" y1="487" x2="1080" y2="487"
+            stroke="rgba(255,255,255,0.1)" stroke-width="1" stroke-dasharray="5 5"/>
+      <text x="835" y="481" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.22)"
+            letter-spacing="3">— — — — — — — — — — — — —</text>
+      <text x="835" y="508" text-anchor="middle" font-size="10" font-weight="700"
+            letter-spacing="1.2" fill="rgba(79,142,247,0.72)">▼  PHASE B — RETRIEVAL</text>
+
+      <!-- R5 · User Question · blue · top=515 · center=546 -->
+      <rect x="620" y="515" width="420" height="62" rx="10"
+            fill="rgba(79,142,247,0.11)" stroke="#4f8ef7" stroke-width="1.5"/>
+      <text x="660" y="546" font-size="20" dominant-baseline="central">💬</text>
+      <text x="693" y="537" font-size="12.5" font-weight="700" fill="#f0f4ff">User Types Question</text>
+      <text x="693" y="556" font-size="10.5" fill="#8b9ab4">Chat widget sends query via POST /api/chat</text>
+      <circle cx="1018" cy="529" r="12" fill="#4f8ef7"/>
+      <text x="1018" y="529" text-anchor="middle" dominant-baseline="central"
+            font-size="9.5" font-weight="800" fill="#fff">B1</text>
+
+      <!-- R6 · RAG Engine · rose · top=620 · center=651 -->
+      <rect x="620" y="620" width="420" height="62" rx="10"
+            fill="rgba(244,114,182,0.11)" stroke="#f472b6" stroke-width="1.5"/>
+      <text x="660" y="651" font-size="20" dominant-baseline="central">🧠</text>
+      <text x="693" y="642" font-size="12.5" font-weight="700" fill="#f0f4ff">RAG Engine · retrieve()</text>
+      <text x="693" y="661" font-size="10.5" fill="#8b9ab4">Embeds query · returns top-5 matching chunks</text>
+      <circle cx="1018" cy="634" r="12" fill="#f472b6"/>
+      <text x="1018" y="634" text-anchor="middle" dominant-baseline="central"
+            font-size="9.5" font-weight="800" fill="#fff">B2</text>
+
+      <!-- R7 · Claude Haiku · purple · top=725 · center=756 -->
+      <rect x="620" y="725" width="420" height="62" rx="10"
+            fill="rgba(159,110,245,0.11)" stroke="#9f6ef5" stroke-width="1.5"/>
+      <text x="660" y="756" font-size="20" dominant-baseline="central">✨</text>
+      <text x="693" y="747" font-size="12.5" font-weight="700" fill="#f0f4ff">Claude Haiku (LLM)</text>
+      <text x="693" y="766" font-size="10.5" fill="#8b9ab4">Generates answer scoped to retrieved context only</text>
+      <circle cx="1018" cy="739" r="12" fill="#9f6ef5"/>
+      <text x="1018" y="739" text-anchor="middle" dominant-baseline="central"
+            font-size="9.5" font-weight="800" fill="#fff">B3</text>
+
+      <!-- R8 · Chat Answer · green · top=830 · center=861 -->
+      <rect x="620" y="830" width="420" height="62" rx="10"
+            fill="rgba(52,211,153,0.11)" stroke="#34d399" stroke-width="1.5"/>
+      <text x="660" y="861" font-size="20" dominant-baseline="central">✅</text>
+      <text x="693" y="852" font-size="12.5" font-weight="700" fill="#f0f4ff">Answer Displayed in Chat</text>
+      <text x="693" y="871" font-size="10.5" fill="#8b9ab4">Source chips shown · scoped to project pages only</text>
+      <circle cx="1018" cy="844" r="12" fill="#34d399"/>
+      <text x="1018" y="844" text-anchor="middle" dominant-baseline="central"
+            font-size="9.5" font-weight="800" fill="#0b0f1a">B4</text>
+
+
+      <!-- ════════════════════════════════════════
+           RIGHT LANE — VERTICAL ARROWS
+           (x=830)
+           ════════════════════════════════════════ -->
+      <!-- R1→R2 (rose) -->
+      <line x1="830" y1="144" x2="830" y2="185"
+            stroke="#f472b6" stroke-width="2" stroke-dasharray="6 4"
+            marker-end="url(#a-rose)" class="fa"/>
+      <!-- R2→R3 (rose) -->
+      <line x1="830" y1="249" x2="830" y2="290"
+            stroke="#f472b6" stroke-width="2" stroke-dasharray="6 4"
+            marker-end="url(#a-rose)" class="fa"/>
+      <!-- R3→R4 (teal — entering vector store) -->
+      <line x1="830" y1="354" x2="830" y2="395"
+            stroke="#2dd4bf" stroke-width="2" stroke-dasharray="6 4"
+            marker-end="url(#a-teal)" class="fa"/>
+      <!-- R4→R5 (blue — spans the phase separator) -->
+      <line x1="830" y1="459" x2="830" y2="513"
+            stroke="#4f8ef7" stroke-width="2" stroke-dasharray="6 4"
+            marker-end="url(#a-blue)" class="fa"/>
+      <!-- R5→R6 (rose) -->
+      <line x1="830" y1="577" x2="830" y2="618"
+            stroke="#f472b6" stroke-width="2" stroke-dasharray="6 4"
+            marker-end="url(#a-rose)" class="fa"/>
+      <!-- R6→R7 (purple — into Claude) -->
+      <line x1="830" y1="682" x2="830" y2="723"
+            stroke="#9f6ef5" stroke-width="2" stroke-dasharray="6 4"
+            marker-end="url(#a-purple)" class="fa"/>
+      <!-- R7→R8 (green — delivered to user) -->
+      <line x1="830" y1="787" x2="830" y2="828"
+            stroke="#34d399" stroke-width="2" stroke-dasharray="6 4"
+            marker-end="url(#a-green)" class="fa"/>
+
+
+      <!-- ════════════════════════════════════════
+           BRIDGE ARROW
+           N5 (File System) right edge (480, 533)
+           → R1 (HTML Pages) left edge  (620, 113)
+
+           Bezier goes right, curves up through the
+           50px gap between lanes, arrives horizontal.
+           ════════════════════════════════════════ -->
+      <path d="M 480,533 C 555,533 555,113 620,113"
+            stroke="#2dd4bf" stroke-width="2.5" fill="none"
+            stroke-dasharray="9 5"
+            marker-end="url(#a-teal-lg)"
+            class="fa-bridge"/>
+
+      <!-- Bridge label — rotated along curve midpoint (~549, 323) -->
+      <text x="549" y="323"
+            text-anchor="middle" dominant-baseline="central"
+            font-size="9.5" font-weight="700"
+            fill="rgba(45,212,191,0.82)"
+            transform="rotate(-90, 549, 323)">Generated HTML → Auto-indexed into RAG</text>
+
+
+      <!-- ════════════════════════════════════════
+           CHROMADB ↔ RAG ENGINE LOOP ARC
+           Shows ChromaDB (R4) is queried by RAG Engine (R6)
+           R4 right edge: (1040, 428)
+           R6 right edge: (1040, 651)
+           Arc curves outward to the right (~x=1095)
+           ════════════════════════════════════════ -->
+      <path d="M 1040,428 C 1095,428 1095,651 1040,651"
+            stroke="#f472b6" stroke-width="2" fill="none"
+            stroke-dasharray="6 4"
+            marker-end="url(#a-rose)"
+            class="fa-slow"/>
+
+      <!-- Loop label — rotated at midpoint (~1098, 540) -->
+      <text x="1098" y="540"
+            text-anchor="middle" dominant-baseline="central"
+            font-size="9" font-weight="700"
+            fill="rgba(244,114,182,0.82)"
+            transform="rotate(90, 1098, 540)">query → retrieve chunks</text>
+
+    </svg>
+  </div><!-- /diagram-wrap -->
+
+  <!-- SUMMARY CARDS -->
+  <div class="summary-grid">
+    <div class="s-card" style="border-color:rgba(245,158,11,0.3)">
+      <div class="s-icon">🏗️</div>
+      <h3 style="color:#f59e0b">Project Creation Flow</h3>
+      <p>Excel upload → Python server → openpyxl parsing → Claude AI generates PRD, Status Tracker, and Summary HTML → saved to disk → project hub updated automatically.</p>
+    </div>
+    <div class="s-card" style="border-color:rgba(45,212,191,0.3)">
+      <div class="s-icon">🔗</div>
+      <h3 style="color:#2dd4bf">Bridge — Auto-Indexing</h3>
+      <p>Every generated HTML page is automatically ingested at server startup. BS4 strips boilerplate, splits content by headings, and chunk embeddings are stored persistently in ChromaDB.</p>
+    </div>
+    <div class="s-card" style="border-color:rgba(244,114,182,0.3)">
+      <div class="s-icon">💬</div>
+      <h3 style="color:#f472b6">RAG Chatbot Flow</h3>
+      <p>User question → embedded → top-5 chunks retrieved from ChromaDB → Claude Haiku generates an answer strictly scoped to project context → answer + source chips displayed in the chat widget.</p>
+    </div>
+  </div>
+
+</main>
+
+<footer>Robin AI Learnings · Data Flow Architecture · 2026</footer>
+
+</body>
+</html>

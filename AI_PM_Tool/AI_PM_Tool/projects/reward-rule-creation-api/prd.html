@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PRD — Reward Rule creation API</title>
+  <style>
+
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0b0f1a; --surface: #111827; --surface2: #161d2e; --surface3: #1c2540;
+      --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.13);
+      --text: #f0f4ff; --text-muted: #8b9ab4; --text-dim: #5a6a84;
+      --primary: #4f8ef7; --primary-dim: rgba(79,142,247,0.15);
+      --secondary: #2dd4bf; --secondary-dim: rgba(45,212,191,0.15);
+      --purple: #9f6ef5; --purple-dim: rgba(159,110,245,0.15);
+      --accent: #f59e0b; --accent-dim: rgba(245,158,11,0.15);
+      --green: #34d399; --green-dim: rgba(52,211,153,0.15);
+      --red: #f87171; --red-dim: rgba(248,113,113,0.15);
+      --radius: 14px; --shadow: 0 4px 24px rgba(0,0,0,0.35);
+    }
+    html, body { min-height: 100vh; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 70% 50% at 15% 15%, rgba(79,142,247,.09) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 45% at 85% 75%, rgba(159,110,245,.09) 0%, transparent 60%);
+      pointer-events: none; z-index: 0;
+    }
+    .page { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; }
+    nav {
+      position: sticky; top: 0; z-index: 20;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 48px; background: rgba(11,15,26,.85);
+      backdrop-filter: blur(14px); border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+    .nav-logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, var(--primary), var(--purple)); border-radius: 8px; display: grid; place-items: center; font-size: 15px; }
+    .nav-logo-text { font-size: 15px; font-weight: 700; }
+    .nav-logo-text span { color: var(--primary); }
+    .back-btn { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--text-muted); text-decoration: none; background: rgba(255,255,255,.04); border: 1px solid var(--border); padding: 7px 14px; border-radius: 9px; transition: all .2s; }
+    .back-btn:hover { color: var(--text); background: rgba(255,255,255,.07); }
+    main { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 48px 32px 80px; width: 100%; }
+    .card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 26px; box-shadow: var(--shadow); margin-bottom: 20px; }
+    .card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 10px; }
+    .card p { color: var(--text-muted); font-size: 0.93rem; }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 18px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; }
+    .callout { border-radius: var(--radius); padding: 18px 22px; margin-bottom: 18px; border-left: 4px solid; }
+    .callout-blue   { background: rgba(37,99,235,.1);  border-color: var(--primary); }
+    .callout-green  { background: rgba(5,150,105,.1);  border-color: var(--green); }
+    .callout-amber  { background: rgba(217,119,6,.1);  border-color: var(--accent); }
+    .callout-purple { background: rgba(124,58,237,.1); border-color: var(--purple); }
+    .callout h4 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; opacity: .6; font-weight: 700; }
+    .callout p { font-size: 0.91rem; color: var(--text-muted); }
+    .callout strong { color: var(--text); }
+    .tag { border-radius: 999px; padding: 3px 12px; font-size: 0.78rem; font-weight: 600; }
+    .tag-blue   { background: var(--primary-dim); color: #93c5fd; }
+    .tag-green  { background: var(--green-dim);   color: #6ee7b7; }
+    .tag-amber  { background: var(--accent-dim);  color: #fcd34d; }
+    .tag-purple { background: var(--purple-dim);  color: #c4b5fd; }
+    .tag-red    { background: var(--red-dim);      color: #fca5a5; }
+    footer { margin-top: auto; text-align: center; padding: 24px; font-size: 12px; color: var(--text-muted); border-top: 1px solid var(--border); }
+
+    .hero { background: linear-gradient(135deg, #0d1b3e 0%, #1a0f4a 50%, #0a2a3a 100%); border-bottom: 1px solid var(--border); padding: 56px 40px 48px; text-align: center; position: relative; overflow: hidden; }
+    .hero::before { content:''; position:absolute; inset:0; background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(79,142,247,.18) 0%, transparent 70%); pointer-events:none; }
+    .hero .badge { position:relative; display:inline-block; background:rgba(79,142,247,.15); border:1px solid rgba(79,142,247,.35); border-radius:999px; padding:5px 16px; font-size:.72rem; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:16px; color:var(--primary); font-weight:700; }
+    .hero h1 { position:relative; font-size:clamp(1.7rem,3.5vw,2.5rem); font-weight:800; letter-spacing:-.5px; margin-bottom:10px; }
+    .hero .sub { position:relative; font-size:.95rem; color:var(--text-muted); max-width:640px; margin:0 auto 26px; line-height:1.6; }
+    .hero-stats { position:relative; display:inline-flex; align-items:center; gap:22px; background:rgba(255,255,255,.06); border:1px solid var(--border2); border-radius:14px; padding:12px 26px; flex-wrap:wrap; justify-content:center; }
+    .stat { text-align:center; }
+    .stat .val { font-size:1.5rem; font-weight:800; }
+    .stat .lbl { font-size:.68rem; color:var(--text-muted); font-weight:500; text-transform:uppercase; letter-spacing:.5px; }
+    .stat-div { width:1px; height:30px; background:var(--border2); }
+    .section-head { display:flex; align-items:center; gap:14px; margin:48px 0 22px; }
+    .section-head h2 { font-size:1.25rem; font-weight:700; }
+    .section-num { font-size:.7rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:1.2px; display:block; margin-bottom:2px; }
+    .section-icon { width:42px; height:42px; border-radius:12px; background:var(--surface2); border:1px solid var(--border); display:grid; place-items:center; font-size:1.1rem; flex-shrink:0; }
+    .milestone-table { width:100%; border-collapse:collapse; font-size:.86rem; border-radius:var(--radius); overflow:hidden; }
+    .milestone-table th { padding:12px 14px; text-align:left; font-size:.72rem; text-transform:uppercase; letter-spacing:.8px; background:var(--surface2); color:var(--text-dim); border-bottom:1px solid var(--border2); white-space:nowrap; }
+    .milestone-table td { padding:11px 14px; border-top:1px solid var(--border); background:var(--surface); vertical-align:middle; }
+    .milestone-table tr:hover td { background:var(--surface2); }
+    .status-badge { display:inline-block; font-size:.72rem; font-weight:600; padding:3px 10px; border-radius:999px; white-space:nowrap; }
+    .status-done       { background:var(--green-dim);  color:var(--green); }
+    .status-inprogress { background:var(--primary-dim);color:var(--primary); }
+    .status-todo       { background:rgba(255,255,255,.06); color:var(--text-muted); }
+    .progress-track { height:7px; background:rgba(255,255,255,.06); border-radius:99px; overflow:hidden; }
+    .progress-fill  { height:100%; background:linear-gradient(90deg,var(--primary),var(--secondary)); border-radius:99px; box-shadow:0 0 10px rgba(79,142,247,.35); }
+    .inner-card { border-radius:10px; padding:16px 18px; }
+    .inner-blue   { background:rgba(37,99,235,.1);   border:1px solid rgba(37,99,235,.22); }
+    .inner-green  { background:rgba(5,150,105,.1);   border:1px solid rgba(5,150,105,.22); }
+    .inner-amber  { background:rgba(217,119,6,.1);   border:1px solid rgba(217,119,6,.22); }
+    .inner-purple { background:rgba(124,58,237,.1);  border:1px solid rgba(124,58,237,.22); }
+    .inner-card strong { display:block; margin-bottom:7px; font-size:.88rem; }
+    .inner-blue   strong { color:#93c5fd; }
+    .inner-green  strong { color:#6ee7b7; }
+    .inner-amber  strong { color:#fcd34d; }
+    .inner-purple strong { color:#c4b5fd; }
+    .inner-card ul { padding-left:16px; font-size:.83rem; color:var(--text-muted); }
+    .inner-card li { margin-bottom:4px; }
+    .risk-table { width:100%; border-collapse:collapse; font-size:.86rem; }
+    .risk-table th { padding:10px 14px; text-align:left; font-size:.7rem; text-transform:uppercase; letter-spacing:.8px; background:var(--surface2); color:var(--text-dim); border-bottom:1px solid var(--border2); }
+    .risk-table td { padding:11px 14px; border-top:1px solid var(--border); background:var(--surface); vertical-align:top; }
+    .risk-table tr:hover td { background:var(--surface2); }
+  </style>
+</head>
+<body>
+<div class="page">
+  <nav>
+    <a class="nav-logo" href="../../default.html">
+      <div class="nav-logo-icon">🤖</div>
+      <div class="nav-logo-text">AI <span>PM</span> Tool</div>
+    </a>
+    <a class="back-btn" href="../../projects.html">← All Projects</a>
+  </nav>
+
+  <header class="hero">
+    <div class="badge">📄 Product Requirements Document</div>
+    <h1>Reward Rule creation API</h1>
+    <p class="sub">💳 Payment Card Network Certification</p>
+    <div class="hero-stats">
+      <div class="stat"><div class="val">31</div><div class="lbl">Steps</div></div>
+      <div class="stat-div"></div>
+      <div class="stat"><div class="val" style="color:var(--green);">4</div><div class="lbl">Done</div></div>
+      <div class="stat-div"></div>
+      <div class="stat"><div class="val" style="color:var(--primary);">2</div><div class="lbl">In Progress</div></div>
+      <div class="stat-div"></div>
+      <div class="stat"><div class="val">13%</div><div class="lbl">Complete</div></div>
+      <div class="stat-div"></div>
+      <div class="stat"><div class="val">4</div><div class="lbl">DRIs</div></div>
+      <div class="stat-div"></div>
+      <div class="stat"><div class="val">4</div><div class="lbl">Phases</div></div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- SECTION 1 — BUSINESS CONTEXT -->
+    <div class="section-head">
+      <div class="section-icon">🧭</div>
+      <div><span class="section-num">Section 1</span><h2>Business Context</h2></div>
+    </div>
+    <div class="callout callout-blue">
+      <h4>What Is This Project?</h4>
+      <p>A <strong>Bank Identification Number (BIN)</strong> — also known as an Issuer Identification Number (IIN) — is the first 6–8 digits of a payment card. It identifies the card network, issuing bank, card type, and country of issue. Before a new card product can be launched, the issuer must obtain a unique BIN from the payment network and complete a structured certification programme involving four key parties: the <strong>Issuer</strong> (the bank), the <strong>Network</strong> (Mastercard / Visa), the <strong>Processor</strong> (transaction handler), and the <strong>Embosser</strong> (card manufacturer).</p>
+    </div>
+    <div class="grid-2">
+      <div class="inner-card inner-purple">
+        <strong>⚠️ The Problem</strong>
+        <p style="font-size:.85rem;color:var(--text-muted);line-height:1.65;margin-top:2px;">The organisation is launching a new payment card product and requires a dedicated Bank Identification Number (BIN) to be procured, registered, and technically certified across all four parties in the payment ecosystem. Without a certified BIN, cards cannot be issued or transacted on the network — blocking the entire card launch programme.</p>
+      </div>
+      <div class="inner-card inner-green">
+        <strong>💡 Business Value</strong>
+        <p style="font-size:.85rem;color:var(--text-muted);line-height:1.65;margin-top:2px;">Successful BIN procurement enables the organisation to issue cards under its own identity on the payment network, unlocking new revenue streams, strengthening brand presence, and delivering a differentiated card product to customers by the target launch date.</p>
+      </div>
+    </div>
+
+    <!-- SECTION 2 — OBJECTIVE & SCOPE -->
+    <div class="section-head">
+      <div class="section-icon">🎯</div>
+      <div><span class="section-num">Section 2</span><h2>Objective &amp; Scope</h2></div>
+    </div>
+    <div class="callout callout-amber">
+      <h4>Project Objective</h4>
+      <p>Tracking the status of Reward Rule Creation API so it will allow the flexibility of Reward Creation dynamically</p>
+    </div>
+    <div class="grid-3">
+      <div class="inner-card inner-blue">
+        <strong>📅 Timeline</strong>
+        <p style="font-size:.85rem;color:var(--text-muted);margin-top:4px;">Start: <strong style="color:var(--text);">May 01, 2026</strong><br/>Target: <strong style="color:var(--text);">Oct 10, 2026</strong></p>
+      </div>
+      <div class="inner-card inner-green">
+        <strong>📊 Scope</strong>
+        <p style="font-size:.85rem;color:var(--text-muted);margin-top:4px;"><strong style="color:var(--text);">31</strong> milestones across <strong style="color:var(--text);">4</strong> phases<br/><strong style="color:var(--text);">4</strong> responsible parties</p>
+      </div>
+      <div class="inner-card inner-amber">
+        <strong>📈 Current Status</strong>
+        <p style="font-size:.85rem;color:var(--text-muted);margin-top:4px;"><strong style="color:var(--green);">4 done</strong> · <strong style="color:var(--primary);">2 active</strong><br/><strong style="color:var(--text-muted);">25</strong> steps remaining</p>
+      </div>
+    </div>
+
+    <!-- SECTION 3 — STAKEHOLDER ECOSYSTEM -->
+    <div class="section-head">
+      <div class="section-icon">👥</div>
+      <div><span class="section-num">Section 3</span><h2>Stakeholder Ecosystem</h2></div>
+    </div>
+    <div class="callout callout-purple">
+      <h4>Four-Party Payment Ecosystem</h4>
+      <p>This programme spans four distinct parties, each with a defined role and accountability. Every milestone is assigned to one or more of these parties and owned by a named DRI.</p>
+    </div>
+    <div class="grid-2" style="margin-bottom:22px;">
+        <div class="card" style="border-left:4px solid var(--primary);">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+            <span style="font-size:1.4rem;">🏦</span>
+            <div>
+              <div style="font-size:.95rem;font-weight:700;">Issuer</div>
+              <div style="font-size:.72rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.8px;">13 Steps · 23% Done</div>
+            </div>
+          </div>
+          <p style="font-size:.82rem;color:var(--text-muted);line-height:1.6;">The card-issuing bank. Owns the customer relationship, submits the BIN request, and approves all SOW and plans.</p>
+        </div>
+        <div class="card" style="border-left:4px solid var(--purple);">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+            <span style="font-size:1.4rem;">🌐</span>
+            <div>
+              <div style="font-size:.95rem;font-weight:700;">Network</div>
+              <div style="font-size:.72rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.8px;">13 Steps · 8% Done</div>
+            </div>
+          </div>
+          <p style="font-size:.82rem;color:var(--text-muted);line-height:1.6;">The payment network (e.g., Mastercard / Visa). Allocates the BIN, manages certification, and governs settlement endpoints.</p>
+        </div>
+        <div class="card" style="border-left:4px solid var(--secondary);">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+            <span style="font-size:1.4rem;">⚙️</span>
+            <div>
+              <div style="font-size:.95rem;font-weight:700;">Processor</div>
+              <div style="font-size:.72rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.8px;">3 Steps · 0% Done</div>
+            </div>
+          </div>
+          <p style="font-size:.82rem;color:var(--text-muted);line-height:1.6;">The transaction processing partner. Generates card cryptographic keys and updates internal systems for the new BIN.</p>
+        </div>
+        <div class="card" style="border-left:4px solid var(--accent);">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+            <span style="font-size:1.4rem;">💳</span>
+            <div>
+              <div style="font-size:.95rem;font-weight:700;">Embosser</div>
+              <div style="font-size:.72rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.8px;">2 Steps · 0% Done</div>
+            </div>
+          </div>
+          <p style="font-size:.82rem;color:var(--text-muted);line-height:1.6;">The card manufacturer. Responsible for personalising, producing, and shipping physical cards to the issuer.</p>
+        </div></div>
+    <div class="section-head" style="margin-top:10px;margin-bottom:16px;">
+      <div class="section-icon">🙋</div>
+      <div><h2 style="font-size:1.05rem;">Directly Responsible Individuals (DRIs)</h2></div>
+    </div>
+    <div class="grid-3">
+        <div class="card" style="border-top:3px solid var(--primary);text-align:center;padding:22px 18px;">
+          <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--primary),rgba(255,255,255,.1));display:grid;place-items:center;margin:0 auto 12px;font-size:1rem;font-weight:800;">R</div>
+          <div style="font-size:.93rem;font-weight:700;margin-bottom:4px;">Robin</div>
+          <a href="mailto:robin.khatwani2@gmail.com" style="font-size:.75rem;color:var(--primary);text-decoration:none;">robin.khatwani2@gmail.com</a>
+        </div>
+        <div class="card" style="border-top:3px solid var(--purple);text-align:center;padding:22px 18px;">
+          <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--purple),rgba(255,255,255,.1));display:grid;place-items:center;margin:0 auto 12px;font-size:1rem;font-weight:800;">M</div>
+          <div style="font-size:.93rem;font-weight:700;margin-bottom:4px;">Monu</div>
+          <a href="mailto:robin.khatwani2@gmail.com" style="font-size:.75rem;color:var(--primary);text-decoration:none;">robin.khatwani2@gmail.com</a>
+        </div>
+        <div class="card" style="border-top:3px solid var(--secondary);text-align:center;padding:22px 18px;">
+          <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--secondary),rgba(255,255,255,.1));display:grid;place-items:center;margin:0 auto 12px;font-size:1rem;font-weight:800;">J</div>
+          <div style="font-size:.93rem;font-weight:700;margin-bottom:4px;">John</div>
+          <a href="mailto:robin.khatwani2@gmail.com" style="font-size:.75rem;color:var(--primary);text-decoration:none;">robin.khatwani2@gmail.com</a>
+        </div>
+        <div class="card" style="border-top:3px solid var(--accent);text-align:center;padding:22px 18px;">
+          <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--accent),rgba(255,255,255,.1));display:grid;place-items:center;margin:0 auto 12px;font-size:1rem;font-weight:800;">A</div>
+          <div style="font-size:.93rem;font-weight:700;margin-bottom:4px;">Ajay</div>
+          <a href="mailto:robin.khatwani2@gmail.com" style="font-size:.75rem;color:var(--primary);text-decoration:none;">robin.khatwani2@gmail.com</a>
+        </div></div>
+
+    <!-- SECTION 4 — PROJECT PHASES -->
+    <div class="section-head">
+      <div class="section-icon">🗺️</div>
+      <div><span class="section-num">Section 4</span><h2>Project Phases &amp; Deliverables</h2></div>
+    </div>
+    
+        <div class="card" style="margin-bottom:20px;border-top:3px solid var(--primary);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+            <h3 style="font-size:1rem;">🚀 Initiation & SOW</h3>
+            <span style="font-size:.78rem;font-weight:700;color:var(--primary);">7 steps · 57% done</span>
+          </div>
+          <div class="progress-track" style="margin-bottom:14px;"><div class="progress-fill" style="width:57%;background:var(--primary);box-shadow:none;"></div></div>
+          <ul style="list-style:none;padding:0;"><li style="margin-bottom:8px;display:flex;align-items:flex-start;gap:8px;"><span class="status-badge status-done" style="margin-top:1px;flex-shrink:0;">✅ Done</span><span style="font-size:.86rem;color:var(--text);"><strong>Request for Project to Network</strong> <span style="color:var(--text-dim);font-size:.78rem;">— Issuer</span><span style="color:var(--text-dim);font-size:.75rem;margin-left:6px;">📅 May 01, 2026</span></span></li><li style="margin-bottom:8px;display:flex;align-items:flex-start;gap:8px;"><span class="status-badge status-inprogress" style="margin-top:1px;flex-shrink:0;">🔄 In Progress</span><span style="font-size:.86rem;color:var(--text);"><strong>Project Creation and PM Assignment</strong> <span style="color:var(--text-dim);font-size:.78rem;">— Network</span><span style="color:var(--text-dim);font-size:.75rem;margin-left:6px;">📅 Jun 05, 2026</span></span></li><li style="margin-bottom:8px;display:flex;align-items:flex-start;gap:8px;"><span class="status-badge status-inprogress" style="margin-top:1px;flex-shrink:0;">🔄 In Progress</span><span style="font-size:.86rem;color:var(--text);"><strong>Project SOW Preparation</strong> <span style="color:var(--text-dim);font-size:.78rem;">— Issuer</span><span style="color:var(--text-dim);font-size:.75rem;margin-left:6px;">📅 Jun 15, 2026</span></span></li><li style="margin-bottom:8px;display:flex;align-items:flex-start;gap:8px;"><span class="status-badge status-done" style="margin-top:1px;flex-shrink:0;">✅ Done</span><span style="font-size:.86rem;color:var(--text);"><strong>Project SOW Approval</strong> <span style="color:var(--text-dim);font-size:.78rem;">— Issuer</span><span style="color:var(--text-dim);font-size:.75rem;margin-left:6px;">📅 Jun 18, 2026</span></span></li><li style="margin-bottom:8px;display:flex;align-items:flex-start;gap:8px;"><span class="status-badge status-done" style="margin-top:1px;flex-shrink:0;">✅ Done</span><span style="font-size:.86rem;color:var(--text);"><strong>Project Plan Proposal</strong> <span style="color:var(--text-dim);font-size:.78rem;">— Network</span><span style="color:var(--text-dim);font-size:.75rem;margin-left:6px;">📅 Jun 25, 2026</span></span></li><li style="margin-bottom:8px;display:flex;align-items:flex-start;gap:8px;"><span class="status-badge status-done" style="margin-top:1px;flex-shrink:0;">✅ Done</span><span style="font-size:.86rem;color:var(--text);"><strong>Project Plan Approval</strong> <span style="color:var(--text-dim);font-size:.78rem;">— Issuer</span><span style="color:var(--text-dim);font-size:.75rem;margin-left:6px;">📅 Jul 01, 2026</span></span></li><li style="margin-bottom:8px;display:flex;align-items:flex-start;gap:8px;"><span class="status-badge status-todo" style="margin-top:1px;flex-shrink:0;">⏳ To Do</span><span style="font-size:.86rem;color:var(--text);"><strong>Token BIN Assignment</strong> <span style="color:var(--text-dim);font-size:.78rem;">— Network</span><span style="color:var(--text-dim);font-size:.75rem;margin-left:6px;">📅 Sep 04, 2026</span></span></li></ul>
+        </div>
+        <div class="card" style="margin-bottom:20px;border-top:3px solid var(--purple);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+            <h3 style="font-size:1rem;">🔑 BIN & Cryptographic Setup</h3>
+            <span style="font-size:.78rem;font-weight:700;color:var(--purple);">8 steps · 0% done</span>
+          </div>
+          <div class="progress-track" style="margin-bottom:14px;"><div class="progress-fill" style="width:0%;background:var(--purple);box-shadow:none;"></div></div>
+          <ul style="list-style:none;padding:0;"><li style="margin-bottom:8px;display:flex;align-items:flex-start;gap:8px;"><span class="status-badge status-todo" style="margin-top:1px;flex-shrink:0;">⏳ To Do</span><span style="font-size:.86rem;color:var(--text);"><strong>New Account BIN Ordering</strong> <span style="color:var(--text-dim);font-size:.78rem;">— Issuer</span><span style="color:var(--text-dim);font-size:.75rem;margin-left:6px;">📅 Jul 05, 2026</span></span></li><li style="margin-bottom:8px;display:flex;align-items:flex-start;gap:8px;"><span class="status-badge status-todo" style="margin-top:1px;flex-shrink:0;">⏳ To Do</span><span style="font-size:.86rem;color:var(--text);"><strong>New Account BIN Available</strong> <span style="color:var(--text-dim);font-size:.78rem;">— Network</span><span style="color:var(--text-dim);font-size:.75rem;margin-left:6px;">📅 Jul 10, 2026</span></span></li><li style="margin-bottom:8px;display:flex;align-items:flex-start;gap:8px;"><span class="status-badge status-todo" style="margin-top:1px;flex-shrink:0;">⏳ To Do</span><span style="font-size:.86rem;color:var(--text);"><strong>Processor Authorization for Card Keys</strong> <span style="color:var(--text-dim);font-size:.78rem;">— Issuer</span><span style="color:var(--text-dim);font-size:.75rem;margin-left:6px;">📅 Jul 15, 2026</span></span></li><li style="margin-bottom:8px;display:flex;align-items:flex-start;gap:8px;"><span class="status-badge status-todo" style="margin-top:1px;flex-shrink:0;">⏳ To Do</span><span style="font-size:.86rem;color:var(--text);"><strong>Card Keys Generation</strong> <span style="color:var(--text-dim);font-size:.78rem;">— Processor</span><span style="color:var(--text-dim);font-size:.75rem;margin-left:6px;">📅 Jul 20, 2026</span></span></li><li style="margin-bottom:8px;display:flex;align-items:flex-start;gap:8px;"><span class="status-badge status-todo" style="margin-top:1px;flex-shrink:0;">⏳ To Do</span><span style="font-size:.86rem;color:var(--text);"><strong>Card Keys Exchange with Processor</strong> <span style="color:var(--text-dim);font-size:.78rem;">— Network</span><span style="color:var(--text-dim);font-size:.75rem;margin-left:6px;">📅 Jul 31, 2026</span></span></li><li style="margin-bottom:8px;display:flex;align-items:flex-start;gap:8px;"><span class="status-badge status-todo" style="margin-top:1px;flex-shrink:0;">⏳ To Do</span><span style="font-size:.86rem;color:var(--text);"><strong>Key Updates in Processor System</strong> <span style="color:var(--text-dim);font-size:.78rem;">— Processor</span><span style="color:var(--text-dim);font-size:.75rem;margin-left:6px;">📅 Aug 05, 2026</span></span></li><li style="margin-bottom:8px;display:flex;align-items:flex-start;gap:8px;"><span class="status-badge status-todo" style="margin-top:1px;flex-shrink:0;">⏳ To Do</span><span style="font-size:.86rem;color:var(--text);"><strong>Key Updates in Network System</strong> <span style="color:var(--text-dim);font-size:.78rem;">— Network</span><span style="color:var(--text-dim);font-size:.75rem;margin-left:6px;">📅 Aug 08, 2026</span></span></li><li style="margin-bottom:8px;display:flex;align-items:flex-start;gap:8px;"><span class="status-badge status-todo" style="margin-top:1px;flex-shrink:0;">⏳ To Do</span><span style="font-size:.86rem;color:var(--text);"><strong>File Encryption Key Exchange with Processor</strong> <span style="color:var(--text-dim);font-size:.78rem;">— Network</span><span style="color:var(--text-dim);font-size:.75rem;margin-left:6px;">📅 Aug 25, 2026</span></span></li></ul>
+        </div>
+        <div class="card" style="margin-bottom:20px;border-top:3px solid var(--secondary);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+            <h3 style="font-size:1rem;">🌐 Network & Settlement</h3>
+            <span style="font-size:.78rem;font-weight:700;color:var(--secondary);">10 steps · 0% done</span>
+          </div>
+          <div class="progress-track" style="margin-bottom:14px;"><div class="progress-fill" style="width:0%;background:var(--secondary);box-shadow:none;"></div></div>
+          <ul style="list-style:none;padding:0;"><li style="margin-bottom:8px;display:flex;align-items:flex-start;gap:8px;"><span class="status-badge status-todo" style="margin-top:1px;flex-shrink:0;">⏳ To Do</span><span style="font-size:.86rem;color:var(--text);"><strong>Non Liability Letter to Network</strong> <span style="color:var(--text-dim);font-size:.78rem;">— Issuer</span><span style="color:var(--text-dim);font-size:.75rem;margin-left:6px;">📅 Aug 12, 2026</span></span></li><li style="margin-bottom:8px;display:flex;align-items:flex-start;gap:8px;"><span class="status-badge status-todo" style="margin-top:1px;flex-shrink:0;">⏳ To Do</span><span style="font-size:.86rem;color:var(--text);"><strong>Network Settlement End Point Initiation</strong> <span style="color:var(--text-dim);font-size:.78rem;">— Network</span><span style="color:var(--text-dim);font-size:.75rem;margin-left:6px;">📅 Aug 12, 2026</span></span></li><li style="margin-bottom:8px;display:flex;align-items:flex-start;gap:8px;"><span class="status-badge status-todo" style="margin-top:1px;flex-shrink:0;">⏳ To Do</span><span style="font-size:.86rem;color:var(--text);"><strong>Network Settlement End Point Approval</strong> <span style="color:var(--text-dim);font-size:.78rem;">— Issuer</span><span style="color:var(--text-dim);font-size:.75rem;margin-left:6px;">📅 Aug 20, 2026</span></span></li><li style="margin-bottom:8px;display:flex;align-items:flex-start;gap:8px;"><span class="status-badge status-todo" style="margin-top:1px;flex-shrink:0;">⏳ To Do</span><span style="font-size:.86rem;color:var(--text);"><strong>Account BIN Setup in Blocked State</strong> <span style="color:var(--text-dim);font-size:.78rem;">— Network</span><span style="color:var(--text-dim);font-size:.75rem;margin-left:6px;">📅 Aug 28, 2026</span></span></li><li style="margin-bottom:8px;display:flex;align-items:flex-start;gap:8px;"><span class="status-badge status-todo" style="margin-top:1px;flex-shrink:0;">⏳ To Do</span><span style="font-size:.86rem;color:var(--text);"><strong>Account BIN and Settlement End Point Go Live</strong> <span style="color:var(--text-dim);font-size:.78rem;">— Network</span><span style="color:var(--text-dim);font-size:.75rem;margin-left:6px;">📅 Aug 31, 2026</span></span></li><li style="margin-bottom:8px;display:flex;align-items:flex-start;gap:8px;"><span class="status-badge status-todo" style="margin-top:1px;flex-shrink:0;">⏳ To Do</span><span style="font-size:.86rem;color:var(--text);"><strong>MDES Project Enablement</strong> <span style="color:var(--text-dim);font-size:.78rem;">— Network</span><span style="color:var(--text-dim);font-size:.75rem;margin-left:6px;">📅 Sep 02, 2026</span></span></li><li style="margin-bottom:8px;display:flex;align-items:flex-start;gap:8px;"><span class="status-badge status-todo" style="margin-top:1px;flex-shrink:0;">⏳ To Do</span><span style="font-size:.86rem;color:var(--text);"><strong>Token BIN Live</strong> <span style="color:var(--text-dim);font-size:.78rem;">— Network</span><span style="color:var(--text-dim);font-size:.75rem;margin-left:6px;">📅 Sep 08, 2026</span></span></li><li style="margin-bottom:8px;display:flex;align-items:flex-start;gap:8px;"><span class="status-badge status-todo" style="margin-top:1px;flex-shrink:0;">⏳ To Do</span><span style="font-size:.86rem;color:var(--text);"><strong>Account BIN Block Removal Initiation</strong> <span style="color:var(--text-dim);font-size:.78rem;">— Issuer</span><span style="color:var(--text-dim);font-size:.75rem;margin-left:6px;">📅 Sep 09, 2026</span></span></li><li style="margin-bottom:8px;display:flex;align-items:flex-start;gap:8px;"><span class="status-badge status-todo" style="margin-top:1px;flex-shrink:0;">⏳ To Do</span><span style="font-size:.86rem;color:var(--text);"><strong>Account BIN Block Removal Completion</strong> <span style="color:var(--text-dim);font-size:.78rem;">— Network</span><span style="color:var(--text-dim);font-size:.75rem;margin-left:6px;">📅 Sep 13, 2026</span></span></li><li style="margin-bottom:8px;display:flex;align-items:flex-start;gap:8px;"><span class="status-badge status-todo" style="margin-top:1px;flex-shrink:0;">⏳ To Do</span><span style="font-size:.86rem;color:var(--text);"><strong>Settlement Verification</strong> <span style="color:var(--text-dim);font-size:.78rem;">— Processor</span><span style="color:var(--text-dim);font-size:.75rem;margin-left:6px;">📅 Oct 07, 2026</span></span></li></ul>
+        </div>
+        <div class="card" style="margin-bottom:20px;border-top:3px solid var(--accent);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+            <h3 style="font-size:1rem;">💳 Card Production & Go-Live</h3>
+            <span style="font-size:.78rem;font-weight:700;color:var(--accent);">6 steps · 0% done</span>
+          </div>
+          <div class="progress-track" style="margin-bottom:14px;"><div class="progress-fill" style="width:0%;background:var(--accent);box-shadow:none;"></div></div>
+          <ul style="list-style:none;padding:0;"><li style="margin-bottom:8px;display:flex;align-items:flex-start;gap:8px;"><span class="status-badge status-todo" style="margin-top:1px;flex-shrink:0;">⏳ To Do</span><span style="font-size:.86rem;color:var(--text);"><strong>Account Setup and Card Ordering for Processor</strong> <span style="color:var(--text-dim);font-size:.78rem;">— Issuer</span><span style="color:var(--text-dim);font-size:.75rem;margin-left:6px;">📅 Sep 20, 2026</span></span></li><li style="margin-bottom:8px;display:flex;align-items:flex-start;gap:8px;"><span class="status-badge status-todo" style="margin-top:1px;flex-shrink:0;">⏳ To Do</span><span style="font-size:.86rem;color:var(--text);"><strong>Card Fulfillment and Personalization</strong> <span style="color:var(--text-dim);font-size:.78rem;">— Embosser</span><span style="color:var(--text-dim);font-size:.75rem;margin-left:6px;">📅 Sep 25, 2026</span></span></li><li style="margin-bottom:8px;display:flex;align-items:flex-start;gap:8px;"><span class="status-badge status-todo" style="margin-top:1px;flex-shrink:0;">⏳ To Do</span><span style="font-size:.86rem;color:var(--text);"><strong>Card Shipping</strong> <span style="color:var(--text-dim);font-size:.78rem;">— Embosser</span><span style="color:var(--text-dim);font-size:.75rem;margin-left:6px;">📅 Sep 28, 2026</span></span></li><li style="margin-bottom:8px;display:flex;align-items:flex-start;gap:8px;"><span class="status-badge status-todo" style="margin-top:1px;flex-shrink:0;">⏳ To Do</span><span style="font-size:.86rem;color:var(--text);"><strong>Card Receiving  and Activation</strong> <span style="color:var(--text-dim);font-size:.78rem;">— Issuer</span><span style="color:var(--text-dim);font-size:.75rem;margin-left:6px;">📅 Sep 30, 2026</span></span></li><li style="margin-bottom:8px;display:flex;align-items:flex-start;gap:8px;"><span class="status-badge status-todo" style="margin-top:1px;flex-shrink:0;">⏳ To Do</span><span style="font-size:.86rem;color:var(--text);"><strong>Card Transaction Validation</strong> <span style="color:var(--text-dim);font-size:.78rem;">— Issuer</span><span style="color:var(--text-dim);font-size:.75rem;margin-left:6px;">📅 Oct 02, 2026</span></span></li><li style="margin-bottom:8px;display:flex;align-items:flex-start;gap:8px;"><span class="status-badge status-todo" style="margin-top:1px;flex-shrink:0;">⏳ To Do</span><span style="font-size:.86rem;color:var(--text);"><strong>Project Close</strong> <span style="color:var(--text-dim);font-size:.78rem;">— Issuer</span><span style="color:var(--text-dim);font-size:.75rem;margin-left:6px;">📅 Oct 10, 2026</span></span></li></ul>
+        </div>
+
+    <!-- SECTION 5 — FULL MILESTONE TABLE -->
+    <div class="section-head">
+      <div class="section-icon">🗂️</div>
+      <div><span class="section-num">Section 5</span><h2>Full Milestone Plan (31 Steps)</h2></div>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden;">
+      <table class="milestone-table">
+        <thead><tr><th>#</th><th>Milestone</th><th>Responsible</th><th>DRI</th><th>Status</th><th>Est. Date</th></tr></thead>
+        <tbody>
+          <tr>
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;">1</td>
+            <td style="font-weight:600;font-size:.86rem;">Request for Project to Network</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Issuer</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Robin</td>
+            <td><span class="status-badge status-done">✅ Done</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">May 01, 2026</td>
+          </tr>
+          <tr>
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;">2</td>
+            <td style="font-weight:600;font-size:.86rem;">Project Creation and PM Assignment</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Network</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Monu</td>
+            <td><span class="status-badge status-inprogress">🔄 In Progress</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Jun 05, 2026</td>
+          </tr>
+          <tr>
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;">3</td>
+            <td style="font-weight:600;font-size:.86rem;">Project SOW Preparation</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Issuer</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Robin</td>
+            <td><span class="status-badge status-inprogress">🔄 In Progress</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Jun 15, 2026</td>
+          </tr>
+          <tr>
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;">4</td>
+            <td style="font-weight:600;font-size:.86rem;">Project SOW Approval</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Issuer</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Robin</td>
+            <td><span class="status-badge status-done">✅ Done</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Jun 18, 2026</td>
+          </tr>
+          <tr>
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;">5</td>
+            <td style="font-weight:600;font-size:.86rem;">Project Plan Proposal</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Network</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Monu</td>
+            <td><span class="status-badge status-done">✅ Done</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Jun 25, 2026</td>
+          </tr>
+          <tr>
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;">6</td>
+            <td style="font-weight:600;font-size:.86rem;">Project Plan Approval</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Issuer</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Robin</td>
+            <td><span class="status-badge status-done">✅ Done</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Jul 01, 2026</td>
+          </tr>
+          <tr>
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;">7</td>
+            <td style="font-weight:600;font-size:.86rem;">New Account BIN Ordering</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Issuer</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Robin</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Jul 05, 2026</td>
+          </tr>
+          <tr>
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;">8</td>
+            <td style="font-weight:600;font-size:.86rem;">New Account BIN Available</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Network</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Monu</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Jul 10, 2026</td>
+          </tr>
+          <tr>
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;">9</td>
+            <td style="font-weight:600;font-size:.86rem;">Processor Authorization for Card Keys</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Issuer</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Robin</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Jul 15, 2026</td>
+          </tr>
+          <tr>
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;">10</td>
+            <td style="font-weight:600;font-size:.86rem;">Card Keys Generation</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Processor</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">John</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Jul 20, 2026</td>
+          </tr>
+          <tr>
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;">11</td>
+            <td style="font-weight:600;font-size:.86rem;">Card Keys Exchange with Processor</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Network</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Monu</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Jul 31, 2026</td>
+          </tr>
+          <tr>
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;">12</td>
+            <td style="font-weight:600;font-size:.86rem;">Key Updates in Processor System</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Processor</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">John</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Aug 05, 2026</td>
+          </tr>
+          <tr>
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;">13</td>
+            <td style="font-weight:600;font-size:.86rem;">Key Updates in Network System</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Network</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Monu</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Aug 08, 2026</td>
+          </tr>
+          <tr>
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;">14</td>
+            <td style="font-weight:600;font-size:.86rem;">Non Liability Letter to Network</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Issuer</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Robin</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Aug 12, 2026</td>
+          </tr>
+          <tr>
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;">15</td>
+            <td style="font-weight:600;font-size:.86rem;">Network Settlement End Point Initiation</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Network</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Monu</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Aug 12, 2026</td>
+          </tr>
+          <tr>
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;">16</td>
+            <td style="font-weight:600;font-size:.86rem;">Network Settlement End Point Approval</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Issuer</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Robin</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Aug 20, 2026</td>
+          </tr>
+          <tr>
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;">17</td>
+            <td style="font-weight:600;font-size:.86rem;">File Encryption Key Exchange with Processor</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Network</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Monu</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Aug 25, 2026</td>
+          </tr>
+          <tr>
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;">18</td>
+            <td style="font-weight:600;font-size:.86rem;">Account BIN Setup in Blocked State</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Network</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Monu</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Aug 28, 2026</td>
+          </tr>
+          <tr>
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;">19</td>
+            <td style="font-weight:600;font-size:.86rem;">Account BIN and Settlement End Point Go Live</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Network</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Monu</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Aug 31, 2026</td>
+          </tr>
+          <tr>
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;">20</td>
+            <td style="font-weight:600;font-size:.86rem;">MDES Project Enablement</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Network</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Monu</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Sep 02, 2026</td>
+          </tr>
+          <tr>
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;">21</td>
+            <td style="font-weight:600;font-size:.86rem;">Token BIN Assignment</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Network</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Monu</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Sep 04, 2026</td>
+          </tr>
+          <tr>
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;">22</td>
+            <td style="font-weight:600;font-size:.86rem;">Token BIN Live</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Network</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Monu</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Sep 08, 2026</td>
+          </tr>
+          <tr>
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;">23</td>
+            <td style="font-weight:600;font-size:.86rem;">Account BIN Block Removal Initiation</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Issuer</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Robin</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Sep 09, 2026</td>
+          </tr>
+          <tr>
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;">24</td>
+            <td style="font-weight:600;font-size:.86rem;">Account BIN Block Removal Completion</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Network</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Monu</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Sep 13, 2026</td>
+          </tr>
+          <tr>
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;">25</td>
+            <td style="font-weight:600;font-size:.86rem;">Account Setup and Card Ordering for Processor</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Issuer</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Robin</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Sep 20, 2026</td>
+          </tr>
+          <tr>
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;">26</td>
+            <td style="font-weight:600;font-size:.86rem;">Card Fulfillment and Personalization</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Embosser</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Ajay</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Sep 25, 2026</td>
+          </tr>
+          <tr>
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;">27</td>
+            <td style="font-weight:600;font-size:.86rem;">Card Shipping</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Embosser</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Ajay</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Sep 28, 2026</td>
+          </tr>
+          <tr>
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;">28</td>
+            <td style="font-weight:600;font-size:.86rem;">Card Receiving  and Activation</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Issuer</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Robin</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Sep 30, 2026</td>
+          </tr>
+          <tr>
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;">29</td>
+            <td style="font-weight:600;font-size:.86rem;">Card Transaction Validation</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Issuer</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Robin</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Oct 02, 2026</td>
+          </tr>
+          <tr>
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;">30</td>
+            <td style="font-weight:600;font-size:.86rem;">Settlement Verification</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Processor</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">John</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Oct 07, 2026</td>
+          </tr>
+          <tr>
+            <td style="color:var(--text-dim);font-size:.82rem;font-weight:700;">31</td>
+            <td style="font-weight:600;font-size:.86rem;">Project Close</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Issuer</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Robin</td>
+            <td><span class="status-badge status-todo">⏳ To Do</span></td>
+            <td style="font-size:.8rem;color:var(--text-dim);">Oct 10, 2026</td>
+          </tr></tbody>
+      </table>
+    </div>
+
+    <!-- SECTION 6 — REQUIREMENTS (MOSCOW) -->
+    <div class="section-head">
+      <div class="section-icon">📐</div>
+      <div><span class="section-num">Section 6</span><h2>Requirements — MoSCoW Prioritisation</h2></div>
+    </div>
+    
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;">
+      <div class="inner-card inner-green"><strong>🟢 Must Have</strong><ul style="margin-top:8px;padding-left:16px;font-size:.83rem;color:var(--text-muted);line-height:1.8;"><li>BIN registration and allocation from the payment network</li><li>Card key generation and exchange between all parties</li><li>Settlement end-point configuration and approval</li><li>Account BIN go-live and block removal</li><li>Card personalisation, shipping, and activation</li><li>UAT — card transaction and settlement validation</li></ul></div>
+      <div class="inner-card inner-blue"><strong>🔵 Should Have</strong><ul style="margin-top:8px;padding-left:16px;font-size:.83rem;color:var(--text-muted);line-height:1.8;"><li>MDES (Mastercard Digital Enablement Service) project enablement</li><li>Token BIN assignment and activation</li><li>Non-liability letter submission to network</li><li>File encryption key exchange</li></ul></div>
+      <div class="inner-card inner-amber"><strong>🟡 Could Have</strong><ul style="margin-top:8px;padding-left:16px;font-size:.83rem;color:var(--text-muted);line-height:1.8;"><li>Accelerated timeline via parallel workstreams where dependencies allow</li><li>Automated status notifications to DRIs on milestone completion</li><li>Smartsheet direct sync for real-time tracker updates</li></ul></div>
+      <div class="inner-card" style="background:rgba(255,255,255,.03);border:1px solid var(--border);"><strong style="color:var(--text-muted);">⚫ Won't Have (Now)</strong><ul style="margin-top:8px;padding-left:16px;font-size:.83rem;color:var(--text-dim);line-height:1.8;"><li>Digital-only (virtual) card launch in this programme — physical card required</li><li>Multi-BIN launch in a single programme cycle</li></ul></div>
+    </div>
+
+    <!-- SECTION 7 — RISK REGISTER -->
+    <div class="section-head">
+      <div class="section-icon">⚠️</div>
+      <div><span class="section-num">Section 7</span><h2>Risk Register</h2></div>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden;">
+      <table class="risk-table">
+        <thead><tr><th>Level</th><th>Risk</th><th>Description</th><th>Mitigation</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span style="background:var(--red-dim);color:var(--red);border-radius:999px;padding:2px 10px;font-size:.72rem;font-weight:700;">HIGH</span></td>
+            <td style="font-weight:600;font-size:.86rem;">Network Delays</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Payment network SLA for BIN allocation can take 4–8 weeks. Late request to network cascades to all downstream milestones.</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Submit network request immediately; escalate PM assignment if delayed beyond Step 2 target.</td>
+          </tr>
+          <tr>
+            <td><span style="background:var(--red-dim);color:var(--red);border-radius:999px;padding:2px 10px;font-size:.72rem;font-weight:700;">HIGH</span></td>
+            <td style="font-weight:600;font-size:.86rem;">Key Exchange Failure</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Cryptographic key exchange failures require full re-generation and re-certification — adding 2–3 weeks.</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Validate key formats before exchange; conduct dry-run in test environment first.</td>
+          </tr>
+          <tr>
+            <td><span style="background:var(--accent-dim);color:var(--accent);border-radius:999px;padding:2px 10px;font-size:.72rem;font-weight:700;">MEDIUM</span></td>
+            <td style="font-weight:600;font-size:.86rem;">SOW / Plan Approval</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Delays in SOW or Plan Approval by the Issuer can stall the entire programme as downstream steps have hard dependencies.</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Engage approvers 1 week in advance; pre-circulate documents for informal review.</td>
+          </tr>
+          <tr>
+            <td><span style="background:var(--accent-dim);color:var(--accent);border-radius:999px;padding:2px 10px;font-size:.72rem;font-weight:700;">MEDIUM</span></td>
+            <td style="font-weight:600;font-size:.86rem;">Embosser Lead Time</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Card personalisation and fulfillment (Steps 25–27) require 3–4 weeks lead time. Late ordering risks missing launch date.</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Confirm card ordering by mid-September to preserve Oct 10 target.</td>
+          </tr>
+          <tr>
+            <td><span style="background:var(--green-dim);color:var(--green);border-radius:999px;padding:2px 10px;font-size:.72rem;font-weight:700;">LOW</span></td>
+            <td style="font-weight:600;font-size:.86rem;">DRI Turnover</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">If a DRI leaves mid-project, knowledge transfer gaps can delay milestone completion.</td>
+            <td style="font-size:.83rem;color:var(--text-muted);">Maintain an updated RACI; cross-train deputies for each DRI role.</td>
+          </tr></tbody>
+      </table>
+    </div>
+
+    <!-- SECTION 8 — SUCCESS METRICS & PROGRESS -->
+    <div class="section-head">
+      <div class="section-icon">📈</div>
+      <div><span class="section-num">Section 8</span><h2>Success Metrics &amp; Current Progress</h2></div>
+    </div>
+    <div class="grid-2" style="margin-bottom:20px;">
+      <div class="inner-card inner-green">
+        <strong>✅ Primary — Completion &amp; Quality</strong>
+        <ul style="margin-top:6px;"><li>100% of 31 milestones marked Done before go-live</li><li>Zero outstanding blockers at card launch date</li><li>All DRI sign-offs and network certifications received</li><li>Successful card transaction &amp; settlement validation</li></ul>
+      </div>
+      <div class="inner-card inner-blue">
+        <strong>🕐 Secondary — Schedule Adherence</strong>
+        <ul style="margin-top:6px;"><li>Each milestone completed by its estimated date</li><li>No more than 10% overall schedule slippage</li><li>Critical path milestones (BIN allocation, Key Exchange) on time</li><li>Target card launch: <strong style="color:var(--text);">Oct 10, 2026</strong></li></ul>
+      </div>
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <span style="font-size:.9rem;font-weight:700;">Overall Progress</span>
+        <span style="font-size:1rem;font-weight:800;color:var(--primary);">13%</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" style="width:13%"></div></div>
+      <div style="display:flex;gap:14px;margin-top:16px;flex-wrap:wrap;">
+        <span class="tag tag-green">✅ Done: 4</span>
+        <span class="tag tag-blue">🔄 In Progress: 2</span>
+        <span style="background:rgba(255,255,255,.06);color:var(--text-muted);border-radius:999px;padding:3px 12px;font-size:.78rem;font-weight:600;">⏳ To Do: 25</span>
+      </div>
+      <div class="callout callout-amber" style="margin-top:18px;margin-bottom:0;">
+        <h4>Future Integration</h4>
+        <p>Planned: <strong>Smartsheet direct sync</strong> to auto-refresh this PRD on save. Re-upload the Excel at any time to reflect the latest milestone statuses.</p>
+      </div>
+    </div>
+
+  </main>
+  <footer><p>📄 PRD — Reward Rule creation API &nbsp;·&nbsp; Robin AI Learnings &nbsp;·&nbsp; AI PM Tool &nbsp;·&nbsp; May 19, 2026 at 15:49</p></footer>
+</div>
+</body>
+</html>

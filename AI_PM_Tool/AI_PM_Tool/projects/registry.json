@@ -1,0 +1,42 @@
+[
+  {
+    "slug": "bin-procurement-for-new-card-launch",
+    "title": "BIN Procurement for New Card Launch",
+    "objective": "Tracking the status of multiple vendors for timely completion of BIN Procurement.",
+    "total": 31,
+    "done": 4,
+    "progress": 13,
+    "dris": 4,
+    "updated": "2026-05-19T19:30:21.308865"
+  },
+  {
+    "slug": "reward-rule-creation-api",
+    "title": "Reward Rule creation API",
+    "objective": "Tracking the status of Reward Rule Creation API so it will allow the flexibility of Reward Creation dynamically",
+    "total": 31,
+    "done": 4,
+    "progress": 13,
+    "dris": 4,
+    "updated": "2026-05-19T15:49:33.787444"
+  },
+  {
+    "slug": "trace-file-log-optimization",
+    "title": "Trace file log optimization",
+    "objective": "Tracking the status of Trace log file optimizations for multiple things.",
+    "total": 31,
+    "done": 4,
+    "progress": 13,
+    "dris": 4,
+    "updated": "2026-05-19T15:50:02.997893"
+  },
+  {
+    "slug": "on-prem-to-aws-migration",
+    "title": "On Prem to AWS Migration",
+    "objective": "Tracking the status of On Prem to AWS Migration",
+    "total": 31,
+    "done": 4,
+    "progress": 13,
+    "dris": 4,
+    "updated": "2026-05-19T15:50:28.880978"
+  }
+]

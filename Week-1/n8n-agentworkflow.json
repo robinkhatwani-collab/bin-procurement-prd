@@ -1,0 +1,191 @@
+{
+  "name": "n8n-agentworkflow",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "allowFileUploads": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -384,
+        -64
+      ],
+      "id": "8716a6cf-e19a-4862-a9c7-0ac829bdcd3c",
+      "name": "When chat message received",
+      "webhookId": "b69eb1af-14f1-46b8-8e3e-b7c17fbf530d"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "data0",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -96,
+        -64
+      ],
+      "id": "d115c7d2-6342-4cc7-b2f2-a6c9d1f17cea",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=user_input =  {{ $('When chat message received').item.json.chatInput }}\n\nContract_context : {{ $json.text }}",
+        "options": {
+          "systemMessage": "Role\nYou are an AI Contract Assistant.\n\nInstructions\n1 Always use the contract retrieval tool before answering.\n2 Search relevant clauses based on the user query.\n3 Extract only the most relevant contract content.\n4 If multiple clauses match, use the most relevant one.\n5 Answer directly and concisely. Do not explain your internal process.\n6 If no information is found, say: “This information is not mentioned in the contract.”\n\nGuardrails\n1 Never make assumptions.\n2 Never provide legal advice.\n3 Never answer without checking the contract first.\n4 If contract language is unclear, say: “This may need professional legal review.”\n5 Never say things like “I searched the contract”, “Based on my analysis”, or “I extracted...”\n\n\nResponse Format\nAnswer: [Direct answer]\nEvidence: [Relevant clause/section]"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        224,
+        -64
+      ],
+      "id": "23337847-8b0d-4904-a1d3-026970432988",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        224,
+        160
+      ],
+      "id": "53f166c5-f15e-42b0-95fd-78ebcb5ca213",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "OvfrR3fXJdPnR6rp",
+          "name": "OpenAI account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## When chat message received\n**Functionality:** Receives chat messages from users via built-in chat interface\n**When to use:** Starting point for conversational AI workflows that need to accept user input and file uploads",
+        "height": 200,
+        "width": 300,
+        "color": 3
+      },
+      "id": "ac6cf7cd-7189-46b6-87d8-d40c1cdbe2a7",
+      "name": "Sticky Note c070b9c4",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -544,
+        -288
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Extract from File\n**Functionality:** Extracts text content from PDF files uploaded by users\n**When to use:** When you need to process document content before sending to AI",
+        "height": 200,
+        "width": 300,
+        "color": 4
+      },
+      "id": "3f0a7783-a6e7-4641-8ebe-250e57ea2939",
+      "name": "Sticky Note 242684c7",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -144,
+        -288
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## AI Agent\n**Functionality:** Processes chat input using OpenAI to generate intelligent responses\n**When to use:** Core conversational AI logic - analyzes user messages and extracted document content",
+        "height": 200,
+        "width": 300,
+        "color": 5
+      },
+      "id": "d36b26b8-6d04-4aed-b93a-9223894ec363",
+      "name": "Sticky Note bb9d3b19",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        256,
+        -288
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## OpenAI Chat Model\n**Functionality:** Provides the language model (GPT) for the AI Agent\n**When to use:** Required subnode for AI Agent - defines which AI model to use",
+        "height": 200,
+        "width": 300,
+        "color": 2
+      },
+      "id": "bba2f257-aca0-4b59-9bdc-3a405b268c95",
+      "name": "Sticky Note 2f71744c",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        400,
+        160
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "a06122ea-dd5b-49bd-88a4-ce14ec585c29",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1ee21dfc80f315ed993e85c8dc97508d1c1d4e0b598766bf138052c558ce125b"
+  },
+  "id": "PLRE2wpU0DmcGggn",
+  "tags": []
+}

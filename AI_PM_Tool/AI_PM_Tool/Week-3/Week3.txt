@@ -1,0 +1,121 @@
+Week-3
+
+How you can select right model for your application 
+Model picking Criteria and Techniques -- Pending
+Create a table of requirement to choose the model etc. 
+How your use case is following HHH(Helpfulness,Honest, Harmless) framework
+What is Responsible AI and how to make AI responsible.
+
+AI ACT Checks in your product to ensure it's compliant.
+
+Risk based Regulation
+Prohibited Practices and Transparency
+Governance and Oversight
+Phase Implementation
+
+
+Challenges of AI product - 
+Accountability
+	Assess the solution's efficacy and limitation. 
+	Ensure compliance with the intended use
+	Manage Sensitive data
+	Incorporate human oversight and control
+	Ensure compliance by developers and partners
+	Perform manual audits
+	Tools - Monitor your model in production for degradation in performance, bias, and to create metrics.
+Transparency -- What are the practical ways to make your system transparent (Tool - InterpretML)
+Fairness - Provide a similar quality of service for all identified areas of operation. Practical way to implement
+Reliability and Safety - Practical way to implement 
+ 
+Create Template for AI product or AI solution  
+a. AI Agent following AI act or not, list all requirements. 
+b. AI Agent evaluation. 
+c. Logging and monitoring 
+
+What is ML Common - Better AI for Everyone - A Common Body. 
+
+What Is memory and how memory works in models and agentic AI 
+
+
+************
+
+KNOWLEDGE GRAPH
+
+INFERENCING  - MODEL OPTIMIZATION TECHNIQUES 
+
+CLAUDE ECOSYSTEM - AGENTIC SKILLS and CONTEXT
+
+
+
+build an AI agent such that you give them a goal (get key terms from contract and insert in hubspot), 
+use knowledge (docs)  and signal (Current state of world)  with reasoning (LLM)  to create plans to change the state of world with actions(tools, API’s), 
+steps to validate if progress is made and on each halt come up with recovery plan.
+
+
+% Task completion rate per user : No of tasks completed without human intervention or minimum intervention and high quality per user. (WoW)
+% Helpfulness : This metric tracks a lot of smaller signals to gauge the response quality of intermittent steps and the final outcome of your agent.
+% Honest : This metric tracks how much information that your agent presented or used is actually verifiable, factful and grounded in reality. 
+% Harmless (guardrails adhered) : This tracks how many conversations erode trust for your customers. This can mean not adhering to compliance requirement, your internal policy or simple doing things that 
+NPS/User feedback rating : This is the same metrics as before that tracks how happy are your customers and uses them as proxy metrics. Proxy metrics means that as you automate tasks user satisfaction should not drop.
+
+% Helpfulness
+correctness of issue/goal identification, 
+plan accuracy, 
+succinct/format responses
+Instruction adherence 
+% abandon rate without accomplishing goals
+Conversation halted after maximum no. of attempt reached
+Conversation where a human was called to get help 
+% Honest 
+grounding/extraction accuracy, 
+Fact fulness : Whatever the agent says/does is grounded in reality.
+Grounded with less top two sources.
+Reasoning or planning step accuracy  
+Is the output produced in desired format (for example, Json,CSV)
+% Harmless (guardrails , policy and compliance adhered) 
+No insult, threat or profanity. 
+No bad mouthing competitors 
+No way to make it say whatever the user wants. 
+No. of nonfactual information shared
+
+
+SMART (Specific, Measurable, Achievable, Relevant, Time-bound). goals for your teams. 
+
+
+
+a. Evaluation - 
+b. Responsibility - Guardrail, Security and Safe. 
+
+Agent Evaluation - 
+KPIS for AI Agents - 
+Responsible AI - 
+
+What is AI Evaluations? 
+Answer: It consists of not only evaluating Test Cases but it also tries to do human evaluation and produce feedback. So, in summary, 
+it evaluates the output against a playbook + Evaluates risks + evaluates test cases + checks guardrails.
+
+Accuracy - 
+Precision and Recall -- ??
+Helpful, Honest, Harmless
+
+Challenges in Evaluation of Agents - 
+
+Scale the Evaluation - 
+LLM as Judge - Give the question as prompt and give answer yes/no. -- Take Precision and Recall numbers. -- Check Live
+Predective AI - Use AI for Content Moderation.  -- Check Live 
+Comparison between human and agent output manually -- Relevance 
+
+Most of the evaluations in real world still done manually 
+
+Precision - 
+Recall - 
+
+
+Current AI Risk and Challenges 
+
+Add Evaluation Strategy in PRD. 
+Make system responsible, safety, reliability . 
+
+
+
+

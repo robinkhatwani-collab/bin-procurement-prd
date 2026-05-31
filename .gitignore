@@ -1,0 +1,28 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+*.log
+
+# macOS launch agent (machine-specific)
+*.plist
+setup_autostart.sh
+
+# RAG / vector store (local, auto-generated — do not commit)
+chromadb_store/
+
+# Sensitive / personal data files
+*.xlsx
+*.xls
+*.pdf
+*.docx
+*.doc

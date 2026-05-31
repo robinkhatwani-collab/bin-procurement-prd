@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+
+    <!-- Unique identifier for this launch agent -->
+    <key>Label</key>
+    <string>com.robinkhatwani.bintracker</string>
+
+    <!-- Command to run: bash wrapper that locates python3 and starts server.py -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>/Users/robinkhatwani/Desktop/Robin AI Learnings/start_server.sh</string>
+    </array>
+
+    <!-- Working directory -->
+    <key>WorkingDirectory</key>
+    <string>/Users/robinkhatwani/Desktop/Robin AI Learnings</string>
+
+    <!-- Start automatically when the agent is loaded (at login) -->
+    <key>RunAtLoad</key>
+    <true/>
+
+    <!-- Restart the server automatically if it crashes or is killed -->
+    <key>KeepAlive</key>
+    <true/>
+
+    <!-- Minimum seconds between restarts (prevents rapid crash loops) -->
+    <key>ThrottleInterval</key>
+    <integer>30</integer>
+
+    <!-- Log files (server.py also writes its own stdout here via the wrapper) -->
+    <key>StandardOutPath</key>
+    <string>/Users/robinkhatwani/Desktop/Robin AI Learnings/server.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>/Users/robinkhatwani/Desktop/Robin AI Learnings/server_error.log</string>
+
+</dict>
+</plist>

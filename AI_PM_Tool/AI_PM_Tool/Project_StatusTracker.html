@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>BIN Procurement — Status Tracker</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;background:#f0f4f8;color:#1e2d3d;font-size:14px}
+header{background:linear-gradient(135deg,#1a3a5c 0%,#0d5ca8 100%);color:#fff;padding:22px 36px;display:flex;gap:16px;align-items:center}
+.logo{width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.15);border-radius:10px;font-size:22px}
+.header-text h1{font-size:1.15rem;margin-bottom:3px}
+.header-text p{font-size:12px;color:rgba(255,255,255,.85)}
+.refresh-info{margin-left:auto;font-size:11px;color:rgba(255,255,255,.7);text-align:right;line-height:1.8}
+main{max-width:1120px;margin:24px auto;padding:0 20px 40px}
+.top-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:20px}
+.card-label{font-size:11px;font-weight:700;text-transform:uppercase;color:#64748b;margin-bottom:8px;letter-spacing:.5px}
+.card p{font-size:13px;line-height:1.7;color:#475569}
+.kpi-row{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:20px}
+.kpi{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px 12px;text-align:center}
+.kpi-val{font-size:26px;font-weight:700;line-height:1}
+.kpi-lbl{font-size:11px;color:#64748b;margin-top:4px;font-weight:600;text-transform:uppercase}
+.kpi-done{color:#1a7a4a}.kpi-ip{color:#0072ce}.kpi-todo{color:#94a3b8}
+.kpi-overdue{color:#b83232}.kpi-pct{color:#1a3a5c}
+.overview-row{display:grid;grid-template-columns:165px 1fr;gap:16px;margin-bottom:20px}
+.donut-card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:18px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.donut-wrap{position:relative;width:110px;height:110px}
+.donut-wrap svg{width:110px;height:110px}
+.donut-center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column}
+.donut-pct{font-size:22px;font-weight:800;color:#1a3a5c}
+.donut-sub{font-size:10px;color:#64748b;margin-top:2px}
+.ov-legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:12px;color:#475569}
+.leg-sq{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.section-title{font-size:12px;font-weight:700;text-transform:uppercase;color:#64748b;letter-spacing:.5px;margin-bottom:12px}
+.sh-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.sh-card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px;text-align:center}
+.sh-title{font-size:13px;font-weight:700;margin-bottom:10px}
+.sh-donut{position:relative;width:90px;height:90px;margin:0 auto 10px}
+.sh-donut svg{width:90px;height:90px}
+.sh-pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#1a3a5c}
+.sh-legend{font-size:11px;color:#475569;margin-bottom:6px}
+.leg-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:2px;vertical-align:middle}
+.sh-total{font-size:11px;color:#94a3b8;font-weight:600}
+.table-wrap{background:#fff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden}
+table{width:100%;border-collapse:collapse}
+th{background:#f8fafc;font-size:11px;text-transform:uppercase;color:#475569;font-weight:700;padding:10px 12px;text-align:left;border-bottom:1px solid #e2e8f0;white-space:nowrap}
+td{padding:9px 12px;border-bottom:1px solid #f1f5f9;vertical-align:top;font-size:13px}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#f8fafc}
+.num-col{color:#94a3b8;font-weight:700;width:36px}
+.notes-col{color:#64748b;font-style:italic;max-width:180px}
+.status-done{background:#e6f4ed;color:#1a7a4a;padding:2px 8px;border-radius:20px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.status-ip{background:#e5f2ff;color:#0072ce;padding:2px 8px;border-radius:20px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.status-todo{background:#f1f5f9;color:#64748b;padding:2px 8px;border-radius:20px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.status-block{background:#fde8e8;color:#b83232;padding:2px 8px;border-radius:20px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.overdue-tag{background:#b83232;color:#fff;font-size:10px;font-weight:700;padding:1px 5px;border-radius:4px;margin-left:4px}
+footer{text-align:center;color:#94a3b8;margin-top:24px;font-size:12px;padding-bottom:20px}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">🏦</div>
+  <div class="header-text">
+    <h1>BIN Procurement — Status Tracker</h1>
+    <p>Payments Division · New Card Launch Programme</p>
+  </div>
+  <div class="refresh-info">
+    Last loaded: 16 May 2026, 20:10<br>
+    <a href="/bin-tracker" style="color:rgba(255,255,255,.85);font-size:11px">↻ Refresh now</a>
+    &nbsp;|&nbsp; <span id="cd">60s</span> auto-refresh
+  </div>
+</header>
+
+<main>
+  <div class="top-cards">
+    <div class="card">
+      <div class="card-label">📋 Project Objective</div>
+      <p>Project Objective : - To Track progress of New BIN procurement for New Card launch.</p>
+    </div>
+    <div class="card">
+      <div class="card-label">📊 Executive Summary</div>
+      <p>The BIN Procurement project is <strong>3% complete</strong> with <strong>1 of 31</strong> steps finished. <strong>1</strong> step(s) are actively in progress and <strong>29</strong> remain in the queue. All steps are on or ahead of schedule. The target card launch is <strong>10 Oct 2026</strong> — <strong>147 days</strong> away. Overall health is rated <strong style='color:#1a7a4a'>GREEN</strong>.</p>
+    </div>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi"><div class="kpi-val kpi-pct">3%</div><div class="kpi-lbl">Complete</div></div>
+    <div class="kpi"><div class="kpi-val kpi-done">1</div><div class="kpi-lbl">Done</div></div>
+    <div class="kpi"><div class="kpi-val kpi-ip">1</div><div class="kpi-lbl">In Progress</div></div>
+    <div class="kpi"><div class="kpi-val kpi-todo">29</div><div class="kpi-lbl">To Do</div></div>
+    <div class="kpi"><div class="kpi-val kpi-overdue">0</div><div class="kpi-lbl">Overdue</div></div>
+    <div class="kpi"><div class="kpi-val" style="font-size:18px;font-weight:800;color:#1a7a4a">GREEN</div><div class="kpi-lbl">Health · 147d left</div></div>
+  </div>
+
+  <div class="overview-row">
+    <div class="donut-card">
+      <div class="card-label" style="text-align:center;margin-bottom:10px">Overall Progress</div>
+      <div class="donut-wrap">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="38" fill="none" stroke="#1a7a4a" stroke-width="18" stroke-dasharray="6.90 9999" stroke-dashoffset="-0.00" transform="rotate(-90 50 50)"/><circle cx="50" cy="50" r="38" fill="none" stroke="#0072ce" stroke-width="18" stroke-dasharray="6.90 9999" stroke-dashoffset="-7.70" transform="rotate(-90 50 50)"/><circle cx="50" cy="50" r="38" fill="none" stroke="#d0daea" stroke-width="18" stroke-dasharray="222.56 9999" stroke-dashoffset="-15.40" transform="rotate(-90 50 50)"/></svg>
+        <div class="donut-center">
+          <div class="donut-pct">3%</div>
+          <div class="donut-sub">done</div>
+        </div>
+      </div>
+      <div class="ov-legend">
+        <div class="leg-item"><div class="leg-sq" style="background:#1a7a4a"></div>Done: 1</div>
+        <div class="leg-item"><div class="leg-sq" style="background:#0072ce"></div>Active: 1</div>
+        <div class="leg-item"><div class="leg-sq" style="background:#d0daea"></div>ToDo: 29</div>
+        <div class="leg-item"><div class="leg-sq" style="background:#b83232"></div>Blocked: 0</div>
+      </div>
+    </div>
+    <div class="card" style="padding:18px 22px">
+      <div class="card-label" style="margin-bottom:16px">📅 Timeline Snapshot — as of 16 May 2026</div>
+      <div style="display:flex;gap:28px;flex-wrap:wrap">
+        <div><div style="font-size:22px;font-weight:800;color:#1a3a5c">10 Oct 2026</div><div style="font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;margin-top:3px">Target Launch</div></div>
+        <div><div style="font-size:22px;font-weight:800;color:#0072ce">147</div><div style="font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;margin-top:3px">Days Remaining</div></div>
+        <div><div style="font-size:22px;font-weight:800;color:#e8840f">0</div><div style="font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;margin-top:3px">Due in 14 Days</div></div>
+        <div><div style="font-size:22px;font-weight:800;color:#b83232">0</div><div style="font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;margin-top:3px">Overdue</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">Stakeholder Progress</div>
+  <div class="sh-grid"><div class="sh-card" style="border-top:3px solid #1a3a5c;background:#e8f0fa"><div class="sh-title" style="color:#1a3a5c">Issuer</div><div class="sh-donut"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="34" fill="none" stroke="#1a7a4a" stroke-width="16" stroke-dasharray="14.46 9999" stroke-dashoffset="-0.00" transform="rotate(-90 50 50)"/><circle cx="50" cy="50" r="34" fill="none" stroke="#d0daea" stroke-width="16" stroke-dasharray="197.57 9999" stroke-dashoffset="-15.26" transform="rotate(-90 50 50)"/></svg><div class="sh-pct">7%</div></div><div class="sh-legend"><span class="leg-dot" style="background:#1a7a4a"></span>Done: 1 &nbsp;<span class="leg-dot" style="background:#0072ce"></span>Active: 0 &nbsp;<span class="leg-dot" style="background:#d0daea"></span>ToDo: 13 &nbsp;</div><div class="sh-total">Total steps: 14</div></div>
+<div class="sh-card" style="border-top:3px solid #0072ce;background:#e5f2ff"><div class="sh-title" style="color:#0072ce">Network</div><div class="sh-donut"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="34" fill="none" stroke="#0072ce" stroke-width="16" stroke-dasharray="15.63 9999" stroke-dashoffset="-0.00" transform="rotate(-90 50 50)"/><circle cx="50" cy="50" r="34" fill="none" stroke="#d0daea" stroke-width="16" stroke-dasharray="196.40 9999" stroke-dashoffset="-16.43" transform="rotate(-90 50 50)"/></svg><div class="sh-pct">0%</div></div><div class="sh-legend"><span class="leg-dot" style="background:#1a7a4a"></span>Done: 0 &nbsp;<span class="leg-dot" style="background:#0072ce"></span>Active: 1 &nbsp;<span class="leg-dot" style="background:#d0daea"></span>ToDo: 12 &nbsp;</div><div class="sh-total">Total steps: 13</div></div>
+<div class="sh-card" style="border-top:3px solid #1a7a4a;background:#e6f4ed"><div class="sh-title" style="color:#1a7a4a">Processor</div><div class="sh-donut"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="34" fill="none" stroke="#d0daea" stroke-width="16" stroke-dasharray="212.83 9999" stroke-dashoffset="-0.00" transform="rotate(-90 50 50)"/></svg><div class="sh-pct">0%</div></div><div class="sh-legend"><span class="leg-dot" style="background:#1a7a4a"></span>Done: 0 &nbsp;<span class="leg-dot" style="background:#0072ce"></span>Active: 0 &nbsp;<span class="leg-dot" style="background:#d0daea"></span>ToDo: 9 &nbsp;</div><div class="sh-total">Total steps: 9</div></div>
+<div class="sh-card" style="border-top:3px solid #e8840f;background:#fff4e5"><div class="sh-title" style="color:#e8840f">Embosser</div><div class="sh-donut"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="34" fill="none" stroke="#d0daea" stroke-width="16" stroke-dasharray="212.83 9999" stroke-dashoffset="-0.00" transform="rotate(-90 50 50)"/></svg><div class="sh-pct">0%</div></div><div class="sh-legend"><span class="leg-dot" style="background:#1a7a4a"></span>Done: 0 &nbsp;<span class="leg-dot" style="background:#0072ce"></span>Active: 0 &nbsp;<span class="leg-dot" style="background:#d0daea"></span>ToDo: 2 &nbsp;</div><div class="sh-total">Total steps: 2</div></div></div>
+
+  <div class="section-title">All Steps (31 total)</div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th>#</th><th>Description</th><th>Responsible</th>
+        <th>Status</th><th>Est. Date</th><th>Completed</th><th>Notes</th>
+      </tr></thead>
+      <tbody><tr><td class="num-col">1</td><td>Request for Project to Network</td><td>Issuer</td><td><span class="status-done"><span class="dot" style="background:#1a7a4a"></span>Done</span></td><td>01 May 2026</td><td>01 May 2026</td><td class="notes-col"></td></tr>
+<tr><td class="num-col">2</td><td>Project Creation and PM Assignment</td><td>Network</td><td><span class="status-ip"><span class="dot" style="background:#0072ce"></span>In Progress</span></td><td>05 Jun 2026</td><td>—</td><td class="notes-col"></td></tr>
+<tr><td class="num-col">3</td><td>Project SOW Preparation</td><td>Issuer</td><td><span class="status-todo"><span class="dot" style="background:#94a3b8"></span>ToDo</span></td><td>15 Jun 2026</td><td>—</td><td class="notes-col"></td></tr>
+<tr><td class="num-col">4</td><td>Project SOW Approval</td><td>Issuer</td><td><span class="status-todo"><span class="dot" style="background:#94a3b8"></span>ToDo</span></td><td>18 Jun 2026</td><td>—</td><td class="notes-col"></td></tr>
+<tr><td class="num-col">5</td><td>Project Plan Proposal</td><td>Network</td><td><span class="status-todo"><span class="dot" style="background:#94a3b8"></span>ToDo</span></td><td>25 Jun 2026</td><td>—</td><td class="notes-col"></td></tr>
+<tr><td class="num-col">6</td><td>Project Plan Approval</td><td>Issuer</td><td><span class="status-todo"><span class="dot" style="background:#94a3b8"></span>ToDo</span></td><td>01 Jul 2026</td><td>—</td><td class="notes-col"></td></tr>
+<tr><td class="num-col">7</td><td>New Account BIN Ordering</td><td>Issuer</td><td><span class="status-todo"><span class="dot" style="background:#94a3b8"></span>ToDo</span></td><td>05 Jul 2026</td><td>—</td><td class="notes-col"></td></tr>
+<tr><td class="num-col">8</td><td>New Account BIN Available</td><td>Network</td><td><span class="status-todo"><span class="dot" style="background:#94a3b8"></span>ToDo</span></td><td>10 Jul 2026</td><td>—</td><td class="notes-col"></td></tr>
+<tr><td class="num-col">9</td><td>Processor Authorization for Card Keys</td><td>Issuer</td><td><span class="status-todo"><span class="dot" style="background:#94a3b8"></span>ToDo</span></td><td>15 Jul 2026</td><td>—</td><td class="notes-col"></td></tr>
+<tr><td class="num-col">10</td><td>Card Keys Generation</td><td>Processor</td><td><span class="status-todo"><span class="dot" style="background:#94a3b8"></span>ToDo</span></td><td>20 Jul 2026</td><td>—</td><td class="notes-col"></td></tr>
+<tr><td class="num-col">11</td><td>Card Keys Exchange</td><td>Network and Processor</td><td><span class="status-todo"><span class="dot" style="background:#94a3b8"></span>ToDo</span></td><td>31 Jul 2026</td><td>—</td><td class="notes-col"></td></tr>
+<tr><td class="num-col">12</td><td>Key Updates in Processor System</td><td>Processor</td><td><span class="status-todo"><span class="dot" style="background:#94a3b8"></span>ToDo</span></td><td>05 Aug 2026</td><td>—</td><td class="notes-col"></td></tr>
+<tr><td class="num-col">13</td><td>Key Updates in Network System</td><td>Network</td><td><span class="status-todo"><span class="dot" style="background:#94a3b8"></span>ToDo</span></td><td>08 Aug 2026</td><td>—</td><td class="notes-col"></td></tr>
+<tr><td class="num-col">14</td><td>Non Liability Letter to Network</td><td>Issuer</td><td><span class="status-todo"><span class="dot" style="background:#94a3b8"></span>ToDo</span></td><td>12 Aug 2026</td><td>—</td><td class="notes-col"></td></tr>
+<tr><td class="num-col">15</td><td>Network Settlement End Point Initiation</td><td>Network</td><td><span class="status-todo"><span class="dot" style="background:#94a3b8"></span>ToDo</span></td><td>12 Aug 2026</td><td>—</td><td class="notes-col"></td></tr>
+<tr><td class="num-col">16</td><td>Network Settlement End Point Approval</td><td>Issuer</td><td><span class="status-todo"><span class="dot" style="background:#94a3b8"></span>ToDo</span></td><td>20 Aug 2026</td><td>—</td><td class="notes-col"></td></tr>
+<tr><td class="num-col">17</td><td>File Encryption Key Exchange</td><td>Network and Processor</td><td><span class="status-todo"><span class="dot" style="background:#94a3b8"></span>ToDo</span></td><td>25 Aug 2026</td><td>—</td><td class="notes-col"></td></tr>
+<tr><td class="num-col">18</td><td>Account BIN Setup in Blocked State</td><td>Network</td><td><span class="status-todo"><span class="dot" style="background:#94a3b8"></span>ToDo</span></td><td>28 Aug 2026</td><td>—</td><td class="notes-col"></td></tr>
+<tr><td class="num-col">19</td><td>Account BIN and Settlement End Point Go Live</td><td>Network</td><td><span class="status-todo"><span class="dot" style="background:#94a3b8"></span>ToDo</span></td><td>31 Aug 2026</td><td>—</td><td class="notes-col"></td></tr>
+<tr><td class="num-col">20</td><td>MDES Project Enablement</td><td>Network</td><td><span class="status-todo"><span class="dot" style="background:#94a3b8"></span>ToDo</span></td><td>02 Sep 2026</td><td>—</td><td class="notes-col"></td></tr>
+<tr><td class="num-col">21</td><td>Token BIN Assignment</td><td>Network</td><td><span class="status-todo"><span class="dot" style="background:#94a3b8"></span>ToDo</span></td><td>04 Sep 2026</td><td>—</td><td class="notes-col"></td></tr>
+<tr><td class="num-col">22</td><td>Token BIN Live</td><td>Network</td><td><span class="status-todo"><span class="dot" style="background:#94a3b8"></span>ToDo</span></td><td>08 Sep 2026</td><td>—</td><td class="notes-col"></td></tr>
+<tr><td class="num-col">23</td><td>Account BIN Block Removal Initiation</td><td>Issuer</td><td><span class="status-todo"><span class="dot" style="background:#94a3b8"></span>ToDo</span></td><td>09 Sep 2026</td><td>—</td><td class="notes-col"></td></tr>
+<tr><td class="num-col">24</td><td>Account BIN Block Removal Completion</td><td>Network</td><td><span class="status-todo"><span class="dot" style="background:#94a3b8"></span>ToDo</span></td><td>13 Sep 2026</td><td>—</td><td class="notes-col"></td></tr>
+<tr><td class="num-col">25</td><td>Account Setup and Card Ordering</td><td>Issuer and Processor</td><td><span class="status-todo"><span class="dot" style="background:#94a3b8"></span>ToDo</span></td><td>20 Sep 2026</td><td>—</td><td class="notes-col"></td></tr>
+<tr><td class="num-col">26</td><td>Card Fulfillment and Personalization</td><td>Embosser and Processor</td><td><span class="status-todo"><span class="dot" style="background:#94a3b8"></span>ToDo</span></td><td>25 Sep 2026</td><td>—</td><td class="notes-col"></td></tr>
+<tr><td class="num-col">27</td><td>Card Shipping</td><td>Embosser</td><td><span class="status-todo"><span class="dot" style="background:#94a3b8"></span>ToDo</span></td><td>28 Sep 2026</td><td>—</td><td class="notes-col"></td></tr>
+<tr><td class="num-col">28</td><td>Card Receiving  and Activation</td><td>Issuer and Processor</td><td><span class="status-todo"><span class="dot" style="background:#94a3b8"></span>ToDo</span></td><td>30 Sep 2026</td><td>—</td><td class="notes-col"></td></tr>
+<tr><td class="num-col">29</td><td>Card Transaction Validation</td><td>Issuer and Processor</td><td><span class="status-todo"><span class="dot" style="background:#94a3b8"></span>ToDo</span></td><td>02 Oct 2026</td><td>—</td><td class="notes-col"></td></tr>
+<tr><td class="num-col">30</td><td>Settlement Verification</td><td>Issuer and Processor</td><td><span class="status-todo"><span class="dot" style="background:#94a3b8"></span>ToDo</span></td><td>07 Oct 2026</td><td>—</td><td class="notes-col"></td></tr>
+<tr><td class="num-col">31</td><td>Project Close</td><td>Issuer</td><td><span class="status-todo"><span class="dot" style="background:#94a3b8"></span>ToDo</span></td><td>10 Oct 2026</td><td>—</td><td class="notes-col"></td></tr></tbody>
+    </table>
+  </div>
+</main>
+
+<footer>BIN Procurement Tracker &middot; 16 May 2026, 20:10 &middot; Source: Project_Input_BIN_SS.xlsx</footer>
+
+<script>
+var secs=60;
+var el=document.getElementById('cd');
+function tick(){secs--;if(secs<=0){window.location.reload();return;}if(el)el.textContent=secs+'s';setTimeout(tick,1000);}
+setTimeout(tick,1000);
+</script>
+</body>
+</html>
