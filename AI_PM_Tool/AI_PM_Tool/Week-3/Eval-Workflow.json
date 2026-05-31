@@ -1,0 +1,438 @@
+{
+  "name": "Eval-Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "source": "googleSheets",
+        "documentId": {
+          "__rl": true,
+          "value": "1HlBhLdeUxP_cq017_lp8Rs3BuTtuqCjIifU3UJ0UxIg",
+          "mode": "list",
+          "cachedResultName": "email_classification_ground_truth - Sheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HlBhLdeUxP_cq017_lp8Rs3BuTtuqCjIifU3UJ0UxIg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1665578127,
+          "mode": "list",
+          "cachedResultName": "email_classification_ground_truth - Sheet1(in).csv",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HlBhLdeUxP_cq017_lp8Rs3BuTtuqCjIifU3UJ0UxIg/edit#gid=1665578127"
+        },
+        "limitRows": true,
+        "maxRows": 100,
+        "filtersUI": {
+          "values": []
+        }
+      },
+      "type": "n8n-nodes-base.evaluationTrigger",
+      "typeVersion": 4.7,
+      "position": [
+        -416,
+        624
+      ],
+      "id": "364c218e-8e21-4e65-9b27-983c28ca02cc",
+      "name": "When fetching a dataset row",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GrvUhemPuMyjVHRB",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4caf71c5-de5a-4e4c-828c-adafb82c58fd",
+              "name": "Subject",
+              "value": "={{ $json.Subject }}",
+              "type": "string"
+            },
+            {
+              "id": "e579c76f-c57b-4fd4-af3f-b93a3e589739",
+              "name": "Body",
+              "value": "={{ $json.Body }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -192,
+        624
+      ],
+      "id": "61c96015-4bca-4084-a39d-bbd9f71d1712",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Subject :{{ $json.Subject }}\nBody :  {{ $json.Body }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "# ROLE\nYou are an Evaluation Classification Agent for a SaaS product.\n\n# GOAL\nAnalyze the provided email Subject and Body and classify the feedback into:\n1. One of the 6 defined categories.\n2. One priority level (Low, Medium, High) based on business impact.\n\nThis classifier intentionally simulates a partially trained AI system.\n\n# ACCURACY SIMULATION\nThis system is designed to behave like an early-stage classifier.\n\nRules:\n- In clear cases, assign the correct category and priority.\n- In approximately 30–50% of cases, return a plausible but slightly incorrect classification.\n- Errors must still be reasonable and similar to the true issue.\n- Never return unrelated or random categories.\n- Confusion should occur mostly between logically similar categories.\n\nExamples of plausible confusion:\n- Bug Report ↔ UI/UX Issue\n- Bug Report ↔ Account Support\n- UI/UX Issue ↔ Feature Enhancement Request\n- Logistic Issue ↔ Account Support\n- Billing ↔ Account Support\n\nPriority mistakes should also be realistic:\n- High ↔ Medium\n- Medium ↔ Low\n\nDo NOT produce unrealistic classifications.\n\n---------------------------------------\n\n# DEFINED CATEGORIES (choose only one)\n\n1. Billing\n→ Payment problems, incorrect charges, refunds, subscription issues.\n\n2. Bug Report\n→ Application crashes, broken features, incorrect behavior, software malfunction.\n\n3. Account Support\n→ Login problems, password reset issues, account access issues, verification problems.\n\n4. UI/UX Issue\n→ Confusing interface, layout problems, usability concerns, poor navigation.\n\n5. Logistic Issue\n→ Delivery delays, operational coordination problems, service availability issues.\n\n6. Feature Enhancement Request\n→ Requests for new features, product improvements, new capabilities.\n\n---------------------------------------\n\n# PRIORITY GUIDELINES\n\nHigh\n- Payment or billing failures\n- App crashes or broken functionality\n- Issues preventing core product usage\n- Security or account access blocked\n\nMedium\n- Partial malfunction\n- Noticeable usability issues\n- Important but non-blocking issues\n- Workflow confusion affecting users\n\nLow\n- Feature suggestions\n- Minor UI improvements\n- Cosmetic changes\n- Non-urgent feedback\n\n---------------------------------------\n\n# INSTRUCTIONS\n\n- Carefully read the Subject and Body.\n- Identify the main problem described.\n- Assign EXACTLY ONE category from the defined list.\n- Assign EXACTLY ONE priority level.\n- Follow the defined taxonomy strictly.\n- When simulating mistakes, ensure they remain realistic.\n\n---------------------------------------\n\n# OUTPUT FORMAT\n\nReturn ONLY a raw JSON object in this exact structure:\n\n{\n\"subject\": \"Original email subject (unchanged)\",\n\"body\": \"Original email body (unchanged)\",\n\"category\": \"Billing | Bug Report | Account Support | UI/UX Issue | Logistic Issue | Feature Enhancement Request\",\n\"priority\": \"Low | Medium | High\"\n}\n\n---------------------------------------\n\n# GUARDRAILS\n\n- Do NOT include explanations.\n- Do NOT include markdown.\n- Do NOT wrap the JSON in quotes.\n- Do NOT add extra fields.\n- Category must match EXACTLY one of the 6 defined categories.\n- Priority must be exactly: Low, Medium, or High.\n- Output must be valid raw JSON only."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        32,
+        624
+      ],
+      "id": "ba390aea-53a9-4a6f-ac92-e157731f7b19",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -48,
+        832
+      ],
+      "id": "134bdbc3-fc43-4a9c-bc03-1e6ba205cf8d",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "EmBCtJZGGo7Veu6w",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"subject\": {\n      \"type\": [\"string\", \"null\"],\n      \"description\": \"Original email subject (unchanged)\"\n    },\n    \"body\": {\n      \"type\": [\"string\", \"null\"],\n      \"description\": \"Original email body (unchanged)\"\n    },\n    \"category\": {\n      \"type\": [\"string\", \"null\"],\n      \"enum\": [\n        \"Billing\",\n        \"Bug Report\",\n        \"Account Support\",\n        \"UI/UX Issue\",\n        \"Logistic Issue\",\n        \"Feature Enhancement Request\",\n        null\n      ],\n      \"description\": \"The classified category of the email\"\n    },\n    \"priority\": {\n      \"type\": [\"string\", \"null\"],\n      \"enum\": [\"Low\", \"Medium\", \"High\", null],\n      \"description\": \"The priority level of the email\"\n    }\n  },\n  \"required\": [\"subject\", \"body\", \"category\", \"priority\"],\n  \"additionalProperties\": false\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        352,
+        864
+      ],
+      "id": "df4bc691-9981-4906-9ea0-450262bc53cf",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "operation": "checkIfEvaluating"
+      },
+      "type": "n8n-nodes-base.evaluation",
+      "typeVersion": 4.8,
+      "position": [
+        384,
+        624
+      ],
+      "id": "0cd7f821-f445-4037-bd91-0933fa15eb50",
+      "name": "Evaluation"
+    },
+    {
+      "parameters": {
+        "source": "googleSheets",
+        "documentId": {
+          "__rl": true,
+          "value": "1HlBhLdeUxP_cq017_lp8Rs3BuTtuqCjIifU3UJ0UxIg",
+          "mode": "list",
+          "cachedResultName": "email_classification_ground_truth - Sheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HlBhLdeUxP_cq017_lp8Rs3BuTtuqCjIifU3UJ0UxIg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1665578127,
+          "mode": "list",
+          "cachedResultName": "email_classification_ground_truth - Sheet1(in).csv",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HlBhLdeUxP_cq017_lp8Rs3BuTtuqCjIifU3UJ0UxIg/edit#gid=1665578127"
+        },
+        "outputs": {
+          "values": [
+            {
+              "outputName": "Predicted Category",
+              "outputValue": "={{ $json.output.category }}"
+            },
+            {
+              "outputName": "Predicted Priority",
+              "outputValue": "={{ $json.output.priority }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.evaluation",
+      "typeVersion": 4.8,
+      "position": [
+        608,
+        528
+      ],
+      "id": "af533e8c-765e-4f36-b45e-f6aff8e36e8f",
+      "name": "Set Output",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GrvUhemPuMyjVHRB",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "setMetrics",
+        "metric": "categorization",
+        "expectedAnswer": "={{ $('When fetching a dataset row').item.json.Category }}",
+        "actualAnswer": "={{ $('AI Agent').item.json.output.category }}",
+        "options": {
+          "metricName": "Category"
+        }
+      },
+      "type": "n8n-nodes-base.evaluation",
+      "typeVersion": 4.8,
+      "position": [
+        832,
+        528
+      ],
+      "id": "b7f2c439-9959-4cfa-81c8-f5e37308713a",
+      "name": "Set Category"
+    },
+    {
+      "parameters": {
+        "operation": "setMetrics",
+        "metric": "categorization",
+        "expectedAnswer": "={{ $('When fetching a dataset row').item.json.Priority }}",
+        "actualAnswer": "={{ $('AI Agent').item.json.output.priority }}",
+        "options": {
+          "metricName": "Priority"
+        }
+      },
+      "type": "n8n-nodes-base.evaluation",
+      "typeVersion": 4.8,
+      "position": [
+        1056,
+        528
+      ],
+      "id": "529588ad-d4ab-44db-ab20-b1fc0ba137c0",
+      "name": "Set Priority"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        608,
+        720
+      ],
+      "id": "178034ae-93e9-4a13-ae1a-0bb1e55b68fa",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "content": "📊 Data Source\n\nLoads email data from Google Sheets ground truth dataset. Each row contains Subject, Body, Category, and Priority fields for evaluation.",
+        "height": 180,
+        "width": 200,
+        "color": 4
+      },
+      "id": "4897dc94-3a2a-4e9d-9398-06d4b9938976",
+      "name": "Data Source",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        448
+      ]
+    },
+    {
+      "parameters": {
+        "content": "🔧 Data Preparation\n\nExtracts only Subject and Body fields from the dataset, preparing clean input for the AI classifier.",
+        "color": 3
+      },
+      "id": "16f55c3b-6ddb-403a-8f2a-4827d2e226c4",
+      "name": "Data Preparation",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -336,
+        816
+      ]
+    },
+    {
+      "parameters": {
+        "content": "🤖 AI Classification\n\nAI Agent analyzes email content and classifies into 6 categories (Billing, Bug Report, Account Support, UI/UX Issue, Logistic Issue, Feature Enhancement) with priority levels (Low, Medium, High). Simulates 30-50% error rate for evaluation testing.",
+        "height": 220,
+        "width": 300
+      },
+      "id": "b6ac3967-14a6-4a06-8721-44456567c902",
+      "name": "AI Classification",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "content": "📕 AI Model Configuration\n\nOpenAI GPT-5-mini model powers the classification agent. Structured Output Parser ensures consistent JSON format with category and priority fields.",
+        "height": 180,
+        "width": 216,
+        "color": 4
+      },
+      "id": "4907a874-dbd3-47ea-9782-9c1ae5eac514",
+      "name": "AI Model Configuration",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -96,
+        992
+      ]
+    },
+    {
+      "parameters": {
+        "content": "📙 Evaluation Flow Control\n\nChecks if workflow is running in evaluation mode. If yes, proceeds to metrics tracking. If no, skips evaluation steps.",
+        "width": 228,
+        "color": 5
+      },
+      "id": "d57b3bfb-ca95-4ad3-b6b3-24ff68be616e",
+      "name": "Evaluation Flow Control",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        336,
+        432
+      ]
+    },
+    {
+      "parameters": {
+        "content": "📘 Metrics Tracking\n\nRecords predicted outputs and calculates accuracy metrics by comparing AI predictions against ground truth Category and Priority values from the dataset.",
+        "height": 180,
+        "width": 460,
+        "color": 2
+      },
+      "id": "7506f87f-688d-47ff-a032-ae66891f819f",
+      "name": "Metrics Tracking",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        736,
+        320
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When fetching a dataset row": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Evaluation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evaluation": {
+      "main": [
+        [
+          {
+            "node": "Set Output",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Output": {
+      "main": [
+        [
+          {
+            "node": "Set Category",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Category": {
+      "main": [
+        [
+          {
+            "node": "Set Priority",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "97c4d7f8-0042-4817-9cfc-c2df6aeb979c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7e5da4e0e69a713b8dcffbd492258251513442f3aa467559680f11558eb2714d"
+  },
+  "id": "IWs8RiLVEiDSDApz",
+  "tags": []
+}

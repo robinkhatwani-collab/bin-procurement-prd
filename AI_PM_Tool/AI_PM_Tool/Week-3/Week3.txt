@@ -1,5 +1,43 @@
 Week-3
-Test
+
+How you can select right model for your application 
+Model picking Criteria and Techniques -- Pending
+Create a table of requirement to choose the model etc. 
+How your use case is following HHH(Helpfulness,Honest, Harmless) framework
+What is Responsible AI and how to make AI responsible.
+
+AI ACT Checks in your product to ensure it's compliant.
+
+Risk based Regulation
+Prohibited Practices and Transparency
+Governance and Oversight
+Phase Implementation
+
+
+Challenges of AI product - 
+Accountability
+	Assess the solution's efficacy and limitation. 
+	Ensure compliance with the intended use
+	Manage Sensitive data
+	Incorporate human oversight and control
+	Ensure compliance by developers and partners
+	Perform manual audits
+	Tools - Monitor your model in production for degradation in performance, bias, and to create metrics.
+Transparency -- What are the practical ways to make your system transparent (Tool - InterpretML)
+Fairness - Provide a similar quality of service for all identified areas of operation. Practical way to implement
+Reliability and Safety - Practical way to implement 
+ 
+Create Template for AI product or AI solution  
+a. AI Agent following AI act or not, list all requirements. 
+b. AI Agent evaluation. 
+c. Logging and monitoring 
+
+What is ML Common - Better AI for Everyone - A Common Body. 
+
+What Is memory and how memory works in models and agentic AI 
+
+
+************
 
 KNOWLEDGE GRAPH
 
