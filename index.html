@@ -3,176 +3,309 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PRD — AI-Powered Multi-Project Tracker (Agentic Edition)</title>
+<title>PRD — AI-Powered Multi-Project Tracker</title>
 <style>
-  :root {
-    --primary: #1a1f36;
-    --accent: #4f46e5;
-    --accent-light: #eef2ff;
-    --green: #16a34a; --green-bg: #f0faf4;
-    --amber: #d97706; --amber-bg: #fef8ee;
-    --red: #dc2626;   --red-bg: #fdeaea;
-    --blue: #2563eb;  --blue-bg: #eff6ff;
-    --purple: #7c3aed;--purple-bg: #f5f3ff;
-    --gray: #6b7280;  --gray-bg: #f9fafb;
-    --border: #e5e7eb;
-    --text: #111827;
-    --muted: #6b7280;
-    --radius: 10px;
-    --shadow: 0 1px 4px rgba(0,0,0,.08);
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--text);background:#fff;line-height:1.6}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+:root {
+  --bg:#0b0f1a; --surface:#111827; --surface2:#161d2e; --surface3:#1c2540;
+  --border:rgba(255,255,255,0.08); --border2:rgba(255,255,255,0.13);
+  --text:#f0f4ff; --text-muted:#8b9ab4; --text-dim:#5a6a84;
+  --primary:#4f8ef7; --secondary:#2dd4bf; --purple:#9f6ef5; --accent:#f59e0b;
+  --green:#34d399; --red:#f87171; --rose:#f472b6;
+  --glow-blue:rgba(79,142,247,0.22); --glow-purple:rgba(159,110,245,0.22);
+  --glow-teal:rgba(45,212,191,0.22); --glow-amber:rgba(245,158,11,0.22);
+  --primary-dim:rgba(79,142,247,0.15); --purple-dim:rgba(159,110,245,0.15);
+  --secondary-dim:rgba(45,212,191,0.15); --accent-dim:rgba(245,158,11,0.15);
+  --green-dim:rgba(52,211,153,0.15); --red-dim:rgba(248,113,113,0.15);
+  --w1:#4f8ef7; --w2:#9f6ef5; --w3:#2dd4bf;
+  --radius:14px; --shadow:0 4px 24px rgba(0,0,0,0.35);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 70% 50% at 15% 15%,rgba(79,142,247,.07) 0%,transparent 60%),radial-gradient(ellipse 60% 45% at 85% 75%,rgba(159,110,245,.07) 0%,transparent 60%);pointer-events:none;z-index:0}
 
-  /* NAV */
-  .topnav{background:var(--primary);padding:14px 32px;display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center}
-  .topnav span{color:#9ca3af;font-size:13px}
-  .topnav a{color:#c7d2fe;font-size:13px;text-decoration:none;white-space:nowrap}
-  .topnav a:hover{color:#fff}
+/* NAV */
+.topnav{position:sticky;top:0;z-index:100;background:rgba(11,15,26,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:12px 32px;display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center}
+.topnav .nav-logo{font-size:.82rem;font-weight:800;color:var(--text);text-decoration:none;margin-right:8px}
+.topnav a{color:var(--text-muted);font-size:.75rem;text-decoration:none;white-space:nowrap;padding:3px 8px;border-radius:6px;transition:.2s}
+.topnav a:hover{color:var(--text);background:rgba(255,255,255,.06)}
+.nav-badge{font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:4px}
+.nb-w1{background:rgba(79,142,247,.2);color:var(--w1)}
+.nb-w2{background:rgba(159,110,245,.2);color:var(--w2)}
+.nb-w3{background:rgba(45,212,191,.2);color:var(--w3)}
 
-  /* HERO */
-  .hero{background:linear-gradient(135deg,#1a1f36 0%,#312e81 100%);color:#fff;padding:56px 48px 44px;position:relative;overflow:hidden}
-  .hero::after{content:'';position:absolute;right:-60px;top:-60px;width:320px;height:320px;border-radius:50%;background:rgba(255,255,255,.04)}
-  .hero h1{font-size:2rem;font-weight:700;margin-bottom:10px}
-  .hero p{color:#c7d2fe;font-size:1.05rem;max-width:680px;margin-bottom:22px}
-  .meta-chips{display:flex;flex-wrap:wrap;gap:8px}
-  .chip{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:4px 14px;font-size:12px;color:#e0e7ff}
-  .chip.poc{background:rgba(234,179,8,.2);border-color:rgba(234,179,8,.4);color:#fef08a}
+/* LAYOUT */
+.section{padding:56px 48px 48px;border-bottom:1px solid var(--border);position:relative;z-index:1}
+.section:last-child{border-bottom:none}
+.section-num{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;background:var(--primary-dim);border:1px solid rgba(79,142,247,.35);color:var(--primary);border-radius:50%;font-weight:800;font-size:.82rem;margin-bottom:14px}
+.section h2{font-size:1.5rem;font-weight:800;letter-spacing:-.4px;margin-bottom:6px}
+.section .subtitle{color:var(--text-muted);font-size:.9rem;margin-bottom:28px}
+h3{font-size:1rem;font-weight:700;color:var(--text);margin:28px 0 12px;letter-spacing:-.1px}
+h4{font-size:.9rem;font-weight:600;color:var(--text);margin:16px 0 8px}
 
-  /* SECTION WRAPPER */
-  .section{padding:48px 48px 40px;border-bottom:1px solid var(--border)}
-  .section:last-child{border-bottom:none}
-  .section-num{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;background:var(--accent);color:#fff;border-radius:50%;font-weight:700;font-size:14px;margin-bottom:12px}
-  .section h2{font-size:1.45rem;font-weight:700;color:var(--primary);margin-bottom:6px}
-  .section .subtitle{color:var(--muted);font-size:.92rem;margin-bottom:24px}
-  h3{font-size:1.05rem;font-weight:600;color:var(--primary);margin:24px 0 10px}
-  h4{font-size:.95rem;font-weight:600;color:var(--primary);margin:16px 0 8px}
+/* LEARNING BADGE */
+.learn-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:10px;font-size:.68rem;font-weight:700;margin:0 4px 4px 0}
+.lb-w1{background:rgba(79,142,247,.15);border:1px solid rgba(79,142,247,.3);color:var(--w1)}
+.lb-w2{background:rgba(159,110,245,.15);border:1px solid rgba(159,110,245,.3);color:var(--w2)}
+.lb-w3{background:rgba(45,212,191,.15);border:1px solid rgba(45,212,191,.3);color:var(--w3)}
 
-  /* TABLES */
-  table{width:100%;border-collapse:collapse;font-size:.875rem;margin:12px 0 20px}
-  th{background:var(--gray-bg);text-align:left;padding:10px 12px;font-weight:600;color:var(--primary);border-bottom:2px solid var(--border)}
-  td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:top}
-  tr:hover td{background:#fafafa}
+/* TABLES */
+table{width:100%;border-collapse:collapse;font-size:.84rem;margin:12px 0 20px}
+th{background:var(--surface2);text-align:left;padding:10px 14px;font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.6px;color:var(--text-dim);border-bottom:1px solid var(--border2)}
+td{padding:9px 14px;border-bottom:1px solid var(--border);vertical-align:top;color:var(--text-muted)}
+td strong{color:var(--text)}
+tr:hover td{background:rgba(255,255,255,.02)}
 
-  /* BADGES */
-  .badge{display:inline-block;padding:2px 9px;border-radius:12px;font-size:11px;font-weight:600}
-  .badge-green{background:#dcfce7;color:#15803d}
-  .badge-amber{background:#fef9c3;color:#92400e}
-  .badge-red{background:#fee2e2;color:#b91c1c}
-  .badge-blue{background:#dbeafe;color:#1d4ed8}
-  .badge-purple{background:#ede9fe;color:#6d28d9}
-  .badge-gray{background:#f3f4f6;color:#374151}
-  .badge-indigo{background:#e0e7ff;color:#3730a3}
+/* BADGES */
+.badge{display:inline-block;padding:2px 9px;border-radius:10px;font-size:.7rem;font-weight:700}
+.badge-green{background:var(--green-dim);color:var(--green)}
+.badge-amber{background:var(--accent-dim);color:var(--accent)}
+.badge-red{background:var(--red-dim);color:var(--red)}
+.badge-blue{background:var(--primary-dim);color:var(--primary)}
+.badge-purple{background:var(--purple-dim);color:var(--purple)}
+.badge-gray{background:var(--surface3);color:var(--text-muted)}
+.badge-teal{background:var(--secondary-dim);color:var(--secondary)}
 
-  /* MOSCOW */
-  .moscow-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin:16px 0}
-  .moscow-card{border-radius:var(--radius);padding:20px;border:1px solid}
-  .moscow-card.must{background:#f0fdf4;border-color:#86efac}
-  .moscow-card.should{background:#eff6ff;border-color:#93c5fd}
-  .moscow-card.could{background:#fefce8;border-color:#fde047}
-  .moscow-card.wont{background:#f9fafb;border-color:#d1d5db}
-  .moscow-card h4{margin:0 0 10px}
-  .moscow-card ul{padding-left:16px;font-size:.875rem;line-height:1.7}
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);margin-bottom:16px}
 
-  /* AGENT CARDS */
-  .agent-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin:20px 0}
-  .agent-card{border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;box-shadow:var(--shadow)}
-  .agent-header{padding:16px 20px;font-weight:700;font-size:.95rem;display:flex;align-items:center;gap:10px}
-  .agent-header .num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700;flex-shrink:0}
-  .agent-body{padding:16px 20px;font-size:.875rem;line-height:1.65}
-  .agent-body ul{padding-left:16px;margin:6px 0}
-  .a1 .agent-header{background:#eff6ff;color:#1d4ed8} .a1 .num{background:#2563eb}
-  .a2 .agent-header{background:#f5f3ff;color:#6d28d9} .a2 .num{background:#7c3aed}
-  .a3 .agent-header{background:#f0fdf4;color:#15803d} .a3 .num{background:#16a34a}
-  .a4 .agent-header{background:#fff7ed;color:#c2410c} .a4 .num{background:#ea580c}
+/* CALLOUTS */
+.callout{border-radius:10px;padding:14px 18px;margin:16px 0;font-size:.85rem;border-left:3px solid}
+.callout-title{font-weight:700;margin-bottom:4px;font-size:.8rem;text-transform:uppercase;letter-spacing:.6px}
+.callout-blue{background:rgba(79,142,247,.08);border-color:var(--primary);color:var(--text-muted)}
+.callout-blue .callout-title{color:var(--primary)}
+.callout-amber{background:var(--accent-dim);border-color:var(--accent);color:var(--text-muted)}
+.callout-amber .callout-title{color:var(--accent)}
+.callout-green{background:var(--green-dim);border-color:var(--green);color:var(--text-muted)}
+.callout-green .callout-title{color:var(--green)}
+.callout-teal{background:var(--secondary-dim);border-color:var(--secondary);color:var(--text-muted)}
+.callout-teal .callout-title{color:var(--secondary)}
+.callout-purple{background:var(--purple-dim);border-color:var(--purple);color:var(--text-muted)}
+.callout-purple .callout-title{color:var(--purple)}
 
-  /* PHASE CARDS */
-  .phase-grid{display:grid;gap:16px;margin:16px 0}
-  .phase-card{border-radius:var(--radius);border:1px solid var(--border);padding:20px 24px}
-  .phase-card .phase-tag{display:inline-block;padding:3px 12px;border-radius:12px;font-size:11px;font-weight:700;margin-bottom:10px}
-  .phase-poc .phase-tag{background:#fef9c3;color:#92400e;border:1px solid #fde047}
-  .phase-future .phase-tag{background:#e0e7ff;color:#3730a3;border:1px solid #a5b4fc}
-  .phase-card h4{margin:0 0 8px;font-size:1rem}
-  .phase-card ul{padding-left:18px;font-size:.875rem;line-height:1.75}
+/* MOSCOW */
+.moscow-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin:16px 0}
+.moscow-card{border-radius:var(--radius);padding:20px;border:1px solid}
+.moscow-card.must{background:rgba(52,211,153,.06);border-color:rgba(52,211,153,.25)}
+.moscow-card.should{background:rgba(79,142,247,.06);border-color:rgba(79,142,247,.25)}
+.moscow-card.could{background:rgba(245,158,11,.06);border-color:rgba(245,158,11,.25)}
+.moscow-card.wont{background:var(--surface2);border-color:var(--border)}
+.moscow-card h4{margin:0 0 10px;color:var(--text)}
+.moscow-card ul{padding-left:16px;font-size:.84rem;line-height:1.75;color:var(--text-muted)}
 
-  /* KPI TILES */
-  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin:16px 0}
-  .kpi{border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center}
-  .kpi .val{font-size:1.7rem;font-weight:700;color:var(--accent)}
-  .kpi .label{font-size:.78rem;color:var(--muted);margin-top:4px}
+/* AGENT CARDS */
+.agent-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin:20px 0}
+.agent-card{border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;box-shadow:var(--shadow)}
+.agent-header{padding:16px 20px;font-weight:700;font-size:.92rem;display:flex;align-items:center;gap:10px}
+.agent-header .num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.8rem;font-weight:800;flex-shrink:0}
+.agent-body{padding:16px 20px;font-size:.84rem;line-height:1.65;background:var(--surface);color:var(--text-muted)}
+.agent-body ul{padding-left:16px;margin:6px 0}
+.agent-body strong{color:var(--text)}
+.a1 .agent-header{background:rgba(79,142,247,.12);color:var(--primary);border-bottom:1px solid rgba(79,142,247,.2)} .a1 .num{background:var(--primary)}
+.a2 .agent-header{background:rgba(159,110,245,.12);color:var(--purple);border-bottom:1px solid rgba(159,110,245,.2)} .a2 .num{background:var(--purple)}
+.a3 .agent-header{background:rgba(52,211,153,.12);color:var(--green);border-bottom:1px solid rgba(52,211,153,.2)} .a3 .num{background:var(--green)}
+.a4 .agent-header{background:rgba(245,158,11,.12);color:var(--accent);border-bottom:1px solid rgba(245,158,11,.2)} .a4 .num{background:var(--accent)}
 
-  /* PROMPT BLOCKS */
-  .prompt-block{background:#1e1e2e;border-radius:var(--radius);padding:18px 22px;margin:12px 0;font-family:'Courier New',monospace;font-size:.8rem;color:#cdd6f4;line-height:1.6;overflow-x:auto}
-  .prompt-block .role{color:#89b4fa;font-weight:700}
-  .prompt-block .var{color:#a6e3a1}
+/* PHASE CARDS */
+.phase-grid{display:grid;gap:16px;margin:16px 0}
+.phase-card{border-radius:var(--radius);border:1px solid var(--border);padding:20px 24px;background:var(--surface)}
+.phase-card .phase-tag{display:inline-block;padding:3px 12px;border-radius:10px;font-size:.7rem;font-weight:700;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px}
+.phase-poc .phase-tag{background:var(--accent-dim);color:var(--accent);border:1px solid rgba(245,158,11,.3)}
+.phase-future .phase-tag{background:var(--primary-dim);color:var(--primary);border:1px solid rgba(79,142,247,.3)}
+.phase-card h4{color:var(--text)}
+.phase-card ul{padding-left:18px;font-size:.84rem;line-height:1.75;color:var(--text-muted)}
 
-  /* RISK TABLE */
-  .risk-high td:first-child{border-left:3px solid var(--red)}
-  .risk-med td:first-child{border-left:3px solid var(--amber)}
-  .risk-low td:first-child{border-left:3px solid var(--green)}
+/* KPI TILES */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin:16px 0}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;text-align:center}
+.kpi .val{font-size:1.7rem;font-weight:800;color:var(--primary);letter-spacing:-.5px}
+.kpi .label{font-size:.75rem;color:var(--text-muted);margin-top:5px}
 
-  /* PRICING */
-  .pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;margin:20px 0}
-  .pricing-card{border-radius:var(--radius);border:2px solid var(--border);padding:24px;position:relative}
-  .pricing-card.popular{border-color:var(--accent)}
-  .pricing-card .popular-tag{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;font-size:11px;font-weight:700;padding:3px 14px;border-radius:12px}
-  .pricing-card h4{font-size:1rem;margin:0 0 6px}
-  .pricing-card .price{font-size:1.8rem;font-weight:700;color:var(--primary);margin:8px 0 4px}
-  .pricing-card .price span{font-size:.85rem;font-weight:400;color:var(--muted)}
-  .pricing-card ul{padding-left:16px;font-size:.82rem;line-height:1.8;color:var(--muted);margin-top:12px}
+/* PROMPT BLOCKS */
+.prompt-block{background:#0d1117;border:1px solid var(--border2);border-radius:var(--radius);padding:18px 22px;margin:12px 0;font-family:'Courier New',monospace;font-size:.78rem;color:#c9d1d9;line-height:1.7;overflow-x:auto}
+.prompt-block .role{color:var(--primary);font-weight:700}
+.prompt-block .var{color:var(--green)}
 
-  /* FLOW DIAGRAM */
-  .flow-section{background:var(--gray-bg);padding:48px}
-  .flow-section h2{font-size:1.3rem;font-weight:700;color:var(--primary);margin-bottom:6px}
-  .flow-section .subtitle{color:var(--muted);font-size:.9rem;margin-bottom:28px}
+/* RISK TABLE */
+.risk-high td:first-child{border-left:3px solid var(--red)}
+.risk-med td:first-child{border-left:3px solid var(--accent)}
+.risk-low td:first-child{border-left:3px solid var(--green)}
 
-  /* FOOTER */
-  footer{background:var(--primary);color:#9ca3af;text-align:center;padding:20px;font-size:.8rem}
+/* PRICING */
+.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;margin:20px 0}
+.pricing-card{border-radius:var(--radius);border:1px solid var(--border);padding:24px;background:var(--surface);position:relative}
+.pricing-card.popular{border-color:var(--primary)}
+.pricing-card .popular-tag{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--primary);color:#fff;font-size:.68rem;font-weight:700;padding:3px 14px;border-radius:10px}
+.pricing-card h4{font-size:.95rem;margin:0 0 6px;color:var(--text)}
+.pricing-card .price{font-size:1.8rem;font-weight:800;color:var(--text);margin:8px 0 4px;letter-spacing:-.5px}
+.pricing-card .price span{font-size:.82rem;font-weight:400;color:var(--text-muted)}
+.pricing-card ul{padding-left:16px;font-size:.82rem;line-height:1.9;color:var(--text-muted);margin-top:12px}
 
-  /* CALLOUT */
-  .callout{border-radius:var(--radius);padding:14px 18px;margin:16px 0;font-size:.875rem;border-left:4px solid}
-  .callout-blue{background:#eff6ff;border-color:#3b82f6;color:#1e40af}
-  .callout-amber{background:#fffbeb;border-color:#f59e0b;color:#92400e}
-  .callout-green{background:#f0fdf4;border-color:#22c55e;color:#15803d}
+/* FLOW */
+.flow-section{background:var(--surface);padding:48px;border-bottom:1px solid var(--border);position:relative;z-index:1}
+.flow-section h2{font-size:1.3rem;font-weight:800;color:var(--text);margin-bottom:6px}
+.flow-section .subtitle{color:var(--text-muted);font-size:.88rem;margin-bottom:28px}
 
-  @media(max-width:640px){
-    .hero,.section,.flow-section{padding:28px 20px}
-    .topnav{padding:10px 16px}
-    h1{font-size:1.5rem}
-  }
+/* HERO */
+.hero{background:linear-gradient(135deg,#060a14 0%,#0d1333 50%,#0a1a14 100%);padding:56px 48px 48px;position:relative;overflow:hidden;border-bottom:1px solid var(--border)}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 60% at 20% 40%,rgba(79,142,247,.12),transparent 60%),radial-gradient(ellipse 50% 50% at 80% 60%,rgba(45,212,191,.1),transparent 60%);pointer-events:none}
+.hero h1{font-size:2.2rem;font-weight:800;letter-spacing:-.8px;margin-bottom:10px;position:relative}
+.hero p{color:var(--text-muted);font-size:1rem;max-width:700px;margin-bottom:22px;position:relative}
+.meta-chips{display:flex;flex-wrap:wrap;gap:8px;position:relative}
+.chip{background:rgba(255,255,255,.07);border:1px solid var(--border2);border-radius:20px;padding:4px 14px;font-size:.72rem;color:var(--text-muted)}
+.chip.poc{background:rgba(245,158,11,.15);border-color:rgba(245,158,11,.3);color:var(--accent)}
+
+/* WEEK STRIP */
+.week-strip{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;position:relative}
+.wk-chip{padding:5px 14px;border-radius:20px;font-size:.75rem;font-weight:700;border:1px solid}
+.wk1{background:rgba(79,142,247,.15);border-color:rgba(79,142,247,.35);color:var(--w1)}
+.wk2{background:rgba(159,110,245,.15);border-color:rgba(159,110,245,.35);color:var(--w2)}
+.wk3{background:rgba(45,212,191,.15);border-color:rgba(45,212,191,.35);color:var(--w3)}
+
+code{background:var(--surface3);border:1px solid var(--border);border-radius:5px;padding:1px 6px;font-size:.8rem;color:var(--secondary);font-family:'Courier New',monospace}
+
+footer{background:var(--surface);border-top:1px solid var(--border);color:var(--text-dim);text-align:center;padding:24px;font-size:.78rem}
+
+@media(max-width:640px){
+  .hero,.section,.flow-section{padding:28px 20px}
+  .topnav{padding:10px 16px}
+  h1{font-size:1.5rem}
+}
 </style>
 </head>
 <body>
 
 <!-- NAV -->
 <nav class="topnav">
-  <span>PRD v2.0</span>
+  <a class="nav-logo" href="default.html">← Hub</a>
+  <a href="#learning">Learning Applied</a>
   <a href="#problem">1. Problem</a>
   <a href="#solution">2. Solution</a>
   <a href="#agents">3. Agents</a>
-  <a href="#journey">4. User Journey</a>
-  <a href="#metrics">5. Metrics</a>
-  <a href="#priority">6. Prioritisation</a>
-  <a href="#roadmap">7. Roadmap</a>
-  <a href="#evaluation">8. Evaluation</a>
-  <a href="#prompts">9. Prompt Strategy</a>
-  <a href="#ai-risk">10. Responsible AI</a>
-  <a href="#pricing">11. Pricing</a>
-  <a href="#poc-tech">12. POC Scope</a>
+  <a href="#metrics">4. Metrics</a>
+  <a href="#priority">5. MoSCoW</a>
+  <a href="#roadmap">6. Roadmap</a>
+  <a href="#evaluation">7. Evaluation</a>
+  <a href="#prompts">8. Prompts</a>
+  <a href="#ai-risk">9. Responsible AI</a>
+  <a href="#pricing">10. Pricing</a>
+  <a href="#poc-tech">11. POC Scope</a>
   <a href="#flow">BIN Flow</a>
 </nav>
 
 <!-- HERO -->
 <div class="hero">
+  <div class="week-strip">
+    <span class="wk-chip wk1">Week 1 · Foundations</span>
+    <span class="wk-chip wk2">Week 2 · Context & Agentic RAG</span>
+    <span class="wk-chip wk3">Week 3 · Agentic AI & Responsible AI</span>
+  </div>
   <h1>AI-Powered Multi-Project Tracker</h1>
-  <p>Agentic platform with four specialised AI agents — tracking multi-party projects via Excel or Smartsheet, generating live status dashboards, answering natural-language queries, monitoring deadlines, and evaluating dependencies autonomously.</p>
+  <p>Agentic platform with four specialised AI agents — this PRD demonstrates how 33 topics across 3 weeks of AI PM learning are directly applied to product decisions, agent design, evaluation strategy, and responsible AI governance.</p>
   <div class="meta-chips">
-    <span class="chip">Version 2.0</span>
+    <span class="chip">PRD v2.0</span>
     <span class="chip">May 2026</span>
     <span class="chip">Author: Robin Khatwani</span>
     <span class="chip">Status: Draft</span>
-    <span class="chip">Domain: Project Management / Enterprise SaaS</span>
     <span class="chip poc">⚡ POC Phase</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     LEARNING IN PRACTICE — CENTRAL SECTION
+     ═══════════════════════════════════════ -->
+<div class="section" id="learning" style="background:var(--surface)">
+  <div class="section-num" style="background:rgba(45,212,191,.12);border-color:rgba(45,212,191,.3);color:var(--secondary)">★</div>
+  <h2>Learning in Practice</h2>
+  <p class="subtitle">How every major product decision in this PRD maps to a specific concept from Weeks 1–3</p>
+
+  <!-- 3 Week Cards -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;margin-bottom:36px;">
+
+    <!-- Week 1 -->
+    <div style="background:var(--surface2);border:1px solid rgba(79,142,247,.3);border-radius:var(--radius);overflow:hidden;">
+      <div style="background:rgba(79,142,247,.12);padding:16px 20px;border-bottom:1px solid rgba(79,142,247,.2);">
+        <div style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:var(--w1);margin-bottom:4px;">Week 1 · Blue</div>
+        <div style="font-size:1rem;font-weight:800;letter-spacing:-.2px;">Foundations — Tokens, Transformers & RAG</div>
+      </div>
+      <div style="padding:16px 20px;display:flex;flex-direction:column;gap:10px;">
+        <div style="font-size:.8rem;color:var(--text-muted);display:flex;gap:10px;align-items:flex-start;"><span style="color:var(--w1);font-weight:700;flex-shrink:0;">▸</span><span><strong style="color:var(--text);">Tokens & Context Windows</strong> — Agent 2's prompt budget is designed around Claude's 200K window. Project snapshots are compressed to JSON to stay under token limits.</span></div>
+        <div style="font-size:.8rem;color:var(--text-muted);display:flex;gap:10px;align-items:flex-start;"><span style="color:var(--w1);font-weight:700;flex-shrink:0;">▸</span><span><strong style="color:var(--text);">RAG Architecture</strong> — Agent 2 uses RAG: project HTML pages are chunked, embedded, and retrieved before answering natural language queries. Never answers from training data.</span></div>
+        <div style="font-size:.8rem;color:var(--text-muted);display:flex;gap:10px;align-items:flex-start;"><span style="color:var(--w1);font-weight:700;flex-shrink:0;">▸</span><span><strong style="color:var(--text);">Grounding</strong> — All four agent system prompts enforce strict grounding: answer only from provided project data. "I don't have that information" is a required fallback.</span></div>
+        <div style="font-size:.8rem;color:var(--text-muted);display:flex;gap:10px;align-items:flex-start;"><span style="color:var(--w1);font-weight:700;flex-shrink:0;">▸</span><span><strong style="color:var(--text);">Encoder/Decoder Understanding</strong> — Chose Claude (decoder-only) for generation tasks. Encoder-style embeddings used for semantic search in Agent 2's retrieval layer.</span></div>
+      </div>
+    </div>
+
+    <!-- Week 2 -->
+    <div style="background:var(--surface2);border:1px solid rgba(159,110,245,.3);border-radius:var(--radius);overflow:hidden;">
+      <div style="background:rgba(159,110,245,.12);padding:16px 20px;border-bottom:1px solid rgba(159,110,245,.2);">
+        <div style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:var(--w2);margin-bottom:4px;">Week 2 · Purple</div>
+        <div style="font-size:1rem;font-weight:800;letter-spacing:-.2px;">Context Management & Agentic RAG</div>
+      </div>
+      <div style="padding:16px 20px;display:flex;flex-direction:column;gap:10px;">
+        <div style="font-size:.8rem;color:var(--text-muted);display:flex;gap:10px;align-items:flex-start;"><span style="color:var(--w2);font-weight:700;flex-shrink:0;">▸</span><span><strong style="color:var(--text);">Agentic RAG</strong> — Agent 2 decomposes multi-project queries, plans multi-step retrieval tool calls, evaluates result quality, and loops — rather than a single-shot retrieval. Matches the Agentic RAG loop pattern.</span></div>
+        <div style="font-size:.8rem;color:var(--text-muted);display:flex;gap:10px;align-items:flex-start;"><span style="color:var(--w2);font-weight:700;flex-shrink:0;">▸</span><span><strong style="color:var(--text);">Context Management (Good Design)</strong> — Agent 2 uses structured context objects (project JSON snapshots) rather than raw HTML dumps. Avoids "lost-in-the-middle" by keeping context lean and structured.</span></div>
+        <div style="font-size:.8rem;color:var(--text-muted);display:flex;gap:10px;align-items:flex-start;"><span style="color:var(--w2);font-weight:700;flex-shrink:0;">▸</span><span><strong style="color:var(--text);">Context Types</strong> — Short-term: conversation history. Structured: project JSON. Unstructured: HTML tracker pages. Each type handled differently in the retrieval pipeline.</span></div>
+        <div style="font-size:.8rem;color:var(--text-muted);display:flex;gap:10px;align-items:flex-start;"><span style="color:var(--w2);font-weight:700;flex-shrink:0;">▸</span><span><strong style="color:var(--text);">In-Context Learning</strong> — Agent 3 email prompts use few-shot examples of good vs. bad reminder tone to guide the LLM without fine-tuning.</span></div>
+      </div>
+    </div>
+
+    <!-- Week 3 -->
+    <div style="background:var(--surface2);border:1px solid rgba(45,212,191,.3);border-radius:var(--radius);overflow:hidden;">
+      <div style="background:rgba(45,212,191,.12);padding:16px 20px;border-bottom:1px solid rgba(45,212,191,.2);">
+        <div style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:var(--w3);margin-bottom:4px;">Week 3 · Teal</div>
+        <div style="font-size:1rem;font-weight:800;letter-spacing:-.2px;">Agentic AI, Evaluation & Responsible AI</div>
+      </div>
+      <div style="padding:16px 20px;display:flex;flex-direction:column;gap:10px;">
+        <div style="font-size:.8rem;color:var(--text-muted);display:flex;gap:10px;align-items:flex-start;"><span style="color:var(--w3);font-weight:700;flex-shrink:0;">▸</span><span><strong style="color:var(--text);">Knowledge Graph → Agent 4</strong> — Steps = nodes, dependencies = edges. Agent 4 traverses this graph to find critical path, blocked nodes, and cascade risks.</span></div>
+        <div style="font-size:.8rem;color:var(--text-muted);display:flex;gap:10px;align-items:flex-start;"><span style="color:var(--w3);font-weight:700;flex-shrink:0;">▸</span><span><strong style="color:var(--text);">Perceive→Plan→Act Loop → Agent 3</strong> — Observe (read deadlines) → Reason (classify urgency) → Act (send email). This is the agentic loop applied to project monitoring.</span></div>
+        <div style="font-size:.8rem;color:var(--text-muted);display:flex;gap:10px;align-items:flex-start;"><span style="color:var(--w3);font-weight:700;flex-shrink:0;">▸</span><span><strong style="color:var(--text);">HHH Framework → Agent 3 guardrails</strong> — Helpful: timely alerts. Honest: only real data. Harmless: no blame language, never escalates without PM review.</span></div>
+        <div style="font-size:.8rem;color:var(--text-muted);display:flex;gap:10px;align-items:flex-start;"><span style="color:var(--w3);font-weight:700;flex-shrink:0;">▸</span><span><strong style="color:var(--text);">Precision & Recall → Agent 4 metrics</strong> — P≥0.80 / R≥0.75 targets for cascade risk detection. F1 balance chosen deliberately — false negatives (missed risks) cost more than false positives.</span></div>
+        <div style="font-size:.8rem;color:var(--text-muted);display:flex;gap:10px;align-items:flex-start;"><span style="color:var(--w3);font-weight:700;flex-shrink:0;">▸</span><span><strong style="color:var(--text);">Prompt Caching → Agent 2 cost</strong> — Repeated project context (scheme rules, dependency graph) is cached. Estimated 70–90% cost reduction on repeated multi-project queries.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Full mapping table -->
+  <h3>Complete Learning → Product Decision Mapping</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Week</th>
+        <th>Learning Topic</th>
+        <th>Where It Shows Up in This PRD</th>
+        <th>Agent / Section</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><span class="learn-badge lb-w1">W1</span></td><td><strong>Tokens & Context Windows</strong></td><td>Project snapshots compressed to JSON; context budget explicitly designed per agent</td><td>Agent 2 · §8 Prompts</td></tr>
+      <tr><td><span class="learn-badge lb-w1">W1</span></td><td><strong>RAG Architecture</strong></td><td>Agent 2 retrieves from project HTML pages before answering; never answers from weights</td><td>Agent 2 · §8 Prompts</td></tr>
+      <tr><td><span class="learn-badge lb-w1">W1</span></td><td><strong>Grounding</strong></td><td>All system prompts include strict "only use provided data" constraint + fallback response</td><td>All Agents · §8 Prompts</td></tr>
+      <tr><td><span class="learn-badge lb-w1">W1</span></td><td><strong>Encoder/Decoder</strong></td><td>Encoder embeddings for semantic search; decoder (Claude) for generation. Separate roles.</td><td>Agent 2 architecture</td></tr>
+      <tr><td><span class="learn-badge lb-w2">W2</span></td><td><strong>Agentic RAG</strong></td><td>Agent 2 decomposes query → plans tool calls → retrieves → evaluates quality → loops</td><td>Agent 2 · §2 Solution</td></tr>
+      <tr><td><span class="learn-badge lb-w2">W2</span></td><td><strong>Context Management — Good Design</strong></td><td>Structured JSON project state vs raw HTML. State persists across multi-turn conversations.</td><td>Agent 2 · §8 Prompts</td></tr>
+      <tr><td><span class="learn-badge lb-w2">W2</span></td><td><strong>Context Types (4 types)</strong></td><td>Short-term (chat), structured (project JSON), unstructured (HTML) — each retrieved differently</td><td>Agent 2 design</td></tr>
+      <tr><td><span class="learn-badge lb-w2">W2</span></td><td><strong>In-Context Learning (few-shot)</strong></td><td>Agent 3 email prompt includes example of good/bad tone to steer output without fine-tuning</td><td>Agent 3 · §8 Prompts</td></tr>
+      <tr><td><span class="learn-badge lb-w3">W3</span></td><td><strong>Knowledge Graph</strong></td><td>Steps = nodes, dependencies = edges. Agent 4 traverses to find critical path & cascade risk.</td><td>Agent 4 · §2 Solution</td></tr>
+      <tr><td><span class="learn-badge lb-w3">W3</span></td><td><strong>Agentic Skills — Perceive→Plan→Act</strong></td><td>Agent 3 loop: observe deadlines → reason about urgency → act (send DRI email)</td><td>Agent 3 spec</td></tr>
+      <tr><td><span class="learn-badge lb-w3">W3</span></td><td><strong>Agentic Skills — Tool Use & Planning</strong></td><td>Agent 4 multi-step plan: read graph → traverse chain → compute critical path → output JSON</td><td>Agent 4 spec</td></tr>
+      <tr><td><span class="learn-badge lb-w3">W3</span></td><td><strong>HHH Framework</strong></td><td>Agent 3: Helpful (timely), Honest (data-only), Harmless (no blame, PM approval for sensitive steps)</td><td>Agent 3 · §9 Responsible AI</td></tr>
+      <tr><td><span class="learn-badge lb-w3">W3</span></td><td><strong>SMART Goals</strong></td><td>Agent 4 milestone recommendations follow SMART criteria: specific step, measurable date, achievable sequence</td><td>Agent 4 spec</td></tr>
+      <tr><td><span class="learn-badge lb-w3">W3</span></td><td><strong>Agent Metrics (3 layers)</strong></td><td>KPIs mapped to: Task Performance (accuracy), Process Quality (latency), Operational Health (uptime)</td><td>§4 Metrics</td></tr>
+      <tr><td><span class="learn-badge lb-w3">W3</span></td><td><strong>Agent Evaluation — Precision & Recall</strong></td><td>Agent 4: P≥0.80, R≥0.75. Recall prioritised — missing a cascade risk costs more than a false flag.</td><td>§7 Evaluation</td></tr>
+      <tr><td><span class="learn-badge lb-w3">W3</span></td><td><strong>LLM as Judge</strong></td><td>Agent 3 email quality evaluated by LLM-as-Judge rubric (tone, relevance, urgency accuracy)</td><td>§7 Evaluation</td></tr>
+      <tr><td><span class="learn-badge lb-w3">W3</span></td><td><strong>Model Optimization — Prompt Caching</strong></td><td>Repeated project context cached across Agent 2 queries. Target: 70%+ cost reduction.</td><td>§2 Architecture · §10 Pricing</td></tr>
+      <tr><td><span class="learn-badge lb-w3">W3</span></td><td><strong>Claude Ecosystem</strong></td><td>Claude Sonnet as LLM backbone for all agents. Constitutional AI alignment matches our HHH requirements.</td><td>All Agents · §8 Prompts</td></tr>
+      <tr><td><span class="learn-badge lb-w3">W3</span></td><td><strong>AI Risks — Hallucination</strong></td><td>Agent 2: RAG-grounded + "I don't know" fallback. Never answers financial/step data from weights.</td><td>§9 Responsible AI</td></tr>
+      <tr><td><span class="learn-badge lb-w3">W3</span></td><td><strong>AI Risks — Over-reliance / Automation Bias</strong></td><td>Agent 4: confidence threshold gate. PM cannot act on milestone rec without explicit acceptance.</td><td>§9 Responsible AI</td></tr>
+      <tr><td><span class="learn-badge lb-w3">W3</span></td><td><strong>AI Risks — Prompt Injection</strong></td><td>Agent 2 input sanitised before LLM call. User cannot override system prompt via chat input.</td><td>§9 Responsible AI</td></tr>
+      <tr><td><span class="learn-badge lb-w3">W3</span></td><td><strong>Risk Mitigation — Defence in Depth</strong></td><td>5-layer mitigation stack: training → system prompt → output filter → human-in-loop → monitoring</td><td>§9 Responsible AI</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-teal">
+    <div class="callout-title">The Learning → Product Principle</div>
+    Every section of this PRD was written with a specific learning concept in mind. The agent loop design came from Week 3 agentic skills. The evaluation framework came from Week 3 precision/recall and LLM-as-Judge. The prompt guardrails came from Week 1 grounding and Week 3 HHH. This is not a theoretical exercise — the 3 weeks of learning are the architectural foundation of this product.
   </div>
 </div>
 
@@ -183,8 +316,8 @@
   <p class="subtitle">Why multi-party project tracking fails without a unified agentic platform</p>
 
   <h3>Background</h3>
-  <p>Organisations managing complex, multi-party projects — procurement cycles, card launches, regulatory workflows — coordinate across dozens of sequential and parallel steps involving multiple stakeholder groups. Without a unified platform, these projects live in disconnected tools: static Excel or Smartsheet files, siloed Jira boards, or scattered Confluence pages — with no cross-tool visibility, no dependency intelligence, and no automated risk detection.</p>
-  <p style="margin-top:10px"><strong>Reference Example — BIN Procurement:</strong> Launching a new payment card requires procuring a Bank Identification Number (BIN) from the card network. This is a complex, multi-party process involving the Issuer, Network, Processor, and Embosser — 31 sequential and parallel steps spanning ~5 months, currently managed in a static Excel file with no automation.</p>
+  <p style="color:var(--text-muted);margin-bottom:10px">Organisations managing complex, multi-party projects — procurement cycles, card launches, regulatory workflows — coordinate across dozens of sequential and parallel steps involving multiple stakeholder groups. Without a unified platform, these projects live in disconnected tools: static Excel or Smartsheet files, siloed Jira boards, or scattered Confluence pages — with no cross-tool visibility, no dependency intelligence, and no automated risk detection.</p>
+  <p style="color:var(--text-muted)"><strong style="color:var(--text)">Reference Example — BIN Procurement:</strong> Launching a new payment card requires procuring a Bank Identification Number (BIN) from the card network. This is a complex, multi-party process involving the Issuer, Network, Processor, and Embosser — 31 sequential and parallel steps spanning ~5 months, currently managed in a static Excel file with no automation.</p>
 
   <h3>Core Pain Points</h3>
   <table>
@@ -219,15 +352,37 @@
   <h2>Solution Definition</h2>
   <p class="subtitle">A multi-agent web application — four specialised AI agents collaborating over a shared project data layer</p>
 
-  <h3>Product Vision</h3>
-  <p>An <strong>AI-Powered Multi-Project Tracker</strong> built as a web application. Users upload an Excel sheet (with DRI names, emails, steps, dates, and dependencies) and Agent 1 instantly generates a live HTML Status Tracker page. A central dashboard shows all active projects. Three additional agents — a chatbot (Agent 2), a deadline monitor (Agent 3), and a dependency evaluator (Agent 4) — run continuously over all tracked projects.</p>
-
-  <div class="callout callout-amber">
-    <strong>POC Scope:</strong> In the POC phase, HTML pages and authentication are managed by the user locally. No backend database is required. Excel is the data source. The future phase replaces Excel with Smartsheet via live API and adds a proper database and auth layer.
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+    <span class="learn-badge lb-w1">W1 · RAG Architecture</span>
+    <span class="learn-badge lb-w2">W2 · Agentic RAG</span>
+    <span class="learn-badge lb-w3">W3 · Knowledge Graph → Agent 4</span>
+    <span class="learn-badge lb-w3">W3 · Prompt Caching</span>
   </div>
 
+  <h3>Product Vision</h3>
+  <p style="color:var(--text-muted);margin-bottom:16px">An <strong style="color:var(--text)">AI-Powered Multi-Project Tracker</strong> built as a web application. Users upload an Excel sheet and Agent 1 instantly generates a live HTML Status Tracker page. Three additional agents — a chatbot (Agent 2), a deadline monitor (Agent 3), and a dependency evaluator (Agent 4) — run continuously over all tracked projects.</p>
+
+  <div class="callout callout-amber">
+    <div class="callout-title">POC Scope</div>
+    In the POC phase, HTML pages and authentication are managed by the user locally. No backend database is required. Excel is the data source. The future phase replaces Excel with Smartsheet via live API and adds a proper database and auth layer.
+  </div>
+
+  <h3>High-Level Architecture</h3>
+  <div class="callout callout-teal" style="margin-bottom:16px">
+    <div class="callout-title">W3 Learning Applied — Knowledge Graph as Dependency Layer</div>
+    Agent 4's dependency model is a direct application of the Knowledge Graph pattern: steps are nodes, dependency relationships are typed edges, and critical path detection is graph traversal. This is exactly how a Knowledge Graph enables multi-hop reasoning — applied to project risk.
+  </div>
+  <table>
+    <thead><tr><th>Layer</th><th>POC Implementation</th><th>Future Phase</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Data Layer</strong></td><td>Excel (.xlsx) uploaded by user; parsed on demand by Agent 1</td><td>Smartsheet API (live); relational DB with event sourcing</td></tr>
+      <tr><td><strong>Agent Layer</strong></td><td>4 agents running as Python/Node services; shared access to parsed project data</td><td>Same agents; persistent memory; multi-tenant isolation</td></tr>
+      <tr><td><strong>Presentation Layer</strong></td><td>Static HTML pages generated per project; user manages file hosting and auth</td><td>Web portal with SSO, role-based access, API integrations</td></tr>
+      <tr><td><strong>Communication Layer</strong></td><td>Email via SMTP (DRI name + email from Excel)</td><td>Slack/Teams + email; in-app notifications</td></tr>
+    </tbody>
+  </table>
+
   <h3>Excel Sheet Requirements (POC)</h3>
-  <p>Every Excel sheet uploaded must follow a standardised column format. The same format will apply to Smartsheet in the future phase.</p>
   <table>
     <thead><tr><th>Column</th><th>Field</th><th>Required</th><th>Notes</th></tr></thead>
     <tbody>
@@ -239,50 +394,29 @@
       <tr><td>F</td><td>Estimated End Date</td><td><span class="badge badge-red">Yes</span></td><td>DD/MM/YYYY</td></tr>
       <tr><td>G</td><td>Actual Completion Date</td><td><span class="badge badge-amber">Optional</span></td><td>Blank if not yet complete</td></tr>
       <tr><td>H</td><td>Status</td><td><span class="badge badge-red">Yes</span></td><td>To Do / In Progress / Done / Blocked</td></tr>
-      <tr><td>I</td><td>Depends On (Step #)</td><td><span class="badge badge-amber">Optional</span></td><td>Comma-separated step numbers; used by Agent 4</td></tr>
+      <tr><td>I</td><td>Depends On (Step #)</td><td><span class="badge badge-amber">Optional</span></td><td>Comma-separated step numbers — Agent 4 Knowledge Graph input</td></tr>
       <tr><td>J</td><td>Security Flag</td><td><span class="badge badge-amber">Optional</span></td><td>Y = elevated security step; AI monitoring disabled</td></tr>
-      <tr><td>K</td><td>Notes</td><td><span class="badge badge-amber">Optional</span></td><td>Free-text context for Agent 2 chatbot</td></tr>
-    </tbody>
-  </table>
-
-  <h3>Core Capabilities</h3>
-  <table>
-    <thead><tr><th>Capability</th><th>Agent</th><th>Description</th><th>AI-Powered?</th></tr></thead>
-    <tbody>
-      <tr><td><strong>Excel Upload &amp; Parsing</strong></td><td><span class="badge badge-blue">A1</span></td><td>Web UI accepts .xlsx file; Agent 1 parses and validates against required schema</td><td>No (Core)</td></tr>
-      <tr><td><strong>HTML Tracker Generation</strong></td><td><span class="badge badge-blue">A1</span></td><td>Agent 1 auto-generates a styled HTML status tracker per project (RAG, progress, steps table)</td><td>✅ Partial</td></tr>
-      <tr><td><strong>Project Dashboard</strong></td><td><span class="badge badge-blue">A1</span></td><td>Central hub showing all projects as cards, each with a link to its HTML tracker</td><td>No (Core)</td></tr>
-      <tr><td><strong>Natural Language Chatbot</strong></td><td><span class="badge badge-purple">A2</span></td><td>Answers queries about any or all projects using live HTML page data as context</td><td>✅ Yes</td></tr>
-      <tr><td><strong>Deadline Monitor</strong></td><td><span class="badge badge-green">A3</span></td><td>Continuously checks estimated dates vs. today; detects overdue steps</td><td>No (Rule-based)</td></tr>
-      <tr><td><strong>DRI Email Alerts</strong></td><td><span class="badge badge-green">A3</span></td><td>AI-generated, context-aware email sent directly to DRI email from Excel</td><td>✅ Yes</td></tr>
-      <tr><td><strong>Status Summary Emails</strong></td><td><span class="badge badge-green">A3</span></td><td>Periodic project health summary sent to PM / exec sponsor</td><td>✅ Yes</td></tr>
-      <tr><td><strong>Dependency Evaluator</strong></td><td><span class="badge badge-amber" style="color:#c2410c;background:#fff7ed">A4</span></td><td>Reads dependency graph from Excel; identifies blocking steps and cascade risks</td><td>✅ Yes</td></tr>
-      <tr><td><strong>Milestone Planner</strong></td><td><span class="badge badge-amber" style="color:#c2410c;background:#fff7ed">A4</span></td><td>Recommends next milestones based on current completion state and dependency chain</td><td>✅ Yes</td></tr>
-    </tbody>
-  </table>
-
-  <h3>High-Level Architecture</h3>
-  <table>
-    <thead><tr><th>Layer</th><th>POC Implementation</th><th>Future Phase</th></tr></thead>
-    <tbody>
-      <tr><td><strong>Data Layer</strong></td><td>Excel (.xlsx) uploaded by user; parsed on demand by Agent 1</td><td>Smartsheet API (live); relational DB with event sourcing</td></tr>
-      <tr><td><strong>Agent Layer</strong></td><td>4 agents running as Python/Node services; shared access to parsed project data</td><td>Same agents; persistent memory; multi-tenant isolation</td></tr>
-      <tr><td><strong>Presentation Layer</strong></td><td>Static HTML pages generated per project; user manages file hosting and auth</td><td>Web portal with SSO, role-based access, API integrations</td></tr>
-      <tr><td><strong>Communication Layer</strong></td><td>Email via SMTP (DRI name + email from Excel)</td><td>Slack/Teams + email; in-app notifications</td></tr>
+      <tr><td>K</td><td>Notes</td><td><span class="badge badge-amber">Optional</span></td><td>Free-text context for Agent 2 RAG retrieval</td></tr>
     </tbody>
   </table>
 </div>
 
-<!-- 3. AGENT SPECS -->
+<!-- 3. AGENTS -->
 <div class="section" id="agents">
   <div class="section-num">3</div>
   <h2>Agent Specifications</h2>
-  <p class="subtitle">Four specialised AI agents — each with a distinct role, inputs, outputs, and agentic behaviour</p>
+  <p class="subtitle">Four specialised AI agents — each designed around specific learning concepts from Weeks 1–3</p>
 
   <div class="agent-grid">
     <div class="agent-card a1">
-      <div class="agent-header"><span class="num">1</span>Source Configurator &amp; Tracker Generator</div>
+      <div class="agent-header">
+        <span class="num">1</span>Source Configurator &amp; Tracker Generator
+      </div>
       <div class="agent-body">
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
+          <span class="learn-badge lb-w1">W1 · Tokens</span>
+          <span class="learn-badge lb-w1">W1 · Grounding</span>
+        </div>
         <p><strong>Trigger:</strong> User uploads Excel file via web UI.</p>
         <ul>
           <li>Validates schema (required columns A–H present)</li>
@@ -290,61 +424,80 @@
           <li>Computes RAG status, % complete, overdue count</li>
           <li>Generates a self-contained HTML Status Tracker page</li>
           <li>Adds project card to the central dashboard with a live link</li>
-          <li>Flags security steps (Column J = Y) — AI monitoring disabled for those rows</li>
+          <li>Flags security steps (Column J = Y) — AI monitoring disabled</li>
         </ul>
-        <p style="margin-top:10px"><strong>Agentic behaviour:</strong> Schema validation with intelligent error messaging (tells user which column is missing/malformed and why). Adaptive layout — if fewer than 10 steps, uses card view; 10+ steps uses table view.</p>
+        <p style="margin-top:10px"><strong>Agentic behaviour:</strong> Schema validation with intelligent error messaging. Adaptive layout — card view under 10 steps, table view for 10+.</p>
         <p style="margin-top:8px"><strong>Output:</strong> <code>project-{slug}.html</code> added to dashboard.</p>
       </div>
     </div>
 
     <div class="agent-card a2">
-      <div class="agent-header"><span class="num">2</span>Project Intelligence Chatbot</div>
+      <div class="agent-header">
+        <span class="num">2</span>Project Intelligence Chatbot
+      </div>
       <div class="agent-body">
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
+          <span class="learn-badge lb-w1">W1 · RAG</span>
+          <span class="learn-badge lb-w1">W1 · Grounding</span>
+          <span class="learn-badge lb-w2">W2 · Agentic RAG</span>
+          <span class="learn-badge lb-w2">W2 · Context Management</span>
+          <span class="learn-badge lb-w3">W3 · Prompt Caching</span>
+        </div>
         <p><strong>Trigger:</strong> User types a natural language question in the chat panel.</p>
         <ul>
-          <li>Has read access to all project HTML tracker pages visible on the dashboard</li>
-          <li>Answers queries across single or multiple projects</li>
-          <li>Supports multi-turn follow-up (remembers conversation context)</li>
-          <li>Can answer: "Which projects are at risk?", "Who owns the blocked step in Project X?", "What's overdue across all projects?"</li>
-          <li>Strictly grounded — never extrapolates beyond project data</li>
-          <li>Responds in ≤3 sentences unless a list is explicitly requested</li>
+          <li>Has read access to all project HTML tracker pages (RAG retrieval layer)</li>
+          <li>Decomposes complex queries into multi-step retrieval plans — <em>Agentic RAG pattern</em></li>
+          <li>Maintains structured context state across turns — not raw conversation history</li>
+          <li>Supports: "Which projects are at risk?", "Who owns the blocked step in Project X?"</li>
+          <li>Strictly grounded — never extrapolates beyond project data (<em>W1 Grounding</em>)</li>
+          <li>Prompt caching applied to repeated project context — reduces query cost by ~70%</li>
         </ul>
-        <p style="margin-top:10px"><strong>Agentic behaviour:</strong> Plans a sequence of tool calls to answer complex queries (query Project A → query Project B → synthesise answer). Does not answer in one static prompt; it decomposes the question first.</p>
-        <p style="margin-top:8px"><strong>Limitation (POC):</strong> Reads from generated HTML snapshots, not live Excel. Refresh required for latest data.</p>
+        <p style="margin-top:10px"><strong>Agentic behaviour:</strong> Plans a sequence of tool calls to answer complex queries. Does not answer in one static prompt — decomposes the question first. (<em>W2 Agentic RAG loop</em>)</p>
       </div>
     </div>
 
     <div class="agent-card a3">
-      <div class="agent-header"><span class="num">3</span>Progress Monitor &amp; Email Notifier</div>
+      <div class="agent-header">
+        <span class="num">3</span>Progress Monitor &amp; Email Notifier
+      </div>
       <div class="agent-body">
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
+          <span class="learn-badge lb-w2">W2 · In-Context Learning</span>
+          <span class="learn-badge lb-w3">W3 · Perceive→Plan→Act</span>
+          <span class="learn-badge lb-w3">W3 · HHH Framework</span>
+        </div>
         <p><strong>Trigger:</strong> Scheduled run (nightly) or on-demand by PM.</p>
         <ul>
-          <li>Reads all project Excel files; compares estimated end dates to today</li>
-          <li>Identifies: overdue steps, steps due within 3 days (warning), steps due within 7 days (heads-up)</li>
-          <li>Generates a personalised email for each affected DRI (name + email from Column C/D)</li>
-          <li>Sends a weekly project health summary to the PM / exec sponsor</li>
-          <li>Logs every email sent with timestamp, recipient, and step reference</li>
-          <li>Respects security flag — never emails about flagged steps without PM approval</li>
+          <li>Observe: reads all project Excel files, compares estimated end dates to today (<em>Perceive</em>)</li>
+          <li>Reason: classifies urgency — overdue / 3-day warning / 7-day heads-up (<em>Plan</em>)</li>
+          <li>Act: generates personalised DRI email, sends, logs (<em>Act</em>)</li>
+          <li>HHH guardrails: Helpful (timely), Honest (data-only), Harmless (no blame language)</li>
+          <li>Security flag respected — never emails about flagged steps without PM approval</li>
         </ul>
-        <p style="margin-top:10px"><strong>Agentic behaviour:</strong> Observes project state → reasons about urgency and audience → decides whether to send immediate alert, warning, or include in weekly digest → acts (sends email). This is the core agentic loop: observe → reason → act.</p>
-        <p style="margin-top:8px"><strong>Output:</strong> Emails sent; email log updated on dashboard.</p>
+        <p style="margin-top:10px"><strong>Agentic behaviour:</strong> Observe → Reason → Act loop. This is the core agentic pattern from <em>W3 Agentic Skills</em> applied directly to project monitoring.</p>
       </div>
     </div>
 
     <div class="agent-card a4">
-      <div class="agent-header"><span class="num">4</span>Dependency Evaluator &amp; Milestone Planner</div>
+      <div class="agent-header">
+        <span class="num">4</span>Dependency Evaluator &amp; Milestone Planner
+      </div>
       <div class="agent-body">
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
+          <span class="learn-badge lb-w3">W3 · Knowledge Graph</span>
+          <span class="learn-badge lb-w3">W3 · SMART Goals</span>
+          <span class="learn-badge lb-w3">W3 · Precision & Recall</span>
+          <span class="learn-badge lb-w3">W3 · Agent Metrics</span>
+        </div>
         <p><strong>Trigger:</strong> On project load and after each status update.</p>
         <ul>
-          <li>Reads dependency graph from Column I (Depends On)</li>
+          <li>Knowledge Graph traversal: Column I dependency data → nodes + edges → critical path (<em>W3 Knowledge Graph</em>)</li>
           <li>Identifies all steps currently blocked by incomplete upstream steps</li>
-          <li>Detects cascade risk — if Step N is delayed, which downstream steps are at risk?</li>
-          <li>Recommends the next 3–5 milestone steps the team should focus on</li>
-          <li>Highlights critical path (longest dependency chain to completion)</li>
-          <li>Generates a plain-language dependency risk summary for the PM</li>
+          <li>Detects cascade risk — if Step N delayed, which downstream steps are at risk?</li>
+          <li>Milestone recommendations follow SMART criteria: specific, measurable, time-bound (<em>W3 SMART Goals</em>)</li>
+          <li>Cascade risk target: P≥0.80, R≥0.75 — recall prioritised over precision (<em>W3 Precision/Recall</em>)</li>
         </ul>
-        <p style="margin-top:10px"><strong>Agentic behaviour:</strong> Multi-step planning — reads the dependency graph, traverses the chain, computes critical path, reasons about current state, then outputs a prioritised action plan. Memory: retains prior milestone suggestions to detect regressions.</p>
-        <p style="margin-top:8px"><strong>Output:</strong> Dependency risk panel on dashboard + recommended milestones widget.</p>
+        <p style="margin-top:10px"><strong>Agentic behaviour:</strong> Multi-step planning — reads graph, traverses chain, computes critical path, outputs prioritised action plan. Memory: retains prior milestone suggestions to detect regressions.</p>
       </div>
     </div>
   </div>
@@ -361,219 +514,73 @@
   </table>
 </div>
 
-<!-- 4. USER JOURNEY -->
-<div class="flow-section" id="journey">
-  <div class="section-num" style="background:var(--accent)">4</div>
-  <h2 style="margin-top:12px">User Journey &amp; Agent Flow Diagram</h2>
-  <p class="subtitle">End-to-end flow from Excel upload to agentic output — POC phase</p>
-
-  <svg viewBox="0 0 960 620" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:960px;display:block;margin:0 auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
-    <defs>
-      <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-        <path d="M0,0 L0,6 L8,3 z" fill="#6b7280"/>
-      </marker>
-      <marker id="arr-blue" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-        <path d="M0,0 L0,6 L8,3 z" fill="#2563eb"/>
-      </marker>
-      <marker id="arr-purple" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-        <path d="M0,0 L0,6 L8,3 z" fill="#7c3aed"/>
-      </marker>
-      <marker id="arr-green" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-        <path d="M0,0 L0,6 L8,3 z" fill="#16a34a"/>
-      </marker>
-      <marker id="arr-orange" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-        <path d="M0,0 L0,6 L8,3 z" fill="#ea580c"/>
-      </marker>
-    </defs>
-
-    <rect x="0" y="0" width="960" height="620" fill="#f9fafb" rx="12"/>
-
-    <!-- Lane headers -->
-    <rect x="10" y="10" width="140" height="600" fill="#dbeafe" rx="8" opacity="0.5"/>
-    <text x="80" y="35" text-anchor="middle" font-size="11" font-weight="700" fill="#1d4ed8">USER</text>
-
-    <rect x="160" y="10" width="140" height="600" fill="#ede9fe" rx="8" opacity="0.5"/>
-    <text x="230" y="35" text-anchor="middle" font-size="11" font-weight="700" fill="#6d28d9">AGENT 1</text>
-    <text x="230" y="48" text-anchor="middle" font-size="9" fill="#7c3aed">Tracker Generator</text>
-
-    <rect x="310" y="10" width="140" height="600" fill="#dcfce7" rx="8" opacity="0.5"/>
-    <text x="380" y="35" text-anchor="middle" font-size="11" font-weight="700" fill="#15803d">AGENT 2</text>
-    <text x="380" y="48" text-anchor="middle" font-size="9" fill="#16a34a">Chatbot</text>
-
-    <rect x="460" y="10" width="140" height="600" fill="#fef9c3" rx="8" opacity="0.5"/>
-    <text x="530" y="35" text-anchor="middle" font-size="11" font-weight="700" fill="#92400e">AGENT 3</text>
-    <text x="530" y="48" text-anchor="middle" font-size="9" fill="#d97706">Progress Monitor</text>
-
-    <rect x="610" y="10" width="140" height="600" fill="#ffedd5" rx="8" opacity="0.5"/>
-    <text x="680" y="35" text-anchor="middle" font-size="11" font-weight="700" fill="#c2410c">AGENT 4</text>
-    <text x="680" y="48" text-anchor="middle" font-size="9" fill="#ea580c">Dependency Eval</text>
-
-    <rect x="760" y="10" width="190" height="600" fill="#f3f4f6" rx="8" opacity="0.5"/>
-    <text x="855" y="35" text-anchor="middle" font-size="11" font-weight="700" fill="#374151">OUTPUTS</text>
-
-    <!-- STEP 1: Upload -->
-    <rect x="20" y="65" width="120" height="44" rx="8" fill="#2563eb"/>
-    <text x="80" y="84" text-anchor="middle" font-size="10" font-weight="700" fill="white">Upload Excel</text>
-    <text x="80" y="98" text-anchor="middle" font-size="9" fill="#bfdbfe">+ DRI names &amp; emails</text>
-    <line x1="140" y1="87" x2="168" y2="87" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arr)"/>
-
-    <!-- STEP 2: A1 Validate -->
-    <rect x="170" y="65" width="120" height="44" rx="8" fill="#7c3aed"/>
-    <text x="230" y="84" text-anchor="middle" font-size="10" font-weight="700" fill="white">Validate Schema</text>
-    <text x="230" y="98" text-anchor="middle" font-size="9" fill="#ddd6fe">Parse columns A–K</text>
-    <line x1="230" y1="109" x2="230" y2="133" stroke="#7c3aed" stroke-width="1.5" marker-end="url(#arr-purple)"/>
-
-    <!-- STEP 3: A1 Generate HTML -->
-    <rect x="170" y="135" width="120" height="50" rx="8" fill="#7c3aed"/>
-    <text x="230" y="154" text-anchor="middle" font-size="10" font-weight="700" fill="white">Generate HTML</text>
-    <text x="230" y="167" text-anchor="middle" font-size="9" fill="#ddd6fe">RAG · Progress · Steps</text>
-    <text x="230" y="179" text-anchor="middle" font-size="9" fill="#ddd6fe">Overdue Alerts</text>
-    <line x1="290" y1="160" x2="768" y2="160" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr-purple)"/>
-
-    <rect x="770" y="140" width="170" height="40" rx="6" fill="#ede9fe" stroke="#7c3aed" stroke-width="1"/>
-    <text x="855" y="157" text-anchor="middle" font-size="10" font-weight="600" fill="#6d28d9">project-{slug}.html</text>
-    <text x="855" y="171" text-anchor="middle" font-size="9" fill="#7c3aed">Status Tracker Page</text>
-
-    <line x1="230" y1="185" x2="230" y2="209" stroke="#7c3aed" stroke-width="1.5" marker-end="url(#arr-purple)"/>
-    <line x1="170" y1="222" x2="140" y2="222" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arr)"/>
-
-    <rect x="20" y="200" width="120" height="44" rx="8" fill="#1a1f36"/>
-    <text x="80" y="219" text-anchor="middle" font-size="10" font-weight="700" fill="white">Dashboard Card</text>
-    <text x="80" y="233" text-anchor="middle" font-size="9" fill="#9ca3af">New project + link</text>
-
-    <line x1="230" y1="222" x2="230" y2="260" stroke="#7c3aed" stroke-width="1" stroke-dasharray="3,2"/>
-    <line x1="230" y1="260" x2="528" y2="260" stroke="#6b7280" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#arr)"/>
-    <text x="370" y="255" text-anchor="middle" font-size="8" fill="#6b7280">project index updated → agents notified</text>
-    <line x1="528" y1="260" x2="678" y2="260" stroke="#6b7280" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#arr)"/>
-
-    <!-- AGENT 2 FLOW -->
-    <rect x="20" y="290" width="120" height="40" rx="8" fill="#2563eb"/>
-    <text x="80" y="307" text-anchor="middle" font-size="10" font-weight="700" fill="white">Ask a Question</text>
-    <text x="80" y="321" text-anchor="middle" font-size="9" fill="#bfdbfe">"What's overdue?"</text>
-    <line x1="140" y1="310" x2="318" y2="310" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arr)"/>
-
-    <rect x="320" y="275" width="120" height="70" rx="8" fill="#16a34a"/>
-    <text x="380" y="298" text-anchor="middle" font-size="10" font-weight="700" fill="white">Decompose Query</text>
-    <text x="380" y="311" text-anchor="middle" font-size="9" fill="#bbf7d0">Plan tool calls</text>
-    <text x="380" y="324" text-anchor="middle" font-size="9" fill="#bbf7d0">Query project data</text>
-    <text x="380" y="337" text-anchor="middle" font-size="9" fill="#bbf7d0">Synthesise answer</text>
-    <line x1="440" y1="310" x2="768" y2="310" stroke="#16a34a" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr-green)"/>
-
-    <rect x="770" y="292" width="170" height="36" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="1"/>
-    <text x="855" y="308" text-anchor="middle" font-size="10" font-weight="600" fill="#15803d">Chat Response</text>
-    <text x="855" y="320" text-anchor="middle" font-size="9" fill="#16a34a">≤3 sentences · grounded</text>
-
-    <!-- AGENT 3 FLOW -->
-    <rect x="470" y="380" width="120" height="55" rx="8" fill="#d97706"/>
-    <text x="530" y="399" text-anchor="middle" font-size="10" font-weight="700" fill="white">Nightly Monitor</text>
-    <text x="530" y="413" text-anchor="middle" font-size="9" fill="#fef3c7">Compare dates → today</text>
-    <text x="530" y="426" text-anchor="middle" font-size="9" fill="#fef3c7">Classify: overdue/warn</text>
-    <line x1="530" y1="435" x2="530" y2="459" stroke="#d97706" stroke-width="1.5" marker-end="url(#arr)"/>
-
-    <rect x="470" y="460" width="120" height="40" rx="8" fill="#d97706"/>
-    <text x="530" y="477" text-anchor="middle" font-size="10" font-weight="700" fill="white">Generate Email</text>
-    <text x="530" y="491" text-anchor="middle" font-size="9" fill="#fef3c7">DRI name + context</text>
-    <line x1="590" y1="480" x2="768" y2="480" stroke="#d97706" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr)"/>
-
-    <rect x="770" y="460" width="170" height="40" rx="6" fill="#fef9c3" stroke="#d97706" stroke-width="1"/>
-    <text x="855" y="477" text-anchor="middle" font-size="10" font-weight="600" fill="#92400e">Email to DRI</text>
-    <text x="855" y="491" text-anchor="middle" font-size="9" fill="#d97706">Step · deadline · context</text>
-
-    <line x1="530" y1="380" x2="530" y2="365" stroke="#6b7280" stroke-width="1" stroke-dasharray="3,2"/>
-    <line x1="530" y1="365" x2="678" y2="365" stroke="#6b7280" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#arr)"/>
-    <text x="610" y="358" text-anchor="middle" font-size="8" fill="#6b7280">cascade risk?</text>
-
-    <!-- AGENT 4 FLOW -->
-    <rect x="620" y="370" width="120" height="55" rx="8" fill="#ea580c"/>
-    <text x="680" y="390" text-anchor="middle" font-size="10" font-weight="700" fill="white">Read Dependency</text>
-    <text x="680" y="403" text-anchor="middle" font-size="9" fill="#fed7aa">Graph (Column I)</text>
-    <text x="680" y="416" text-anchor="middle" font-size="9" fill="#fed7aa">Traverse chain</text>
-    <line x1="680" y1="425" x2="680" y2="449" stroke="#ea580c" stroke-width="1.5" marker-end="url(#arr)"/>
-
-    <rect x="620" y="450" width="120" height="50" rx="8" fill="#ea580c"/>
-    <text x="680" y="469" text-anchor="middle" font-size="10" font-weight="700" fill="white">Suggest Milestones</text>
-    <text x="680" y="482" text-anchor="middle" font-size="9" fill="#fed7aa">Next 3–5 steps</text>
-    <text x="680" y="495" text-anchor="middle" font-size="9" fill="#fed7aa">Critical path flag</text>
-    <line x1="740" y1="475" x2="768" y2="475" stroke="#ea580c" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr-orange)"/>
-
-    <rect x="770" y="540" width="170" height="40" rx="6" fill="#ffedd5" stroke="#ea580c" stroke-width="1"/>
-    <text x="855" y="557" text-anchor="middle" font-size="10" font-weight="600" fill="#c2410c">Milestone Panel</text>
-    <text x="855" y="571" text-anchor="middle" font-size="9" fill="#ea580c">Dashboard widget updated</text>
-
-    <line x1="620" y1="475" x2="592" y2="475" stroke="#6b7280" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#arr)"/>
-    <text x="606" y="470" text-anchor="middle" font-size="8" fill="#6b7280">alert</text>
-
-    <!-- Legend -->
-    <rect x="20" y="560" width="420" height="50" rx="6" fill="white" stroke="#e5e7eb" stroke-width="1"/>
-    <text x="35" y="578" font-size="9" font-weight="700" fill="#374151">LEGEND</text>
-    <line x1="95" y1="575" x2="135" y2="575" stroke="#7c3aed" stroke-width="1.5" marker-end="url(#arr-purple)"/>
-    <text x="140" y="578" font-size="9" fill="#374151">Agent 1 flow</text>
-    <line x1="210" y1="575" x2="250" y2="575" stroke="#16a34a" stroke-width="1.5" marker-end="url(#arr-green)"/>
-    <text x="255" y="578" font-size="9" fill="#374151">Agent 2 flow</text>
-    <line x1="325" y1="575" x2="365" y2="575" stroke="#d97706" stroke-width="1.5" marker-end="url(#arr)"/>
-    <text x="370" y="578" font-size="9" fill="#374151">Agent 3 flow</text>
-    <line x1="95" y1="597" x2="135" y2="597" stroke="#ea580c" stroke-width="1.5" marker-end="url(#arr-orange)"/>
-    <text x="140" y="600" font-size="9" fill="#374151">Agent 4 flow</text>
-    <line x1="210" y1="597" x2="250" y2="597" stroke="#6b7280" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#arr)"/>
-    <text x="255" y="600" font-size="9" fill="#374151">Inter-agent signal</text>
-  </svg>
-</div>
-
-<!-- 5. METRICS -->
+<!-- 4. METRICS -->
 <div class="section" id="metrics">
-  <div class="section-num">5</div>
+  <div class="section-num">4</div>
   <h2>Core Metrics</h2>
-  <p class="subtitle">How we measure success across all agents and projects</p>
+  <p class="subtitle">Metrics framework built on W3 learning — 3-layer Agent Metrics model applied to all agents</p>
+
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+    <span class="learn-badge lb-w3">W3 · Agent Metrics (3 layers)</span>
+    <span class="learn-badge lb-w3">W3 · Precision & Recall</span>
+    <span class="learn-badge lb-w3">W3 · Agent Evaluation</span>
+  </div>
+
+  <div class="callout callout-teal">
+    <div class="callout-title">W3 Learning Applied — 3-Layer Agent Metrics Framework</div>
+    The KPIs below are organised by the 3-layer framework from Week 3: <strong style="color:var(--text)">Task Performance</strong> (did the agent do the right thing?), <strong style="color:var(--text)">Process Quality</strong> (did it do it well?), and <strong style="color:var(--text)">Operational Health</strong> (is it reliable at scale?). Every agent has metrics in all three layers.
+  </div>
 
   <h3>North Star Metric</h3>
-  <div class="callout callout-blue"><strong>On-Time Project Delivery Rate</strong> — % of active projects completed on or before their target delivery date. Target: ≥ 90% within 6 months of deployment.</div>
+  <div class="callout callout-blue">
+    <strong>On-Time Project Delivery Rate</strong> — % of active projects completed on or before their target delivery date. Target: ≥ 90% within 6 months of deployment.
+  </div>
 
   <div class="kpi-grid">
     <div class="kpi"><div class="val">≥85%</div><div class="label">Step On-Time Rate</div></div>
     <div class="kpi"><div class="val">&lt;3d</div><div class="label">Avg Step Delay</div></div>
     <div class="kpi"><div class="val">40%</div><div class="label">PM Time Saved</div></div>
     <div class="kpi"><div class="val">≥70%</div><div class="label">Email Response Rate (A3)</div></div>
-    <div class="kpi"><div class="val">≥80%</div><div class="label">Dependency Risk Precision (A4)</div></div>
+    <div class="kpi"><div class="val">P≥0.80</div><div class="label">Cascade Risk Precision (A4)</div></div>
     <div class="kpi"><div class="val">≥90%</div><div class="label">Chatbot Accuracy (A2)</div></div>
   </div>
 
-  <h3>Agent-Specific Metrics</h3>
+  <h3>Agent-Specific Metrics by Layer</h3>
   <table>
-    <thead><tr><th>Agent</th><th>Metric</th><th>Target</th></tr></thead>
+    <thead><tr><th>Agent</th><th>Task Performance</th><th>Process Quality</th><th>Operational Health</th></tr></thead>
     <tbody>
-      <tr><td><span class="badge badge-blue">A1</span> Tracker Generator</td><td>HTML page generated within 10s of Excel upload; schema validation error rate</td><td>&lt;10s; &lt;5% parse errors on valid files</td></tr>
-      <tr><td><span class="badge badge-purple">A2</span> Chatbot</td><td>Answer accuracy vs. ground truth; multi-turn context retention; response latency</td><td>≥90% accuracy; ≥85% context retention; &lt;5s</td></tr>
-      <tr><td><span class="badge badge-green">A3</span> Email Notifier</td><td>% of overdue steps that triggered a DRI email; email open rate; status update within 24h of email</td><td>100% coverage; ≥60% open rate; ≥70% response rate</td></tr>
-      <tr><td><span class="badge badge-amber" style="color:#c2410c;background:#fff7ed">A4</span> Dependency Eval</td><td>Cascade risk precision (flagged risks that materialised); milestone suggestion acceptance rate</td><td>≥80% precision; ≥65% acceptance</td></tr>
+      <tr><td><span class="badge badge-blue">A1</span> Generator</td><td>HTML page accuracy vs Excel source</td><td>&lt;10s generation time; &lt;5% parse errors</td><td>100% uptime on upload; zero data loss</td></tr>
+      <tr><td><span class="badge badge-purple">A2</span> Chatbot</td><td>Answer accuracy ≥90% vs ground truth</td><td>Multi-turn context retention ≥85%; latency &lt;5s</td><td>Graceful degradation if LLM unavailable</td></tr>
+      <tr><td><span class="badge badge-green">A3</span> Email</td><td>100% coverage of overdue steps; ≥60% open rate</td><td>≥70% response rate; 0 blame-language flags</td><td>Zero missed nightly runs; full send log</td></tr>
+      <tr><td><span class="badge badge-amber">A4</span> Dependency</td><td>P≥0.80 / R≥0.75 cascade risk detection</td><td>Milestone acceptance rate ≥65%</td><td>Runs within 30s of status update; memory intact</td></tr>
     </tbody>
   </table>
 </div>
 
-<!-- 6. PRIORITISATION -->
+<!-- 5. PRIORITISATION -->
 <div class="section" id="priority">
-  <div class="section-num">6</div>
-  <h2>Prioritisation</h2>
-  <p class="subtitle">MoSCoW framework — POC phase features</p>
+  <div class="section-num">5</div>
+  <h2>Prioritisation — MoSCoW</h2>
+  <p class="subtitle">POC phase features — prioritised by learning concept complexity and delivery risk</p>
 
   <div class="moscow-grid">
     <div class="moscow-card must">
-      <h4>🟢 Must Have — POC MVP</h4>
+      <h4 style="color:var(--green)">🟢 Must Have — POC MVP</h4>
       <ul>
         <li>Web UI for Excel file upload</li>
         <li>Agent 1: Schema validation + HTML tracker generation</li>
         <li>Dashboard with project cards + tracker links</li>
-        <li>Agent 3: Nightly overdue detection + DRI email alerts</li>
-        <li>Agent 4: Dependency graph read + blocked step detection</li>
-        <li>DRI name + email mandatory in Excel (Columns C &amp; D)</li>
-        <li>Security flag support — AI disabled for flagged rows</li>
+        <li>Agent 3: Nightly overdue detection + DRI email alerts (HHH-compliant)</li>
+        <li>Agent 4: Dependency graph (Knowledge Graph) + blocked step detection</li>
+        <li>Security flag — AI disabled for flagged rows (HHH: Harmless)</li>
         <li>RAG status, progress bar, overdue panel in tracker HTML</li>
       </ul>
     </div>
     <div class="moscow-card should">
-      <h4>🔵 Should Have — POC Phase 2</h4>
+      <h4 style="color:var(--primary)">🔵 Should Have — POC Phase 2</h4>
       <ul>
-        <li>Agent 2: Project chatbot (single + multi-project queries)</li>
-        <li>Agent 4: Milestone recommendations widget on dashboard</li>
+        <li>Agent 2: Project chatbot (RAG + Agentic RAG multi-step)</li>
+        <li>Agent 4: SMART milestone recommendations widget on dashboard</li>
         <li>Agent 3: Weekly exec summary email</li>
         <li>Critical path highlighting in tracker HTML</li>
         <li>Email send log on dashboard</li>
@@ -581,18 +588,18 @@
       </ul>
     </div>
     <div class="moscow-card could">
-      <h4>🟡 Could Have — Future Phase</h4>
+      <h4 style="color:var(--accent)">🟡 Could Have — Future Phase</h4>
       <ul>
         <li>Smartsheet API connector (replace Excel upload)</li>
         <li>Backend database for project persistence</li>
-        <li>User authentication (SSO / email login)</li>
+        <li>Prompt caching implementation (70%+ cost reduction)</li>
         <li>Slack / Teams notification alongside email</li>
-        <li>Multi-project cross-analysis by Agent 4</li>
         <li>Agent 2 multi-turn memory across sessions</li>
+        <li>LLM-as-Judge automated email quality scoring</li>
       </ul>
     </div>
     <div class="moscow-card wont">
-      <h4>⚪ Won't Have (This Release)</h4>
+      <h4 style="color:var(--text-muted)">⚪ Won't Have (This Release)</h4>
       <ul>
         <li>Full ERP integration (SAP, Oracle)</li>
         <li>Physical HSM management</li>
@@ -605,9 +612,9 @@
   </div>
 </div>
 
-<!-- 7. ROADMAP -->
+<!-- 6. ROADMAP -->
 <div class="section" id="roadmap">
-  <div class="section-num">7</div>
+  <div class="section-num">6</div>
   <h2>Roadmap</h2>
   <p class="subtitle">POC → Full Product — phased delivery plan</p>
 
@@ -619,33 +626,31 @@
         <li>Web UI: Excel upload, schema validation, error feedback</li>
         <li>Agent 1: HTML Status Tracker generation (RAG, progress, step table, overdue panel)</li>
         <li>Dashboard: project cards with tracker links</li>
-        <li>Agent 3: Nightly deadline check, DRI email alerts (overdue + 3-day warning)</li>
-        <li>Agent 4: Dependency graph traversal, blocked step identification</li>
+        <li>Agent 3: Nightly deadline check, DRI email alerts — Perceive→Plan→Act loop, HHH-compliant</li>
+        <li>Agent 4: Knowledge Graph traversal (Column I), blocked step identification, critical path</li>
         <li>Security flag: AI disabled for Column J = Y rows</li>
         <li>Email log visible on dashboard</li>
-        <li><em>Auth &amp; storage managed by user locally</em></li>
       </ul>
     </div>
     <div class="phase-card phase-poc">
       <span class="phase-tag">POC — Phase 2 · Aug–Sep 2026</span>
       <h4>Agent 2 + Agent 4 Milestones + Agent 3 Summary</h4>
       <ul>
-        <li>Agent 2: Project chatbot (natural language queries, multi-project)</li>
-        <li>Agent 4: Milestone recommendations, critical path highlighting</li>
+        <li>Agent 2: Project chatbot — RAG + Agentic RAG multi-step query decomposition</li>
+        <li>Agent 4: SMART milestone recommendations, critical path highlighting</li>
         <li>Agent 3: Weekly executive health summary email</li>
         <li>Excel re-upload flow (refresh existing project)</li>
         <li>BIN Procurement UAT: 2 pilot PMs running live project</li>
-        <li>AI evaluation: chatbot accuracy, email relevance, dependency precision</li>
+        <li>AI evaluation: P/R metrics for Agent 4, LLM-as-Judge for Agent 3 emails</li>
       </ul>
     </div>
     <div class="phase-card phase-future">
       <span class="phase-tag">Future Phase · Q4 2026</span>
-      <h4>Smartsheet Integration + Database Backend</h4>
+      <h4>Smartsheet Integration + Prompt Caching + Database</h4>
       <ul>
-        <li>Smartsheet API connector: agents poll Smartsheet for live updates (no manual upload)</li>
-        <li>Standardised Smartsheet template (identical column format to Excel schema)</li>
+        <li>Smartsheet API connector: agents poll live (no manual upload)</li>
+        <li>Prompt caching: repeated project context cached — target 70%+ cost reduction (W3 Model Optimization)</li>
         <li>Backend database: project persistence, event sourcing, audit log</li>
-        <li>User authentication: email login or SSO</li>
         <li>Agent 3: Smartsheet-triggered email on status change (real-time, not nightly)</li>
         <li>Agent 4: Cross-project dependency analysis</li>
       </ul>
@@ -659,52 +664,63 @@
         <li>Agent 4: Predictive benchmarking vs. historical project data</li>
         <li>SOC 2 Type II certification</li>
         <li>White-label offering for card networks</li>
-        <li>Mobile app (iOS / Android)</li>
       </ul>
     </div>
   </div>
 </div>
 
-<!-- 8. EVALUATION -->
+<!-- 7. EVALUATION -->
 <div class="section" id="evaluation">
-  <div class="section-num">8</div>
+  <div class="section-num">7</div>
   <h2>Evaluation Plan</h2>
-  <p class="subtitle">How we validate each agent works — BIN Procurement as pilot test case</p>
+  <p class="subtitle">Evaluation framework directly from W3 learning — Precision/Recall, LLM-as-Judge, and human review layers</p>
+
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+    <span class="learn-badge lb-w3">W3 · Agent Evaluation (4 dimensions)</span>
+    <span class="learn-badge lb-w3">W3 · Precision & Recall</span>
+    <span class="learn-badge lb-w3">W3 · LLM as Judge</span>
+  </div>
+
+  <div class="callout callout-teal">
+    <div class="callout-title">W3 Learning Applied — Evaluation Strategy</div>
+    Week 3 taught four evaluation dimensions (correctness, relevance, completeness, safety) and three methods (human review, LLM-as-Judge, automated metrics). Each agent below uses the method appropriate to its output type. Agent 3 email quality uses LLM-as-Judge rubric. Agent 4 cascade risk uses Precision/Recall against historical datasets.
+  </div>
 
   <table>
-    <thead><tr><th>Test Type</th><th>Scope</th><th>Exit Criteria</th></tr></thead>
+    <thead><tr><th>Test Type</th><th>Scope</th><th>Method</th><th>Exit Criteria</th></tr></thead>
     <tbody>
-      <tr><td><strong>Agent 1 — Schema Tests</strong></td><td>Upload 10 Excel files: valid, missing columns, wrong types, security flags</td><td>100% correct parse on valid files; clear error on invalid; &lt;10s generation time</td></tr>
-      <tr><td><strong>Agent 2 — Chatbot Accuracy</strong></td><td>100-question benchmark across 3 simulated projects; compare to ground truth</td><td>≥90% accuracy; no hallucinated step data</td></tr>
-      <tr><td><strong>Agent 3 — Email Coverage</strong></td><td>Simulate 31-step BIN project with 5 overdue steps; verify emails sent to correct DRIs</td><td>5/5 correct DRI emails; 0 false positives on non-overdue steps</td></tr>
-      <tr><td><strong>Agent 4 — Dependency Precision</strong></td><td>Test on 20 historical project datasets with known cascade delays</td><td>Precision ≥ 0.80; recall ≥ 0.75 on cascade risk detection</td></tr>
-      <tr><td><strong>UAT</strong></td><td>2 pilot PMs run BIN Procurement live in parallel with existing Excel process</td><td>Task success ≥ 90%; PM reports ≥ 30% time saving; SUS score ≥ 70</td></tr>
-      <tr><td><strong>Security Test</strong></td><td>Verify AI disabled for Column J = Y rows; verify emails never sent for flagged steps without PM override</td><td>0 AI outputs on security-flagged steps</td></tr>
+      <tr><td><strong>Agent 1 — Schema Tests</strong></td><td>Upload 10 Excel files: valid, missing columns, wrong types, security flags</td><td>Automated</td><td>100% correct parse on valid; clear error on invalid; &lt;10s</td></tr>
+      <tr><td><strong>Agent 2 — Chatbot Accuracy</strong></td><td>100-question benchmark across 3 simulated projects vs ground truth</td><td>Human review + LLM-as-Judge</td><td>≥90% accuracy; no hallucinated step data</td></tr>
+      <tr><td><strong>Agent 3 — Email Coverage</strong></td><td>Simulate 31-step BIN project with 5 overdue steps</td><td>Automated + LLM-as-Judge rubric</td><td>5/5 correct DRI emails; 0 blame-language flags; avg rating ≥4.0/5</td></tr>
+      <tr><td><strong>Agent 4 — Dependency Precision</strong></td><td>Test on 20 historical project datasets with known cascade delays</td><td>Automated P/R measurement</td><td><strong>P ≥ 0.80 · R ≥ 0.75</strong> on cascade risk detection</td></tr>
+      <tr><td><strong>UAT</strong></td><td>2 pilot PMs run BIN Procurement live alongside existing Excel process</td><td>Human review + SUS survey</td><td>Task success ≥90%; PM reports ≥30% time saving; SUS ≥70</td></tr>
+      <tr><td><strong>Security Test</strong></td><td>Verify AI disabled for Column J = Y; verify emails never sent without PM override</td><td>Automated penetration test</td><td>0 AI outputs on security-flagged steps</td></tr>
     </tbody>
   </table>
 
-  <h3>AI Evaluation Framework</h3>
-  <table>
-    <thead><tr><th>AI Feature</th><th>Method</th><th>Target</th></tr></thead>
-    <tbody>
-      <tr><td>Agent 2 — Chatbot</td><td>100-question benchmark; human rater panel (5 PMs) for tone and clarity</td><td>Accuracy ≥ 90%; avg rating ≥ 4.0/5.0</td></tr>
-      <tr><td>Agent 3 — Email Generator</td><td>50 generated emails rated by 5 PMs for relevance, tone, urgency</td><td>Avg rating ≥ 4.0/5.0; 0 blame-language flags</td></tr>
-      <tr><td>Agent 4 — Risk Predictor</td><td>Compare flagged cascade risks vs. actual delays in 20 historical datasets</td><td>Precision ≥ 0.80; Recall ≥ 0.75</td></tr>
-      <tr><td>Agent 4 — Milestones</td><td>PM panel reviews 30 milestone suggestions for relevance and sequencing</td><td>Acceptance rate ≥ 65%</td></tr>
-    </tbody>
-  </table>
+  <div class="callout callout-purple" style="margin-top:16px">
+    <div class="callout-title">Precision vs Recall Trade-off Decision (Agent 4)</div>
+    For cascade risk detection, we deliberately bias toward <strong style="color:var(--text)">Recall (R≥0.75)</strong> over Precision. A false negative (missed cascade risk) causes a real project delay. A false positive (unnecessary alert) costs a PM 5 minutes of review. This is a direct application of the W3 Precision/Recall case study — the business cost asymmetry determines the dial setting.
+  </div>
 </div>
 
-<!-- 9. PROMPTS -->
+<!-- 8. PROMPTS -->
 <div class="section" id="prompts">
-  <div class="section-num">9</div>
+  <div class="section-num">8</div>
   <h2>Prompt Strategy</h2>
-  <p class="subtitle">Structured, auditable prompts for Agents 2, 3, and 4 — grounded, scoped, role-aware</p>
+  <p class="subtitle">Structured, auditable prompts — built on W1 Grounding, W2 Context Management, W3 HHH Framework</p>
+
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+    <span class="learn-badge lb-w1">W1 · Grounding</span>
+    <span class="learn-badge lb-w2">W2 · Context Management</span>
+    <span class="learn-badge lb-w2">W2 · In-Context Learning</span>
+    <span class="learn-badge lb-w3">W3 · HHH Framework</span>
+  </div>
 
   <h3>Design Principles</h3>
-  <p><strong>Grounded</strong> — always use real project data, never hallucinate. <strong>Scoped</strong> — output length and format explicitly constrained. <strong>Role-aware</strong> — audience and tone vary by recipient. <strong>Auditable</strong> — every AI output logged with its input context.</p>
+  <p style="color:var(--text-muted);margin-bottom:16px"><strong style="color:var(--w1)">Grounded (W1)</strong> — always use real project data, never hallucinate. <strong style="color:var(--w2)">Scoped (W2)</strong> — structured context objects, not raw document dumps. <strong style="color:var(--w3)">HHH-Aligned (W3)</strong> — every prompt enforces Helpful, Honest, Harmless. <strong style="color:var(--text)">Auditable</strong> — every AI output logged with its input context.</p>
 
-  <h3>Agent 2 — Project Chatbot</h3>
+  <h3>Agent 2 — Project Chatbot <span class="learn-badge lb-w1">W1 · RAG</span><span class="learn-badge lb-w2">W2 · Agentic RAG</span></h3>
   <div class="prompt-block">
 <span class="role">SYSTEM:</span> You are a helpful project assistant with read access to all projects tracked on the Multi-Project Tracker platform. You will be given live project data as JSON context. Answer only based on the provided data. If information is not in the data, say "I don't have that information." Never guess or extrapolate. Keep answers under 3 sentences unless the user asks for a list. You may query multiple projects to answer a question — plan your tool calls before responding.
 
@@ -712,90 +728,85 @@
 User question: <span class="var">{{user_question}}</span>
   </div>
 
-  <h3>Agent 3 — DRI Deadline Alert Email</h3>
+  <h3>Agent 3 — DRI Deadline Alert Email <span class="learn-badge lb-w3">W3 · HHH — Helpful, Honest, Harmless</span></h3>
   <div class="prompt-block">
-<span class="role">SYSTEM:</span> You are a professional project coordinator. Write a brief, friendly, and professional reminder email to a stakeholder about an overdue or upcoming project step. Keep it under 100 words. Do not use blame language. Be specific about the step, deadline, and the downstream impact of the delay. Sign off with the PM's name.
+<span class="role">SYSTEM:</span> You are a professional project coordinator. Write a brief, friendly, and professional reminder email to a stakeholder about an overdue or upcoming project step. Keep it under 100 words. Do not use blame language (Harmless). Be specific about the step, deadline, and the downstream impact of the delay (Helpful + Honest). Sign off with the PM's name.
 
 <span class="role">USER:</span> Recipient: <span class="var">{{dri_name}}</span> (<span class="var">{{dri_email}}</span>)
 Project: <span class="var">{{project_name}}</span>
 Step: <span class="var">{{step_number}}</span> — <span class="var">{{step_description}}</span>
-Was Due: <span class="var">{{estimated_end_date}}</span>
-Days Overdue: <span class="var">{{days_overdue}}</span>
+Was Due: <span class="var">{{estimated_end_date}}</span>  |  Days Overdue: <span class="var">{{days_overdue}}</span>
 Next Dependent Step: <span class="var">{{next_step}}</span> (owned by <span class="var">{{next_dri_name}}</span>)
 PM Name: <span class="var">{{pm_name}}</span>
 
 Write the email body only. No subject line.
   </div>
 
-  <h3>Agent 3 — Weekly Executive Summary</h3>
+  <h3>Agent 4 — Dependency Risk &amp; Milestone Planner <span class="learn-badge lb-w3">W3 · Knowledge Graph</span><span class="learn-badge lb-w3">W3 · SMART Goals</span></h3>
   <div class="prompt-block">
-<span class="role">SYSTEM:</span> You are a senior program manager writing a weekly project status update for an executive audience. Write in clear, confident business prose. No jargon. Highlight RAG status. Maximum 200 words.
+<span class="role">SYSTEM:</span> You are a senior project risk analyst specialising in dependency management. Analyse the provided project dependency graph and current step statuses. Identify all blocked steps, cascade risks, and the critical path. Then recommend the next 3–5 milestones the team should prioritise — each milestone must be SMART: Specific, Measurable, Achievable, Relevant, Time-bound. Be concise, data-driven, and actionable. Output as JSON.
 
-<span class="role">USER:</span> Week Ending: <span class="var">{{week_end_date}}</span>
-Project: <span class="var">{{project_name}}</span>
-Overall Status: <span class="var">{{rag_status}}</span>
-Steps Completed This Week: <span class="var">{{completed_this_week}}</span>
-Steps Overdue: <span class="var">{{overdue_steps}}</span>
-Upcoming Next Week: <span class="var">{{upcoming_steps}}</span>
-Dependency Risk Summary: <span class="var">{{agent4_risk_summary}}</span>
-Key Blockers: <span class="var">{{blockers}}</span>
-
-Write the executive summary. Start with overall health, then highlights, then risks, then ask.
-  </div>
-
-  <h3>Agent 4 — Dependency Risk &amp; Milestone Planner</h3>
-  <div class="prompt-block">
-<span class="role">SYSTEM:</span> You are a senior project risk analyst specialising in dependency management. Analyse the provided project dependency graph and current step statuses. Identify all blocked steps, cascade risks, and the critical path. Then recommend the next 3–5 milestones the team should prioritise. Be concise, data-driven, and actionable. Output as JSON.
-
-<span class="role">USER:</span> Project: <span class="var">{{project_name}}</span>
-Target Launch Date: <span class="var">{{launch_date}}</span>
-Today's Date: <span class="var">{{today}}</span>
+<span class="role">USER:</span> Project: <span class="var">{{project_name}}</span>  |  Target Launch: <span class="var">{{launch_date}}</span>  |  Today: <span class="var">{{today}}</span>
 Step Statuses: <span class="var">{{step_statuses_json}}</span>
 Dependency Graph: <span class="var">{{dependency_graph_json}}</span>
 
-Provide: (1) blocked_steps (array), (2) cascade_risks (array with impact description), (3) critical_path (array of step numbers), (4) recommended_milestones (array of next 3–5 steps with rationale), (5) overall_risk_score 0–100.
+Provide: (1) blocked_steps, (2) cascade_risks with impact, (3) critical_path, (4) recommended_milestones (SMART), (5) overall_risk_score 0–100.
   </div>
 
   <h3>Guardrails on All Prompts</h3>
   <table>
-    <thead><tr><th>Guardrail</th><th>Implementation</th></tr></thead>
+    <thead><tr><th>Guardrail</th><th>Learning Source</th><th>Implementation</th></tr></thead>
     <tbody>
-      <tr><td>No PII in prompts beyond DRI name/email</td><td>Data sanitised before injection; no sensitive step content for security-flagged rows</td></tr>
-      <tr><td>Output length enforcement</td><td>Max token limits set per prompt; truncation fallback</td></tr>
-      <tr><td>Human override</td><td>PM can edit any AI email before send; all AI outputs labelled "AI Suggested"</td></tr>
-      <tr><td>Confidence threshold</td><td>Agent 4 risk score only surfaced if model confidence &gt; 0.75</td></tr>
-      <tr><td>Full audit trail</td><td>Every AI prompt + output logged with timestamp, project ID, and model version</td></tr>
+      <tr><td>No PII beyond DRI name/email</td><td><span class="learn-badge lb-w3">W3 · AI Risks</span></td><td>Data sanitised before injection; security-flagged rows excluded entirely</td></tr>
+      <tr><td>Output length enforcement</td><td><span class="learn-badge lb-w1">W1 · Tokens</span></td><td>Max token limits set per prompt; truncation fallback to prevent context overflow</td></tr>
+      <tr><td>Human override on all AI outputs</td><td><span class="learn-badge lb-w3">W3 · HHH Harmless</span></td><td>PM can edit any AI email before send; all outputs labelled "AI Suggested"</td></tr>
+      <tr><td>Confidence threshold</td><td><span class="learn-badge lb-w3">W3 · Agent Evaluation</span></td><td>Agent 4 risk score only surfaced if model confidence &gt;0.75</td></tr>
+      <tr><td>Full audit trail</td><td><span class="learn-badge lb-w3">W3 · AI Risks</span></td><td>Every AI prompt + output logged with timestamp, project ID, and model version</td></tr>
     </tbody>
   </table>
 </div>
 
-<!-- 10. RESPONSIBLE AI -->
+<!-- 9. RESPONSIBLE AI -->
 <div class="section" id="ai-risk">
-  <div class="section-num">10</div>
+  <div class="section-num">9</div>
   <h2>Responsible AI Risk &amp; Mitigation</h2>
-  <p class="subtitle">Ethical, security, and compliance considerations across all four agents</p>
+  <p class="subtitle">Ethical, security, and compliance considerations — built directly from W3 AI Risks & HHH Framework learning</p>
+
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+    <span class="learn-badge lb-w3">W3 · HHH Framework</span>
+    <span class="learn-badge lb-w3">W3 · AI Risks — Hallucination</span>
+    <span class="learn-badge lb-w3">W3 · AI Risks — Prompt Injection</span>
+    <span class="learn-badge lb-w3">W3 · AI Risks — Over-reliance</span>
+    <span class="learn-badge lb-w3">W3 · Defence in Depth</span>
+  </div>
+
+  <div class="callout callout-teal">
+    <div class="callout-title">W3 Learning Applied — Defence in Depth</div>
+    Week 3 introduced the defence-in-depth mitigation stack: Model Training → System Prompt → Output Filter → Human-in-Loop → Monitoring. Every risk row below maps to one or more layers of this stack. Risk without an owner is a liability — each row has a named layer and a measurable mitigation signal.
+  </div>
 
   <table>
-    <thead><tr><th>Risk</th><th>Agent</th><th>Severity</th><th>Mitigation</th></tr></thead>
+    <thead><tr><th>Risk</th><th>Agent</th><th>Severity</th><th>W3 Risk Category</th><th>Mitigation</th></tr></thead>
     <tbody>
-      <tr class="risk-high"><td><strong>AI hallucination in chatbot responses</strong> — Agent 2 fabricates step data not present in the project</td><td><span class="badge badge-purple">A2</span></td><td><span class="badge badge-red">High</span></td><td>Strictly grounded prompting (data-only); "I don't have that information" fallback; human spot-check on first 50 responses</td></tr>
-      <tr class="risk-high"><td><strong>Security-flagged steps included in AI prompts</strong> — Card key or sensitive steps sent to LLM</td><td><span class="badge badge-blue">A1</span> <span class="badge badge-green">A3</span></td><td><span class="badge badge-red">Critical</span></td><td>Column J = Y rows hard-excluded from all AI prompts; only step status (To Do/Done) passed; key values never included</td></tr>
-      <tr class="risk-med"><td><strong>Blame-language in DRI emails</strong> — Agent 3 generates accusatory tone causing stakeholder friction</td><td><span class="badge badge-green">A3</span></td><td><span class="badge badge-amber">Medium</span></td><td>Explicit no-blame guardrail in system prompt; PM review of first 50 emails; A/B test variants; PM can edit before send</td></tr>
-      <tr class="risk-med"><td><strong>Incorrect milestone recommendations</strong> — Agent 4 suggests wrong next steps due to dependency parsing error</td><td><span class="badge badge-amber" style="color:#c2410c;background:#fff7ed">A4</span></td><td><span class="badge badge-amber">Medium</span></td><td>Confidence threshold ≥ 0.75; PM acceptance required before milestones are actioned; all suggestions labelled "AI Recommended"</td></tr>
-      <tr class="risk-med"><td><strong>Over-reliance on AI risk scores</strong> — PM stops exercising independent judgment</td><td><span class="badge badge-amber" style="color:#c2410c;background:#fff7ed">A4</span></td><td><span class="badge badge-amber">Medium</span></td><td>Risk scores clearly labelled with data inputs used; mandatory override option; PM training on AI limitations</td></tr>
-      <tr class="risk-low"><td><strong>LLM provider unavailability</strong> — AI features go dark if provider is down</td><td>All</td><td><span class="badge badge-green">Low</span></td><td>Graceful degradation: rule-based reminders and manual risk flags replace AI outputs; multi-provider fallback strategy</td></tr>
-      <tr class="risk-med"><td><strong>PII in DRI emails sent to wrong recipient</strong> — Agent 3 emails wrong DRI due to Excel row mismatch</td><td><span class="badge badge-green">A3</span></td><td><span class="badge badge-amber">Medium</span></td><td>Email address validated against DRI name before send; PM review mode for first project; send log with full recipient list</td></tr>
+      <tr class="risk-high"><td><strong>AI hallucination in chatbot responses</strong> — Agent 2 fabricates step data</td><td><span class="badge badge-purple">A2</span></td><td><span class="badge badge-red">High</span></td><td><span class="learn-badge lb-w3">Hallucination</span></td><td>Strictly grounded prompting; "I don't have that information" fallback; RAG-only (never training weights)</td></tr>
+      <tr class="risk-high"><td><strong>Security-flagged steps included in AI prompts</strong> — card key data sent to LLM</td><td><span class="badge badge-blue">A1</span> <span class="badge badge-green">A3</span></td><td><span class="badge badge-red">Critical</span></td><td><span class="learn-badge lb-w3">Data Privacy</span></td><td>Column J = Y rows hard-excluded from all AI prompts; key values never passed; dual PM authorisation</td></tr>
+      <tr class="risk-high"><td><strong>Prompt injection via chat input</strong> — user overrides system prompt to extract data or execute actions</td><td><span class="badge badge-purple">A2</span></td><td><span class="badge badge-red">High</span></td><td><span class="learn-badge lb-w3">Prompt Injection</span></td><td>Input pre-processed through injection classifier; AI can inform but never directly mutate project state</td></tr>
+      <tr class="risk-med"><td><strong>Blame-language in DRI emails</strong> — Agent 3 generates accusatory tone</td><td><span class="badge badge-green">A3</span></td><td><span class="badge badge-amber">Medium</span></td><td><span class="learn-badge lb-w3">HHH — Harmless</span></td><td>Explicit no-blame guardrail in system prompt; PM review of first 50 emails; LLM-as-Judge tone scoring</td></tr>
+      <tr class="risk-med"><td><strong>Over-reliance on AI risk scores</strong> — PM stops exercising independent judgment</td><td><span class="badge badge-amber">A4</span></td><td><span class="badge badge-amber">Medium</span></td><td><span class="learn-badge lb-w3">Automation Bias</span></td><td>Confidence threshold ≥0.75; PM acceptance required before actioning milestones; all labelled "AI Recommended"</td></tr>
+      <tr class="risk-med"><td><strong>Incorrect milestone recommendations</strong> — Agent 4 suggests wrong sequence</td><td><span class="badge badge-amber">A4</span></td><td><span class="badge badge-amber">Medium</span></td><td><span class="learn-badge lb-w3">Model Risk</span></td><td>SMART criteria validation in prompt; PM panel review in UAT; acceptance rate monitored continuously</td></tr>
+      <tr class="risk-low"><td><strong>LLM provider unavailability</strong> — AI features go dark</td><td>All</td><td><span class="badge badge-green">Low</span></td><td><span class="learn-badge lb-w3">Operational Risk</span></td><td>Graceful degradation: rule-based reminders replace AI outputs; multi-provider fallback strategy</td></tr>
     </tbody>
   </table>
 
   <div class="callout callout-green">
-    <strong>AI Governance Commitments:</strong> Human-in-the-loop for all consequential AI actions (emails, milestone changes) · No AI training on customer project data without consent · Full audit trail of every AI prompt and output · AI feature toggle — any agent can be disabled per project · Quarterly AI risk review
+    <div class="callout-title">AI Governance Commitments</div>
+    Human-in-the-loop for all consequential AI actions (emails, milestone changes) · No AI training on customer project data without consent · Full audit trail of every AI prompt and output · AI feature toggle — any agent can be disabled per project · Quarterly AI risk review aligned to W3 risk framework
   </div>
 </div>
 
-<!-- 11. PRICING -->
+<!-- 10. PRICING -->
 <div class="section" id="pricing">
-  <div class="section-num">11</div>
+  <div class="section-num">10</div>
   <h2>Pricing &amp; Cost Structure</h2>
   <p class="subtitle">Per-project SaaS subscription — scaled by agents enabled and data source</p>
 
@@ -805,12 +816,11 @@ Provide: (1) blocked_steps (array), (2) cascade_risks (array with impact descrip
       <div class="price">$2,500<span> / project / yr</span></div>
       <ul>
         <li>✅ Agent 1 — HTML tracker generation</li>
+        <li>✅ Agent 3 — deadline email alerts (HHH-compliant)</li>
         <li>✅ Dashboard with project cards</li>
-        <li>✅ Agent 3 — deadline email alerts</li>
-        <li>❌ Agent 2 (chatbot)</li>
-        <li>❌ Agent 4 (dependency eval)</li>
-        <li>Excel upload only</li>
-        <li>Up to 3 concurrent projects</li>
+        <li>❌ Agent 2 (chatbot + Agentic RAG)</li>
+        <li>❌ Agent 4 (Knowledge Graph + milestones)</li>
+        <li>Excel upload only · Up to 3 concurrent projects</li>
       </ul>
     </div>
     <div class="pricing-card popular">
@@ -819,12 +829,12 @@ Provide: (1) blocked_steps (array), (2) cascade_risks (array with impact descrip
       <div class="price">$6,500<span> / project / yr</span></div>
       <ul>
         <li>✅ All 4 agents enabled</li>
-        <li>✅ Agent 2 — project chatbot</li>
-        <li>✅ Agent 4 — dependency + milestones</li>
+        <li>✅ Agent 2 — Agentic RAG chatbot + context management</li>
+        <li>✅ Agent 4 — Knowledge Graph dependency + SMART milestones</li>
         <li>✅ Weekly exec summary email</li>
-        <li>✅ Email send log</li>
-        <li>Excel + Smartsheet (future phase)</li>
-        <li>Up to 10 concurrent projects</li>
+        <li>✅ Email send log + AI audit trail</li>
+        <li>✅ Prompt caching (future) — ~70% cost reduction</li>
+        <li>Excel + Smartsheet (future) · Up to 10 projects</li>
       </ul>
     </div>
     <div class="pricing-card">
@@ -835,9 +845,8 @@ Provide: (1) blocked_steps (array), (2) cascade_risks (array with impact descrip
         <li>✅ Unlimited projects</li>
         <li>✅ Jira / Confluence connectors</li>
         <li>✅ Backend DB + SSO auth</li>
-        <li>✅ White-label option</li>
-        <li>✅ Dedicated CSM + SLA</li>
-        <li>✅ SOC 2 Type II</li>
+        <li>✅ LLM-as-Judge continuous evaluation</li>
+        <li>✅ White-label option · SOC 2 Type II</li>
         <li>✅ On-premise deployment option</li>
       </ul>
     </div>
@@ -851,30 +860,32 @@ Provide: (1) blocked_steps (array), (2) cascade_risks (array with impact descrip
       <tr><td>Gross Margin target</td><td>75%+</td></tr>
       <tr><td>Payback period (CAC)</td><td>&lt;12 months</td></tr>
       <tr><td>Break-even ARR</td><td>~$800K (~25 Professional customers)</td></tr>
+      <tr><td>LLM cost reduction via prompt caching (W3)</td><td>Target 70%+ on repeated project context queries</td></tr>
     </tbody>
   </table>
 </div>
 
-<!-- 12. POC TECHNICAL SCOPE -->
+<!-- 11. POC TECHNICAL SCOPE -->
 <div class="section" id="poc-tech">
-  <div class="section-num">12</div>
+  <div class="section-num">11</div>
   <h2>POC Technical Scope</h2>
   <p class="subtitle">What gets built in the POC — constraints, file structure, and run instructions</p>
 
   <div class="callout callout-amber">
-    <strong>POC Constraints:</strong> No backend database. No user authentication system. HTML pages and Excel files are stored and managed by the user locally. Authentication (if needed) is handled by the user outside the platform. Smartsheet integration is deferred to the future phase.
+    <div class="callout-title">POC Constraints</div>
+    No backend database. No user authentication system. HTML pages and Excel files are stored and managed by the user locally. Smartsheet integration is deferred to the future phase. Claude Sonnet used as LLM backbone for all agents (W3 Claude Ecosystem).
   </div>
 
   <h3>POC Deliverables</h3>
   <table>
-    <thead><tr><th>Deliverable</th><th>Description</th></tr></thead>
+    <thead><tr><th>Deliverable</th><th>Learning Concepts Applied</th><th>Description</th></tr></thead>
     <tbody>
-      <tr><td><strong>Web Upload UI</strong></td><td>Single-page web form for Excel upload; schema validation with inline error feedback; triggers Agent 1</td></tr>
-      <tr><td><strong>Agent 1 — Tracker Generator</strong></td><td>Python script that parses .xlsx (standard library only), generates project-{slug}.html with RAG, progress bar, steps table, overdue alert panel, and secure step badges</td></tr>
-      <tr><td><strong>Dashboard (index.html)</strong></td><td>Central hub showing all generated project cards; each card links to its tracker HTML page; shows last-updated timestamp</td></tr>
-      <tr><td><strong>Agent 3 — Email Monitor</strong></td><td>Python script (cron or manual trigger); reads all project Excel files; sends SMTP emails to overdue DRIs; logs sends to email-log.json</td></tr>
-      <tr><td><strong>Agent 4 — Dependency Evaluator</strong></td><td>Python script; parses Column I dependency graph; outputs blocked steps + milestone recommendations to dashboard widget</td></tr>
-      <tr><td><strong>Agent 2 — Chatbot UI</strong></td><td>Chat panel on dashboard; calls LLM API with project HTML content as context; multi-turn conversation</td></tr>
+      <tr><td><strong>Web Upload UI</strong></td><td>—</td><td>Single-page web form for Excel upload; schema validation with inline error feedback</td></tr>
+      <tr><td><strong>Agent 1 — Tracker Generator</strong></td><td><span class="learn-badge lb-w1">W1 · Tokens</span></td><td>Python script; parses .xlsx, generates project-{slug}.html with RAG, progress bar, steps table</td></tr>
+      <tr><td><strong>Dashboard (index.html)</strong></td><td>—</td><td>Central hub showing all generated project cards; each card links to its tracker HTML page</td></tr>
+      <tr><td><strong>Agent 3 — Email Monitor</strong></td><td><span class="learn-badge lb-w3">W3 · Perceive→Plan→Act</span><span class="learn-badge lb-w3">W3 · HHH</span></td><td>Python script (cron); reads project Excel; sends SMTP emails; logs to email-log.json</td></tr>
+      <tr><td><strong>Agent 4 — Dependency Evaluator</strong></td><td><span class="learn-badge lb-w3">W3 · Knowledge Graph</span><span class="learn-badge lb-w3">W3 · SMART Goals</span></td><td>Python script; parses Column I dependency graph; outputs blocked steps + milestone JSON</td></tr>
+      <tr><td><strong>Agent 2 — Chatbot UI</strong></td><td><span class="learn-badge lb-w1">W1 · RAG</span><span class="learn-badge lb-w2">W2 · Agentic RAG</span></td><td>Chat panel; calls Claude API with project HTML as RAG context; multi-turn conversation</td></tr>
     </tbody>
   </table>
 
@@ -882,251 +893,241 @@ Provide: (1) blocked_steps (array), (2) cascade_risks (array with impact descrip
   <table>
     <thead><tr><th>File</th><th>Purpose</th></tr></thead>
     <tbody>
-      <tr><td><code>index.html</code></td><td>Central dashboard — all project cards</td></tr>
+      <tr><td><code>index.html</code></td><td>This PRD — Learning in Practice + full product spec</td></tr>
       <tr><td><code>upload.html</code></td><td>Excel upload UI (Agent 1 trigger)</td></tr>
       <tr><td><code>agent1.py</code></td><td>HTML tracker generator — reads Excel, outputs project-{slug}.html</td></tr>
-      <tr><td><code>agent3.py</code></td><td>Deadline monitor — reads Excel files, sends DRI emails via SMTP</td></tr>
-      <tr><td><code>agent4.py</code></td><td>Dependency evaluator — outputs blocked steps + milestones JSON</td></tr>
-      <tr><td><code>chat.js</code></td><td>Agent 2 chatbot frontend — calls LLM API with project context</td></tr>
+      <tr><td><code>agent3.py</code></td><td>Deadline monitor — HHH-compliant DRI emails via SMTP</td></tr>
+      <tr><td><code>agent4.py</code></td><td>Knowledge Graph traversal — blocked steps + SMART milestone JSON</td></tr>
+      <tr><td><code>chat.js</code></td><td>Agent 2 Agentic RAG chatbot frontend — calls Claude API</td></tr>
       <tr><td><code>projects/{slug}/input.xlsx</code></td><td>Source Excel file per project</td></tr>
       <tr><td><code>projects/{slug}/tracker.html</code></td><td>Generated status tracker per project</td></tr>
-      <tr><td><code>email-log.json</code></td><td>Agent 3 send log</td></tr>
+      <tr><td><code>email-log.json</code></td><td>Agent 3 send log with full audit trail</td></tr>
       <tr><td><code>project-index.json</code></td><td>Shared project registry — all agents read this</td></tr>
-    </tbody>
-  </table>
-
-  <h3>Future Phase — Smartsheet Integration Notes</h3>
-  <table>
-    <thead><tr><th>Aspect</th><th>Requirement</th></tr></thead>
-    <tbody>
-      <tr><td>Column format</td><td>Smartsheet template must be <strong>identical</strong> to the Excel column schema (A–K) for all agent parsers to work without modification</td></tr>
-      <tr><td>API connection</td><td>Agents connect to Smartsheet API using OAuth token; poll on a configurable interval (default: every 15 minutes)</td></tr>
-      <tr><td>Trigger model</td><td>Agent 3 switches from nightly batch to event-driven (Smartsheet webhook on row update)</td></tr>
-      <tr><td>Data residency</td><td>Smartsheet data does not leave the designated region; PII stripped before LLM prompt injection</td></tr>
     </tbody>
   </table>
 </div>
 
 <!-- BIN FLOW -->
 <div class="flow-section" id="flow">
-  <div class="section-num" style="background:var(--accent)">⬡</div>
+  <div class="section-num" style="background:var(--secondary-dim);border-color:rgba(45,212,191,.3);color:var(--secondary)">⬡</div>
   <h2 style="margin-top:12px">BIN Procurement — Reference Process Flow</h2>
-  <p class="subtitle">Example implementation: 31 steps tracked via Excel/Smartsheet — demonstrating all 4 agents in action across a live card launch (Jun–Oct 2026)</p>
+  <p class="subtitle">Example implementation: 31 steps across 6 phases — showing all 4 agents applying W1/W2/W3 learning in a live card launch</p>
 
-  <svg viewBox="0 0 900 1100" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:900px;display:block;margin:0 auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
-    <rect x="5" y="5" width="168" height="1090" fill="#eff6ff" rx="6" opacity="0.6"/>
-    <rect x="178" y="5" width="168" height="1090" fill="#f0fdf4" rx="6" opacity="0.6"/>
-    <rect x="351" y="5" width="168" height="1090" fill="#fff7ed" rx="6" opacity="0.6"/>
-    <rect x="524" y="5" width="168" height="1090" fill="#fdf4ff" rx="6" opacity="0.6"/>
-    <rect x="697" y="5" width="198" height="1090" fill="#f9fafb" rx="6" opacity="0.6"/>
+  <svg viewBox="0 0 900 1100" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:900px;display:block;margin:0 auto;font-family:'Inter',sans-serif">
+    <rect x="5" y="5" width="168" height="1090" fill="rgba(79,142,247,0.07)" rx="6"/>
+    <rect x="178" y="5" width="168" height="1090" fill="rgba(52,211,153,0.07)" rx="6"/>
+    <rect x="351" y="5" width="168" height="1090" fill="rgba(245,158,11,0.07)" rx="6"/>
+    <rect x="524" y="5" width="168" height="1090" fill="rgba(159,110,245,0.07)" rx="6"/>
+    <rect x="697" y="5" width="198" height="1090" fill="rgba(255,255,255,0.03)" rx="6"/>
 
-    <text x="89" y="28" text-anchor="middle" font-size="11" font-weight="700" fill="#1d4ed8">ISSUER</text>
-    <text x="262" y="28" text-anchor="middle" font-size="11" font-weight="700" fill="#15803d">NETWORK</text>
-    <text x="435" y="28" text-anchor="middle" font-size="11" font-weight="700" fill="#c2410c">PROCESSOR</text>
-    <text x="608" y="28" text-anchor="middle" font-size="11" font-weight="700" fill="#7c3aed">EMBOSSER</text>
-    <text x="796" y="28" text-anchor="middle" font-size="11" font-weight="700" fill="#374151">AGENT ACTIONS</text>
+    <text x="89" y="28" text-anchor="middle" font-size="11" font-weight="700" fill="#4f8ef7">ISSUER</text>
+    <text x="262" y="28" text-anchor="middle" font-size="11" font-weight="700" fill="#34d399">NETWORK</text>
+    <text x="435" y="28" text-anchor="middle" font-size="11" font-weight="700" fill="#f59e0b">PROCESSOR</text>
+    <text x="608" y="28" text-anchor="middle" font-size="11" font-weight="700" fill="#9f6ef5">EMBOSSER</text>
+    <text x="796" y="28" text-anchor="middle" font-size="11" font-weight="700" fill="#8b9ab4">AGENT ACTIONS</text>
 
     <defs>
-      <marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#6b7280"/></marker>
-      <marker id="arr2-blue" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#2563eb"/></marker>
-      <marker id="arr2-purple" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#7c3aed"/></marker>
-      <marker id="arr2-green" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#16a34a"/></marker>
+      <marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#5a6a84"/></marker>
+      <marker id="arr2-blue" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#4f8ef7"/></marker>
+      <marker id="arr2-purple" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#9f6ef5"/></marker>
+      <marker id="arr2-green" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#34d399"/></marker>
     </defs>
 
     <!-- PHASE A -->
-    <rect x="5" y="40" width="860" height="20" fill="#1a1f36" rx="4" opacity="0.85"/>
-    <text x="440" y="54" text-anchor="middle" font-size="10" font-weight="700" fill="white">PHASE A — PROJECT INITIATION (Jun 2026)</text>
+    <rect x="5" y="40" width="860" height="20" fill="rgba(79,142,247,0.2)" rx="4"/>
+    <text x="440" y="54" text-anchor="middle" font-size="10" font-weight="700" fill="#4f8ef7">PHASE A — PROJECT INITIATION (Jun 2026)</text>
 
-    <rect x="15" y="66" width="148" height="34" rx="6" fill="#2563eb"/>
+    <rect x="15" y="66" width="148" height="34" rx="6" fill="#1e3a5f"/>
     <text x="89" y="81" text-anchor="middle" font-size="9" font-weight="700" fill="white">Step 1 · Issuer</text>
-    <text x="89" y="93" text-anchor="middle" font-size="8" fill="#bfdbfe">Request to Network · Jun 1</text>
-    <line x1="163" y1="83" x2="188" y2="83" stroke="#6b7280" stroke-width="1.2" marker-end="url(#arr2)"/>
+    <text x="89" y="93" text-anchor="middle" font-size="8" fill="#93c5fd">Request to Network · Jun 1</text>
+    <line x1="163" y1="83" x2="188" y2="83" stroke="#5a6a84" stroke-width="1.2" marker-end="url(#arr2)"/>
 
-    <rect x="188" y="66" width="148" height="34" rx="6" fill="#16a34a"/>
+    <rect x="188" y="66" width="148" height="34" rx="6" fill="#1a3a2a"/>
     <text x="262" y="81" text-anchor="middle" font-size="9" font-weight="700" fill="white">Step 2 · Network</text>
-    <text x="262" y="93" text-anchor="middle" font-size="8" fill="#bbf7d0">Project Creation · Jun 15</text>
-    <line x1="262" y1="100" x2="262" y2="116" stroke="#16a34a" stroke-width="1.2" marker-end="url(#arr2-green)"/>
+    <text x="262" y="93" text-anchor="middle" font-size="8" fill="#6ee7b7">Project Creation · Jun 15</text>
+    <line x1="262" y1="100" x2="262" y2="116" stroke="#34d399" stroke-width="1.2" marker-end="url(#arr2-green)"/>
 
-    <rect x="15" y="106" width="148" height="34" rx="6" fill="#2563eb"/>
+    <rect x="15" y="106" width="148" height="34" rx="6" fill="#1e3a5f"/>
     <text x="89" y="121" text-anchor="middle" font-size="9" font-weight="700" fill="white">Step 3 · Issuer</text>
-    <text x="89" y="133" text-anchor="middle" font-size="8" fill="#bfdbfe">SOW Preparation · Jun 15</text>
-    <line x1="89" y1="140" x2="89" y2="156" stroke="#2563eb" stroke-width="1.2" marker-end="url(#arr2-blue)"/>
+    <text x="89" y="133" text-anchor="middle" font-size="8" fill="#93c5fd">SOW Preparation · Jun 15</text>
+    <line x1="89" y1="140" x2="89" y2="156" stroke="#4f8ef7" stroke-width="1.2" marker-end="url(#arr2-blue)"/>
 
-    <rect x="15" y="146" width="148" height="34" rx="6" fill="#2563eb"/>
+    <rect x="15" y="146" width="148" height="34" rx="6" fill="#1e3a5f"/>
     <text x="89" y="161" text-anchor="middle" font-size="9" font-weight="700" fill="white">Step 4 · Issuer</text>
-    <text x="89" y="173" text-anchor="middle" font-size="8" fill="#bfdbfe">SOW Approval · Jun 18</text>
-    <line x1="163" y1="163" x2="188" y2="163" stroke="#6b7280" stroke-width="1.2" marker-end="url(#arr2)"/>
+    <text x="89" y="173" text-anchor="middle" font-size="8" fill="#93c5fd">SOW Approval · Jun 18</text>
+    <line x1="163" y1="163" x2="188" y2="163" stroke="#5a6a84" stroke-width="1.2" marker-end="url(#arr2)"/>
 
-    <rect x="188" y="146" width="148" height="34" rx="6" fill="#16a34a"/>
+    <rect x="188" y="146" width="148" height="34" rx="6" fill="#1a3a2a"/>
     <text x="262" y="161" text-anchor="middle" font-size="9" font-weight="700" fill="white">Step 5 · Network</text>
-    <text x="262" y="173" text-anchor="middle" font-size="8" fill="#bbf7d0">Project Plan Proposal · Jun 25</text>
-    <line x1="262" y1="180" x2="89" y2="196" stroke="#6b7280" stroke-width="1" marker-end="url(#arr2)"/>
+    <text x="262" y="173" text-anchor="middle" font-size="8" fill="#6ee7b7">Project Plan Proposal · Jun 25</text>
+    <line x1="262" y1="180" x2="89" y2="196" stroke="#5a6a84" stroke-width="1" marker-end="url(#arr2)"/>
 
-    <rect x="15" y="186" width="148" height="34" rx="6" fill="#2563eb"/>
+    <rect x="15" y="186" width="148" height="34" rx="6" fill="#1e3a5f"/>
     <text x="89" y="201" text-anchor="middle" font-size="9" font-weight="700" fill="white">Step 6 · Issuer</text>
-    <text x="89" y="213" text-anchor="middle" font-size="8" fill="#bfdbfe">Project Plan Approval · Jul 1</text>
+    <text x="89" y="213" text-anchor="middle" font-size="8" fill="#93c5fd">Project Plan Approval · Jul 1</text>
 
-    <rect x="707" y="66" width="178" height="60" rx="6" fill="#ffedd5" stroke="#ea580c" stroke-width="1"/>
-    <text x="796" y="84" text-anchor="middle" font-size="9" font-weight="700" fill="#c2410c">🤖 Agent 4 Active</text>
-    <text x="796" y="97" text-anchor="middle" font-size="8" fill="#ea580c">Dependency graph loaded</text>
-    <text x="796" y="109" text-anchor="middle" font-size="8" fill="#ea580c">Critical path: 1→3→4→5→6</text>
-    <text x="796" y="121" text-anchor="middle" font-size="8" fill="#ea580c">Milestone rec: Steps 3, 4, 5</text>
+    <rect x="707" y="66" width="178" height="65" rx="6" fill="rgba(245,158,11,0.1)" stroke="rgba(245,158,11,0.3)" stroke-width="1"/>
+    <text x="796" y="84" text-anchor="middle" font-size="9" font-weight="700" fill="#f59e0b">🤖 Agent 4 Active</text>
+    <text x="796" y="97" text-anchor="middle" font-size="8" fill="#8b9ab4">Knowledge Graph loaded</text>
+    <text x="796" y="110" text-anchor="middle" font-size="8" fill="#8b9ab4">Critical path: 1→3→4→5→6</text>
+    <text x="796" y="123" text-anchor="middle" font-size="8" fill="#f59e0b">W3 · Knowledge Graph</text>
 
     <!-- PHASE B -->
-    <rect x="5" y="230" width="860" height="20" fill="#1a1f36" rx="4" opacity="0.85"/>
-    <text x="440" y="244" text-anchor="middle" font-size="10" font-weight="700" fill="white">PHASE B — BIN ORDERING (Jul 2026)</text>
+    <rect x="5" y="230" width="860" height="20" fill="rgba(79,142,247,0.2)" rx="4"/>
+    <text x="440" y="244" text-anchor="middle" font-size="10" font-weight="700" fill="#4f8ef7">PHASE B — BIN ORDERING (Jul 2026)</text>
 
-    <rect x="15" y="256" width="148" height="34" rx="6" fill="#2563eb"/>
+    <rect x="15" y="256" width="148" height="34" rx="6" fill="#1e3a5f"/>
     <text x="89" y="271" text-anchor="middle" font-size="9" font-weight="700" fill="white">Step 7 · Issuer</text>
-    <text x="89" y="283" text-anchor="middle" font-size="8" fill="#bfdbfe">New Account BIN Ordering · Jul 5</text>
-    <line x1="163" y1="273" x2="188" y2="273" stroke="#6b7280" stroke-width="1.2" marker-end="url(#arr2)"/>
+    <text x="89" y="283" text-anchor="middle" font-size="8" fill="#93c5fd">New Account BIN Ordering · Jul 5</text>
+    <line x1="163" y1="273" x2="188" y2="273" stroke="#5a6a84" stroke-width="1.2" marker-end="url(#arr2)"/>
 
-    <rect x="188" y="256" width="148" height="34" rx="6" fill="#16a34a"/>
+    <rect x="188" y="256" width="148" height="34" rx="6" fill="#1a3a2a"/>
     <text x="262" y="271" text-anchor="middle" font-size="9" font-weight="700" fill="white">Step 8 · Network</text>
-    <text x="262" y="283" text-anchor="middle" font-size="8" fill="#bbf7d0">New Account BIN Available · Jul 10</text>
+    <text x="262" y="283" text-anchor="middle" font-size="8" fill="#6ee7b7">New Account BIN Available · Jul 10</text>
 
     <!-- PHASE C -->
-    <rect x="5" y="304" width="860" height="20" fill="#7c3aed" rx="4" opacity="0.85"/>
-    <text x="440" y="318" text-anchor="middle" font-size="10" font-weight="700" fill="white">PHASE C — CARD KEY MANAGEMENT ⚿ (Jul–Aug 2026)</text>
+    <rect x="5" y="304" width="860" height="20" fill="rgba(159,110,245,0.2)" rx="4"/>
+    <text x="440" y="318" text-anchor="middle" font-size="10" font-weight="700" fill="#9f6ef5">PHASE C — CARD KEY MANAGEMENT ⚿ (Jul–Aug 2026)</text>
 
-    <rect x="15" y="330" width="148" height="34" rx="6" fill="#1d4ed8" stroke="#7c3aed" stroke-width="2"/>
+    <rect x="15" y="330" width="148" height="34" rx="6" fill="#1e2a4a" stroke="#9f6ef5" stroke-width="2"/>
     <text x="89" y="345" text-anchor="middle" font-size="9" font-weight="700" fill="white">Step 9 ⚿ Issuer</text>
-    <text x="89" y="357" text-anchor="middle" font-size="8" fill="#bfdbfe">Processor Auth for Keys · Jul 15</text>
-    <line x1="163" y1="347" x2="358" y2="347" stroke="#7c3aed" stroke-width="1.5" marker-end="url(#arr2-purple)"/>
+    <text x="89" y="357" text-anchor="middle" font-size="8" fill="#c4b5fd">Processor Auth for Keys · Jul 15</text>
+    <line x1="163" y1="347" x2="358" y2="347" stroke="#9f6ef5" stroke-width="1.5" marker-end="url(#arr2-purple)"/>
 
-    <rect x="361" y="330" width="148" height="34" rx="6" fill="#ea580c" stroke="#7c3aed" stroke-width="2"/>
+    <rect x="361" y="330" width="148" height="34" rx="6" fill="#2a1f3a" stroke="#9f6ef5" stroke-width="2"/>
     <text x="435" y="345" text-anchor="middle" font-size="9" font-weight="700" fill="white">Step 10 ⚿ Processor</text>
-    <text x="435" y="357" text-anchor="middle" font-size="8" fill="#fed7aa">Card Keys Generation · Jul 20</text>
-    <line x1="435" y1="364" x2="435" y2="380" stroke="#7c3aed" stroke-width="1.5" marker-end="url(#arr2-purple)"/>
+    <text x="435" y="357" text-anchor="middle" font-size="8" fill="#fcd34d">Card Keys Generation · Jul 20</text>
+    <line x1="435" y1="364" x2="435" y2="380" stroke="#9f6ef5" stroke-width="1.5" marker-end="url(#arr2-purple)"/>
 
-    <rect x="188" y="370" width="320" height="34" rx="6" fill="#7c3aed"/>
+    <rect x="188" y="370" width="320" height="34" rx="6" fill="#1a1a3a"/>
     <text x="348" y="385" text-anchor="middle" font-size="9" font-weight="700" fill="white">Step 11 ⚿ Network + Processor</text>
-    <text x="348" y="397" text-anchor="middle" font-size="8" fill="#ddd6fe">Card Keys Exchange · Jul 31</text>
-    <line x1="348" y1="404" x2="435" y2="420" stroke="#7c3aed" stroke-width="1.5" marker-end="url(#arr2-purple)"/>
+    <text x="348" y="397" text-anchor="middle" font-size="8" fill="#c4b5fd">Card Keys Exchange · Jul 31</text>
+    <line x1="348" y1="404" x2="435" y2="420" stroke="#9f6ef5" stroke-width="1.5" marker-end="url(#arr2-purple)"/>
 
-    <rect x="361" y="410" width="148" height="34" rx="6" fill="#ea580c" stroke="#7c3aed" stroke-width="2"/>
+    <rect x="361" y="410" width="148" height="34" rx="6" fill="#2a1f3a" stroke="#9f6ef5" stroke-width="2"/>
     <text x="435" y="425" text-anchor="middle" font-size="9" font-weight="700" fill="white">Step 12 ⚿ Processor</text>
-    <text x="435" y="437" text-anchor="middle" font-size="8" fill="#fed7aa">Key Updates in Processor · Aug 5</text>
-    <line x1="435" y1="444" x2="262" y2="460" stroke="#6b7280" stroke-width="1.2" marker-end="url(#arr2)"/>
+    <text x="435" y="437" text-anchor="middle" font-size="8" fill="#fcd34d">Key Updates in Processor · Aug 5</text>
+    <line x1="435" y1="444" x2="262" y2="460" stroke="#5a6a84" stroke-width="1.2" marker-end="url(#arr2)"/>
 
-    <rect x="188" y="450" width="148" height="34" rx="6" fill="#16a34a" stroke="#7c3aed" stroke-width="2"/>
+    <rect x="188" y="450" width="148" height="34" rx="6" fill="#1a3a2a" stroke="#9f6ef5" stroke-width="2"/>
     <text x="262" y="465" text-anchor="middle" font-size="9" font-weight="700" fill="white">Step 13 ⚿ Network</text>
-    <text x="262" y="477" text-anchor="middle" font-size="8" fill="#bbf7d0">Key Updates in Network · Aug 8</text>
+    <text x="262" y="477" text-anchor="middle" font-size="8" fill="#6ee7b7">Key Updates in Network · Aug 8</text>
 
-    <rect x="707" y="330" width="178" height="80" rx="6" fill="#ede9fe" stroke="#7c3aed" stroke-width="1"/>
-    <text x="796" y="348" text-anchor="middle" font-size="9" font-weight="700" fill="#6d28d9">⚿ Security Zone</text>
-    <text x="796" y="361" text-anchor="middle" font-size="8" fill="#7c3aed">Agent 3: AI emails DISABLED</text>
-    <text x="796" y="374" text-anchor="middle" font-size="8" fill="#7c3aed">PM manual approval required</text>
-    <text x="796" y="387" text-anchor="middle" font-size="8" fill="#7c3aed">Agent 4: Dependency check ON</text>
-    <text x="796" y="400" text-anchor="middle" font-size="8" fill="#7c3aed">Dual authorisation required</text>
+    <rect x="707" y="330" width="178" height="80" rx="6" fill="rgba(159,110,245,0.1)" stroke="rgba(159,110,245,0.3)" stroke-width="1"/>
+    <text x="796" y="348" text-anchor="middle" font-size="9" font-weight="700" fill="#9f6ef5">⚿ Security Zone</text>
+    <text x="796" y="361" text-anchor="middle" font-size="8" fill="#8b9ab4">Agent 3: AI emails DISABLED</text>
+    <text x="796" y="374" text-anchor="middle" font-size="8" fill="#8b9ab4">PM manual approval required</text>
+    <text x="796" y="387" text-anchor="middle" font-size="8" fill="#8b9ab4">Agent 4: Dependency check ON</text>
+    <text x="796" y="400" text-anchor="middle" font-size="8" fill="#9f6ef5">W3 · HHH — Harmless</text>
 
     <!-- PHASE D -->
-    <rect x="5" y="498" width="860" height="20" fill="#1a1f36" rx="4" opacity="0.85"/>
-    <text x="440" y="512" text-anchor="middle" font-size="10" font-weight="700" fill="white">PHASE D — SETTLEMENT &amp; BIN SETUP (Aug 2026)</text>
+    <rect x="5" y="498" width="860" height="20" fill="rgba(79,142,247,0.2)" rx="4"/>
+    <text x="440" y="512" text-anchor="middle" font-size="10" font-weight="700" fill="#4f8ef7">PHASE D — SETTLEMENT &amp; BIN SETUP (Aug 2026)</text>
 
-    <rect x="15" y="524" width="148" height="34" rx="6" fill="#2563eb"/>
+    <rect x="15" y="524" width="148" height="34" rx="6" fill="#1e3a5f"/>
     <text x="89" y="539" text-anchor="middle" font-size="9" font-weight="700" fill="white">Step 14 · Issuer</text>
-    <text x="89" y="551" text-anchor="middle" font-size="8" fill="#bfdbfe">Non Liability Letter · Aug 12</text>
-    <line x1="163" y1="541" x2="188" y2="541" stroke="#6b7280" stroke-width="1.2" marker-end="url(#arr2)"/>
+    <text x="89" y="551" text-anchor="middle" font-size="8" fill="#93c5fd">Non Liability Letter · Aug 12</text>
+    <line x1="163" y1="541" x2="188" y2="541" stroke="#5a6a84" stroke-width="1.2" marker-end="url(#arr2)"/>
 
-    <rect x="188" y="524" width="148" height="34" rx="6" fill="#16a34a"/>
+    <rect x="188" y="524" width="148" height="34" rx="6" fill="#1a3a2a"/>
     <text x="262" y="539" text-anchor="middle" font-size="9" font-weight="700" fill="white">Step 15 · Network</text>
-    <text x="262" y="551" text-anchor="middle" font-size="8" fill="#bbf7d0">Settlement End Pt Init · Aug 12</text>
-    <line x1="262" y1="558" x2="89" y2="574" stroke="#6b7280" stroke-width="1" marker-end="url(#arr2)"/>
+    <text x="262" y="551" text-anchor="middle" font-size="8" fill="#6ee7b7">Settlement End Pt Init · Aug 12</text>
+    <line x1="262" y1="558" x2="89" y2="574" stroke="#5a6a84" stroke-width="1" marker-end="url(#arr2)"/>
 
-    <rect x="15" y="564" width="148" height="34" rx="6" fill="#2563eb"/>
+    <rect x="15" y="564" width="148" height="34" rx="6" fill="#1e3a5f"/>
     <text x="89" y="579" text-anchor="middle" font-size="9" font-weight="700" fill="white">Step 16 · Issuer</text>
-    <text x="89" y="591" text-anchor="middle" font-size="8" fill="#bfdbfe">Settlement End Pt Approval · Aug 20</text>
-    <line x1="163" y1="581" x2="358" y2="607" stroke="#6b7280" stroke-width="1" marker-end="url(#arr2)"/>
+    <text x="89" y="591" text-anchor="middle" font-size="8" fill="#93c5fd">Settlement End Pt Approval · Aug 20</text>
+    <line x1="163" y1="581" x2="358" y2="607" stroke="#5a6a84" stroke-width="1" marker-end="url(#arr2)"/>
 
-    <rect x="188" y="604" width="320" height="34" rx="6" fill="#6b7280"/>
+    <rect x="188" y="604" width="320" height="34" rx="6" fill="#1c2230"/>
     <text x="348" y="619" text-anchor="middle" font-size="9" font-weight="700" fill="white">Step 17 · Network + Processor</text>
-    <text x="348" y="631" text-anchor="middle" font-size="8" fill="#e5e7eb">File Encryption Key Exchange · Aug 25</text>
-    <line x1="348" y1="638" x2="262" y2="654" stroke="#6b7280" stroke-width="1" marker-end="url(#arr2)"/>
+    <text x="348" y="631" text-anchor="middle" font-size="8" fill="#8b9ab4">File Encryption Key Exchange · Aug 25</text>
+    <line x1="348" y1="638" x2="262" y2="654" stroke="#5a6a84" stroke-width="1" marker-end="url(#arr2)"/>
 
-    <rect x="188" y="644" width="148" height="34" rx="6" fill="#16a34a"/>
+    <rect x="188" y="644" width="148" height="34" rx="6" fill="#1a3a2a"/>
     <text x="262" y="659" text-anchor="middle" font-size="9" font-weight="700" fill="white">Step 18 · Network</text>
-    <text x="262" y="671" text-anchor="middle" font-size="8" fill="#bbf7d0">BIN Setup Blocked State · Aug 28</text>
-    <line x1="262" y1="678" x2="262" y2="694" stroke="#16a34a" stroke-width="1.2" marker-end="url(#arr2-green)"/>
+    <text x="262" y="671" text-anchor="middle" font-size="8" fill="#6ee7b7">BIN Setup Blocked State · Aug 28</text>
+    <line x1="262" y1="678" x2="262" y2="694" stroke="#34d399" stroke-width="1.2" marker-end="url(#arr2-green)"/>
 
-    <rect x="188" y="684" width="148" height="34" rx="6" fill="#16a34a"/>
+    <rect x="188" y="684" width="148" height="34" rx="6" fill="#1a3a2a"/>
     <text x="262" y="699" text-anchor="middle" font-size="9" font-weight="700" fill="white">Step 19 · Network</text>
-    <text x="262" y="711" text-anchor="middle" font-size="8" fill="#bbf7d0">BIN &amp; Settlement Go Live · Aug 31</text>
+    <text x="262" y="711" text-anchor="middle" font-size="8" fill="#6ee7b7">BIN &amp; Settlement Go Live · Aug 31</text>
 
-    <rect x="707" y="524" width="178" height="60" rx="6" fill="#fef9c3" stroke="#d97706" stroke-width="1"/>
-    <text x="796" y="542" text-anchor="middle" font-size="9" font-weight="700" fill="#92400e">📧 Agent 3 Monitor</text>
-    <text x="796" y="555" text-anchor="middle" font-size="8" fill="#d97706">Steps 14–19: daily checks</text>
-    <text x="796" y="568" text-anchor="middle" font-size="8" fill="#d97706">DRI emails on overdue detection</text>
-    <text x="796" y="578" text-anchor="middle" font-size="8" fill="#d97706">Weekly exec summary: Amber</text>
+    <rect x="707" y="524" width="178" height="65" rx="6" fill="rgba(52,211,153,0.08)" stroke="rgba(52,211,153,0.3)" stroke-width="1"/>
+    <text x="796" y="542" text-anchor="middle" font-size="9" font-weight="700" fill="#34d399">📧 Agent 3 Monitor</text>
+    <text x="796" y="555" text-anchor="middle" font-size="8" fill="#8b9ab4">Steps 14–19: daily checks</text>
+    <text x="796" y="568" text-anchor="middle" font-size="8" fill="#8b9ab4">Perceive→Plan→Act loop</text>
+    <text x="796" y="581" text-anchor="middle" font-size="8" fill="#34d399">W3 · HHH + Agentic Skills</text>
 
     <!-- PHASE E -->
-    <rect x="5" y="730" width="860" height="20" fill="#1a1f36" rx="4" opacity="0.85"/>
-    <text x="440" y="744" text-anchor="middle" font-size="10" font-weight="700" fill="white">PHASE E — TOKENIZATION &amp; BIN ACTIVATION (Sep 2026)</text>
+    <rect x="5" y="730" width="860" height="20" fill="rgba(79,142,247,0.2)" rx="4"/>
+    <text x="440" y="744" text-anchor="middle" font-size="10" font-weight="700" fill="#4f8ef7">PHASE E — TOKENIZATION &amp; BIN ACTIVATION (Sep 2026)</text>
 
-    <rect x="188" y="756" width="148" height="34" rx="6" fill="#16a34a"/>
+    <rect x="188" y="756" width="148" height="34" rx="6" fill="#1a3a2a"/>
     <text x="262" y="771" text-anchor="middle" font-size="9" font-weight="700" fill="white">Step 20 · Network</text>
-    <text x="262" y="783" text-anchor="middle" font-size="8" fill="#bbf7d0">MDES Project Enablement · Sep 2</text>
-    <line x1="262" y1="790" x2="262" y2="806" stroke="#16a34a" stroke-width="1.2" marker-end="url(#arr2-green)"/>
+    <text x="262" y="783" text-anchor="middle" font-size="8" fill="#6ee7b7">MDES Project Enablement · Sep 2</text>
+    <line x1="262" y1="790" x2="262" y2="806" stroke="#34d399" stroke-width="1.2" marker-end="url(#arr2-green)"/>
 
-    <rect x="188" y="796" width="148" height="34" rx="6" fill="#16a34a"/>
+    <rect x="188" y="796" width="148" height="34" rx="6" fill="#1a3a2a"/>
     <text x="262" y="811" text-anchor="middle" font-size="9" font-weight="700" fill="white">Step 21 · Network</text>
-    <text x="262" y="823" text-anchor="middle" font-size="8" fill="#bbf7d0">Token BIN Assignment · Sep 4</text>
-    <line x1="262" y1="830" x2="262" y2="846" stroke="#16a34a" stroke-width="1.2" marker-end="url(#arr2-green)"/>
+    <text x="262" y="823" text-anchor="middle" font-size="8" fill="#6ee7b7">Token BIN Assignment · Sep 4</text>
+    <line x1="262" y1="830" x2="262" y2="846" stroke="#34d399" stroke-width="1.2" marker-end="url(#arr2-green)"/>
 
-    <rect x="188" y="836" width="148" height="34" rx="6" fill="#16a34a"/>
+    <rect x="188" y="836" width="148" height="34" rx="6" fill="#1a3a2a"/>
     <text x="262" y="851" text-anchor="middle" font-size="9" font-weight="700" fill="white">Step 22 · Network</text>
-    <text x="262" y="863" text-anchor="middle" font-size="8" fill="#bbf7d0">Token BIN Live · Sep 8</text>
-    <line x1="262" y1="870" x2="89" y2="886" stroke="#6b7280" stroke-width="1" marker-end="url(#arr2)"/>
+    <text x="262" y="863" text-anchor="middle" font-size="8" fill="#6ee7b7">Token BIN Live · Sep 8</text>
+    <line x1="262" y1="870" x2="89" y2="886" stroke="#5a6a84" stroke-width="1" marker-end="url(#arr2)"/>
 
-    <rect x="15" y="876" width="148" height="34" rx="6" fill="#2563eb"/>
+    <rect x="15" y="876" width="148" height="34" rx="6" fill="#1e3a5f"/>
     <text x="89" y="891" text-anchor="middle" font-size="9" font-weight="700" fill="white">Step 23 · Issuer</text>
-    <text x="89" y="903" text-anchor="middle" font-size="8" fill="#bfdbfe">BIN Block Removal Init · Sep 9</text>
-    <line x1="163" y1="893" x2="188" y2="893" stroke="#6b7280" stroke-width="1.2" marker-end="url(#arr2)"/>
+    <text x="89" y="903" text-anchor="middle" font-size="8" fill="#93c5fd">BIN Block Removal Init · Sep 9</text>
+    <line x1="163" y1="893" x2="188" y2="893" stroke="#5a6a84" stroke-width="1.2" marker-end="url(#arr2)"/>
 
-    <rect x="188" y="876" width="148" height="34" rx="6" fill="#16a34a"/>
+    <rect x="188" y="876" width="148" height="34" rx="6" fill="#1a3a2a"/>
     <text x="262" y="891" text-anchor="middle" font-size="9" font-weight="700" fill="white">Step 24 · Network</text>
-    <text x="262" y="903" text-anchor="middle" font-size="8" fill="#bbf7d0">BIN Block Removal Done · Sep 13</text>
+    <text x="262" y="903" text-anchor="middle" font-size="8" fill="#6ee7b7">BIN Block Removal Done · Sep 13</text>
 
     <!-- PHASE F -->
-    <rect x="5" y="924" width="860" height="20" fill="#1a1f36" rx="4" opacity="0.85"/>
-    <text x="440" y="938" text-anchor="middle" font-size="10" font-weight="700" fill="white">PHASE F — CARD FULFILLMENT &amp; LAUNCH (Sep–Oct 2026)</text>
+    <rect x="5" y="924" width="860" height="20" fill="rgba(79,142,247,0.2)" rx="4"/>
+    <text x="440" y="938" text-anchor="middle" font-size="10" font-weight="700" fill="#4f8ef7">PHASE F — CARD FULFILLMENT &amp; LAUNCH (Sep–Oct 2026)</text>
 
-    <rect x="15" y="950" width="320" height="34" rx="6" fill="#1d4ed8"/>
+    <rect x="15" y="950" width="320" height="34" rx="6" fill="#1e3a5f"/>
     <text x="175" y="965" text-anchor="middle" font-size="9" font-weight="700" fill="white">Step 25 · Issuer + Processor</text>
-    <text x="175" y="977" text-anchor="middle" font-size="8" fill="#bfdbfe">Account Setup &amp; Card Ordering · Sep 20</text>
-    <line x1="175" y1="984" x2="435" y2="1000" stroke="#6b7280" stroke-width="1" marker-end="url(#arr2)"/>
-    <line x1="175" y1="984" x2="608" y2="1000" stroke="#6b7280" stroke-width="1" marker-end="url(#arr2)"/>
+    <text x="175" y="977" text-anchor="middle" font-size="8" fill="#93c5fd">Account Setup &amp; Card Ordering · Sep 20</text>
+    <line x1="175" y1="984" x2="435" y2="1000" stroke="#5a6a84" stroke-width="1" marker-end="url(#arr2)"/>
+    <line x1="175" y1="984" x2="608" y2="1000" stroke="#5a6a84" stroke-width="1" marker-end="url(#arr2)"/>
 
-    <rect x="361" y="990" width="320" height="34" rx="6" fill="#7c3aed"/>
+    <rect x="361" y="990" width="320" height="34" rx="6" fill="#1a1a3a"/>
     <text x="521" y="1005" text-anchor="middle" font-size="9" font-weight="700" fill="white">Step 26 · Embosser + Processor</text>
-    <text x="521" y="1017" text-anchor="middle" font-size="8" fill="#ddd6fe">Card Fulfillment &amp; Personalization · Sep 25</text>
-    <line x1="608" y1="1024" x2="608" y2="1040" stroke="#7c3aed" stroke-width="1.2" marker-end="url(#arr2-purple)"/>
+    <text x="521" y="1017" text-anchor="middle" font-size="8" fill="#c4b5fd">Card Fulfillment &amp; Personalization · Sep 25</text>
+    <line x1="608" y1="1024" x2="608" y2="1040" stroke="#9f6ef5" stroke-width="1.2" marker-end="url(#arr2-purple)"/>
 
-    <rect x="534" y="1030" width="148" height="34" rx="6" fill="#7c3aed"/>
+    <rect x="534" y="1030" width="148" height="34" rx="6" fill="#1a1a3a"/>
     <text x="608" y="1045" text-anchor="middle" font-size="9" font-weight="700" fill="white">Step 27 · Embosser</text>
-    <text x="608" y="1057" text-anchor="middle" font-size="8" fill="#ddd6fe">Card Shipping · Sep 28</text>
-    <line x1="608" y1="1064" x2="89" y2="1075" stroke="#6b7280" stroke-width="1" marker-end="url(#arr2)"/>
-    <line x1="608" y1="1064" x2="435" y2="1075" stroke="#6b7280" stroke-width="1" marker-end="url(#arr2)"/>
+    <text x="608" y="1057" text-anchor="middle" font-size="8" fill="#c4b5fd">Card Shipping · Sep 28</text>
+    <line x1="608" y1="1064" x2="89" y2="1075" stroke="#5a6a84" stroke-width="1" marker-end="url(#arr2)"/>
+    <line x1="608" y1="1064" x2="435" y2="1075" stroke="#5a6a84" stroke-width="1" marker-end="url(#arr2)"/>
 
-    <rect x="15" y="1065" width="148" height="28" rx="5" fill="#2563eb"/>
+    <rect x="15" y="1065" width="148" height="28" rx="5" fill="#1e3a5f"/>
     <text x="89" y="1082" text-anchor="middle" font-size="8" font-weight="700" fill="white">Steps 28–31 · Issuer + Processor</text>
-    <rect x="361" y="1065" width="148" height="28" rx="5" fill="#ea580c"/>
-    <text x="435" y="1082" text-anchor="middle" font-size="8" font-weight="700" fill="white">Activation · Validation · Settlement</text>
+    <rect x="361" y="1065" width="148" height="28" rx="5" fill="#2a1f0a"/>
+    <text x="435" y="1082" text-anchor="middle" font-size="8" font-weight="700" fill="#fcd34d">Activation · Validation · Settlement</text>
 
-    <rect x="707" y="950" width="178" height="100" rx="6" fill="#f0fdf4" stroke="#16a34a" stroke-width="1"/>
-    <text x="796" y="968" text-anchor="middle" font-size="9" font-weight="700" fill="#15803d">🤖 All Agents Active</text>
-    <text x="796" y="981" text-anchor="middle" font-size="8" fill="#16a34a">A2: "What's left before launch?"</text>
-    <text x="796" y="994" text-anchor="middle" font-size="8" fill="#d97706">A3: Daily DRI emails, exec summary</text>
-    <text x="796" y="1007" text-anchor="middle" font-size="8" fill="#ea580c">A4: Critical path = Steps 28→31</text>
-    <text x="796" y="1020" text-anchor="middle" font-size="8" fill="#ea580c">Milestone: Card Transaction Valid</text>
-    <text x="796" y="1033" text-anchor="middle" font-size="8" fill="#15803d">Risk score monitored nightly</text>
-    <text x="796" y="1046" text-anchor="middle" font-size="8" fill="#7c3aed">A1 tracker: 🟢 On Track → 🚀</text>
+    <rect x="707" y="950" width="178" height="110" rx="6" fill="rgba(52,211,153,0.08)" stroke="rgba(52,211,153,0.3)" stroke-width="1"/>
+    <text x="796" y="968" text-anchor="middle" font-size="9" font-weight="700" fill="#34d399">🤖 All Agents Active</text>
+    <text x="796" y="981" text-anchor="middle" font-size="8" fill="#4f8ef7">A2 RAG: "What's left to launch?"</text>
+    <text x="796" y="994" text-anchor="middle" font-size="8" fill="#34d399">A3 HHH emails: daily DRI alerts</text>
+    <text x="796" y="1007" text-anchor="middle" font-size="8" fill="#f59e0b">A4 Graph: Critical path 28→31</text>
+    <text x="796" y="1020" text-anchor="middle" font-size="8" fill="#f59e0b">SMART milestone: Card Valid</text>
+    <text x="796" y="1033" text-anchor="middle" font-size="8" fill="#8b9ab4">Risk score monitored nightly</text>
+    <text x="796" y="1046" text-anchor="middle" font-size="8" fill="#2dd4bf">W1+W2+W3 applied end-to-end</text>
   </svg>
 </div>
 
 <footer>
-  <p>Multi-Project Tracker PRD · Agentic Edition v2.0 · BIN Procurement Reference Implementation · May 2026 · Author: Robin Khatwani · Confidential — Internal Use Only</p>
-  <p style="margin-top:6px">POC data source: Project_Input_BIN_SS.xlsx (31 steps, Jun–Oct 2026) · Future: Smartsheet API (identical column format required)</p>
+  <p>AI-Powered Multi-Project Tracker · PRD v2.0 · Built on 3 Weeks of AI PM Learning · May 2026 · Author: Robin Khatwani</p>
+  <p style="margin-top:6px">W1: Tokens · RAG · Grounding &nbsp;|&nbsp; W2: Agentic RAG · Context Management &nbsp;|&nbsp; W3: Knowledge Graph · HHH · Precision/Recall · AI Risks</p>
+  <p style="margin-top:6px">POC data source: Project_Input_BIN_SS.xlsx (31 steps, Jun–Oct 2026)</p>
 </footer>
 
 </body>
