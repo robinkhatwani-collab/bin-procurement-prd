@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Week 4 – AI Learning Summary</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:            #0b0f1a;
+      --surface:       #111827;
+      --surface2:      #161d2e;
+      --surface3:      #1c2540;
+      --border:        rgba(255,255,255,0.08);
+      --border2:       rgba(255,255,255,0.13);
+      --text:          #f0f4ff;
+      --text-muted:    #8b9ab4;
+      --text-dim:      #5a6a84;
+      --primary:       #4f8ef7;
+      --primary-dim:   rgba(79,142,247,0.15);
+      --secondary:     #2dd4bf;
+      --secondary-dim: rgba(45,212,191,0.15);
+      --accent:        #f59e0b;
+      --accent-dim:    rgba(245,158,11,0.15);
+      --green:         #34d399;
+      --green-dim:     rgba(52,211,153,0.15);
+      --red:           #f87171;
+      --red-dim:       rgba(248,113,113,0.15);
+      --purple:        #9f6ef5;
+      --purple-dim:    rgba(159,110,245,0.15);
+      --rose:          #f472b6;
+      /* Week 4 theme — Amber (drives shared components via --w3 token) */
+      --w3:            #f59e0b;
+      --w3-dim:        rgba(245,158,11,0.15);
+      --w3-glow:       rgba(245,158,11,0.22);
+      --teal:          #2dd4bf;
+      --radius:        14px;
+      --shadow:        0 4px 24px rgba(0,0,0,0.35);
+    }
+
+    html, body { min-height: 100vh; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 70% 50% at 10% 10%, rgba(245,158,11,.09) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 45% at 90% 80%, rgba(79,142,247,.08) 0%, transparent 60%);
+      pointer-events: none; z-index: 0;
+    }
+
+    /* ── NAV ── */
+    .top-nav {
+      position: sticky; top: 0; z-index: 20;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 48px;
+      background: rgba(11,15,26,.88); backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+    .nav-logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, var(--w3), var(--primary)); border-radius: 8px; display: grid; place-items: center; font-size: 15px; }
+    .nav-logo-text { font-size: 15px; font-weight: 700; }
+    .nav-logo-text span { color: var(--w3); }
+    .back-btn {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 12px; font-weight: 600; color: var(--text-muted);
+      text-decoration: none; background: rgba(255,255,255,.04);
+      border: 1px solid var(--border); padding: 7px 14px; border-radius: 9px;
+      transition: all .2s;
+    }
+    .back-btn:hover { color: var(--text); background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.15); }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative; z-index: 1;
+      background: linear-gradient(135deg, #1c1407 0%, #2a1e09 50%, #0d1545 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 60px 40px 50px; text-align: center; overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(245,158,11,.2) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero .badge {
+      position: relative;
+      display: inline-block; background: rgba(245,158,11,.15); border: 1px solid rgba(245,158,11,.35);
+      border-radius: 999px; padding: 6px 18px; font-size: .78rem; letter-spacing: 1.5px;
+      text-transform: uppercase; margin-bottom: 18px; color: var(--w3); font-weight: 600;
+    }
+    .hero h1 {
+      position: relative; font-size: clamp(1.9rem, 4vw, 2.8rem); font-weight: 800;
+      margin-bottom: 14px; letter-spacing: -.5px;
+      background: linear-gradient(135deg, #fff 30%, var(--w3) 70%, var(--primary));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .hero p { position: relative; font-size: 1.05rem; color: var(--text-muted); max-width: 620px; margin: 0 auto 28px; }
+    .hero .topics-count {
+      position: relative;
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,.07); border: 1px solid var(--border2);
+      border-radius: 999px; padding: 8px 20px; font-size: .9rem; color: var(--text-muted); font-weight: 500;
+    }
+
+    /* ── LEARNING PATH NAV ── */
+    .path-wrapper {
+      position: relative; z-index: 1;
+      background: var(--surface); border-bottom: 1px solid var(--border); padding: 26px 40px;
+    }
+    .path-wrapper h2 { font-size: .78rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 16px; font-weight: 700; }
+    .path-phases { display: flex; gap: 0; flex-wrap: wrap; }
+    .phase-block { flex: 1; min-width: 200px; position: relative; }
+    .phase-block:not(:last-child)::after { content: '›'; position: absolute; right: -10px; top: 50%; transform: translateY(-50%); font-size: 1.4rem; color: var(--text-dim); z-index: 1; }
+    .phase-inner { background: var(--surface2); border-radius: 10px; padding: 12px 14px; margin: 0 18px 0 0; border: 1px solid var(--border); }
+    .phase-block:last-child .phase-inner { margin-right: 0; }
+    .phase-label { font-size: .7rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 6px; }
+    .phase-topics a { color: var(--text-muted); text-decoration: none; display: block; padding: 1px 0; font-size: .78rem; line-height: 1.5; transition: color .2s; }
+    .phase-topics a:hover { color: var(--w3); }
+    .ph1 .phase-label { color: #fbbf24; } .ph1 .phase-inner { border-left: 3px solid #d97706; }
+    .ph2 .phase-label { color: #60a5fa; } .ph2 .phase-inner { border-left: 3px solid #2563eb; }
+    .ph3 .phase-label { color: #a78bfa; } .ph3 .phase-inner { border-left: 3px solid #7c3aed; }
+    .ph4 .phase-label { color: #34d399; } .ph4 .phase-inner { border-left: 3px solid #059669; }
+
+    /* ── MAIN CONTENT ── */
+    .main { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 40px 32px 80px; }
+
+    /* ── PHASE DIVIDER ── */
+    .phase-divider { display: flex; align-items: center; gap: 16px; margin: 48px 0 32px; }
+    .pd-badge { display: inline-flex; align-items: center; gap: 8px; font-size: .78rem; font-weight: 700; padding: 7px 16px; border-radius: 999px; white-space: nowrap; letter-spacing: .3px; }
+    .pd-1 { background: rgba(245,158,11,.15);  color: #fbbf24; border: 1px solid rgba(245,158,11,.3); }
+    .pd-2 { background: rgba(79,142,247,.15);  color: #60a5fa; border: 1px solid rgba(79,142,247,.3); }
+    .pd-3 { background: rgba(159,110,245,.15); color: #a78bfa; border: 1px solid rgba(159,110,245,.3); }
+    .pd-4 { background: rgba(52,211,153,.15);  color: #34d399; border: 1px solid rgba(52,211,153,.3); }
+    .pd-line { flex: 1; height: 1px; background: var(--border2); }
+
+    /* ── CARDS ── */
+    .card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 28px 30px; box-shadow: var(--shadow); margin-bottom: 22px; }
+    .card-header { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+    .card-icon-wrap { width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; font-size: 1.3rem; flex-shrink: 0; }
+    .card-section-label { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-dim); margin-bottom: 3px; }
+    .card-title { font-size: 1.12rem; font-weight: 800; letter-spacing: -.2px; }
+    .card p { color: var(--text-muted); font-size: .92rem; line-height: 1.75; margin-bottom: 14px; }
+    .card p:last-child { margin-bottom: 0; }
+    strong { color: var(--text); font-weight: 700; }
+
+    /* ── CALLOUTS ── */
+    .callout { border-radius: 10px; padding: 16px 20px; margin: 18px 0; font-size: .88rem; line-height: 1.7; }
+    .callout-teal   { background: rgba(45,212,191,.1);  border: 1px solid rgba(45,212,191,.25);  border-left: 3px solid var(--teal); color: var(--text-muted); }
+    .callout-blue   { background: rgba(79,142,247,.1);  border: 1px solid rgba(79,142,247,.25);  border-left: 3px solid var(--primary); color: var(--text-muted); }
+    .callout-green  { background: rgba(52,211,153,.1);  border: 1px solid rgba(52,211,153,.25);  border-left: 3px solid var(--green); color: var(--text-muted); }
+    .callout-amber  { background: rgba(245,158,11,.1);  border: 1px solid rgba(245,158,11,.25);  border-left: 3px solid var(--accent); color: var(--text-muted); }
+    .callout-purple { background: rgba(159,110,245,.1); border: 1px solid rgba(159,110,245,.25); border-left: 3px solid var(--purple); color: var(--text-muted); }
+    .callout-red    { background: rgba(248,113,113,.1); border: 1px solid rgba(248,113,113,.25); border-left: 3px solid var(--red); color: var(--text-muted); }
+    .callout-title  { font-weight: 700; color: var(--text); margin-bottom: 6px; font-size: .82rem; text-transform: uppercase; letter-spacing: .8px; }
+
+    /* ── ANALOGY TABLE ── */
+    .analogy-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: .85rem; }
+    .analogy-table thead tr { background: var(--surface2); }
+    .analogy-table th { padding: 10px 14px; text-align: left; font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--text-dim); border-bottom: 1px solid var(--border2); }
+    .analogy-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text-muted); vertical-align: top; }
+    .analogy-table tbody tr:last-child td { border-bottom: none; }
+    .analogy-table tbody tr:hover { background: rgba(255,255,255,.02); }
+    .analogy-table td:first-child { color: var(--w3); font-weight: 700; }
+
+    /* ── KEY TAKEAWAYS ── */
+    .takeaway-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-top: 18px; }
+    .takeaway-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+    .takeaway-num { font-size: 1.4rem; font-weight: 800; color: var(--w3); line-height: 1; margin-bottom: 6px; }
+    .takeaway-text { font-size: .82rem; color: var(--text-muted); line-height: 1.6; }
+
+    /* ── DIAGRAM CARD ── */
+    .diagram-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin: 16px 0; }
+    .diagram-card { background: var(--surface2); border: 1px solid var(--border2); border-radius: 12px; padding: 18px 18px 14px; }
+    .diagram-card-title { font-size: .8rem; font-weight: 800; text-transform: uppercase; letter-spacing: .6px; margin-bottom: 4px; }
+    .diagram-card-sub { font-size: .76rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.5; }
+    .diagram-card svg { width: 100%; height: auto; display: block; overflow: visible; }
+
+    /* ── CASE STUDY EXPANDERS ── */
+    .case { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 9px; overflow: hidden; }
+    .case > summary { cursor: pointer; list-style: none; padding: 12px 16px; display: flex; align-items: center; gap: 10px; font-size: .86rem; font-weight: 600; color: var(--text); transition: background .2s; }
+    .case > summary::-webkit-details-marker { display: none; }
+    .case > summary::after { content: '+'; margin-left: auto; color: var(--text-dim); font-size: 1.15rem; font-weight: 700; }
+    .case[open] > summary::after { content: '\2013'; }
+    .case > summary:hover { background: rgba(255,255,255,.03); }
+    .case-body { padding: 4px 16px 15px; font-size: .82rem; color: var(--text-muted); line-height: 1.7; }
+    .case-body strong { color: var(--text); }
+    .case-tag { font-size: .62rem; font-weight: 800; text-transform: uppercase; letter-spacing: .6px; padding: 3px 9px; border-radius: 6px; flex-shrink: 0; }
+    .tag-single { background: rgba(45,212,191,.15); color: #2dd4bf; border: 1px solid rgba(45,212,191,.3); }
+    .tag-multi  { background: rgba(245,158,11,.15); color: #fbbf24; border: 1px solid rgba(245,158,11,.3); }
+
+    /* ── CODE BLOCK ── */
+    .code-block { background: var(--surface2); border: 1px solid var(--border2); border-radius: 10px; padding: 16px 18px; font-family: 'Courier New', monospace; font-size: .8rem; color: #a5b4fc; line-height: 1.7; margin: 14px 0; overflow-x: auto; white-space: pre; }
+
+    /* ── OAS INTERACTIVE DEMO ── */
+    .oas-demo { display: grid; grid-template-columns: 1fr 1.15fr; gap: 14px; margin: 18px 0; }
+    .oas-spec, .oas-chat { background: var(--surface2); border: 1px solid var(--border2); border-radius: 12px; padding: 14px; }
+    .oas-spec-title { font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .6px; color: var(--text-dim); margin-bottom: 10px; }
+    .oas-ep { font-family: 'Courier New', monospace; font-size: .76rem; color: var(--text-muted); background: var(--surface3); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; margin-bottom: 7px; transition: all .25s; }
+    .oas-ep:last-child { margin-bottom: 0; }
+    .oas-ep .ep-desc { color: var(--text-dim); }
+    .oas-ep.hit { border-color: var(--primary); background: rgba(79,142,247,.14); color: var(--text); box-shadow: 0 0 0 1px rgba(79,142,247,.3); }
+    .m { font-weight: 700; padding: 1px 6px; border-radius: 5px; font-size: .68rem; margin-right: 4px; }
+    .m-get  { background: rgba(52,211,153,.18); color: #34d399; }
+    .m-post { background: rgba(245,158,11,.18); color: #fbbf24; }
+    .oas-transcript { height: 236px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 4px; margin-bottom: 10px; }
+    .oas-hint { color: var(--text-dim); font-size: .8rem; text-align: center; margin: auto; padding: 0 10px; }
+    .step { background: var(--surface3); border: 1px solid var(--border); border-radius: 9px; padding: 8px 11px; }
+    .step-label { font-size: .64rem; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; color: var(--text-dim); margin-bottom: 3px; }
+    .step-content { font-size: .82rem; color: var(--text-muted); line-height: 1.5; }
+    .step.you { background: rgba(79,142,247,.1); border-color: rgba(79,142,247,.25); }
+    .step.answer { background: rgba(52,211,153,.1); border-color: rgba(52,211,153,.25); }
+    .step.muted .step-content { color: var(--text-dim); }
+    .mono { font-family: 'Courier New', monospace; color: #a5b4fc; font-size: .78rem; }
+    .oas-presets { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+    .oas-presets button { background: rgba(255,255,255,.05); border: 1px solid var(--border2); color: var(--text-muted); font-size: .74rem; font-weight: 600; padding: 6px 11px; border-radius: 8px; cursor: pointer; transition: all .2s; font-family: inherit; }
+    .oas-presets button:hover { color: var(--text); border-color: var(--primary); background: rgba(79,142,247,.12); }
+    .oas-inputrow { display: flex; gap: 7px; }
+    .oas-inputrow input { flex: 1; background: var(--surface3); border: 1px solid var(--border2); border-radius: 8px; padding: 8px 11px; color: var(--text); font-size: .8rem; font-family: inherit; }
+    .oas-inputrow input:focus { outline: none; border-color: var(--primary); }
+    .oas-inputrow button { background: linear-gradient(135deg, var(--w3), var(--primary)); border: none; color: #0b0f1a; font-weight: 700; font-size: .78rem; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-family: inherit; }
+
+    /* ── FOOTER ── */
+    footer { margin-top: auto; text-align: center; padding: 24px; font-size: .75rem; color: var(--text-muted); border-top: 1px solid var(--border); position: relative; z-index: 1; }
+    footer span { color: var(--w3); }
+
+    @media (max-width: 640px) {
+      .top-nav { padding: 14px 18px; }
+      .main { padding: 28px 18px 60px; }
+      .path-wrapper { padding: 18px; }
+      .hero { padding: 44px 20px 36px; }
+      .path-phases { flex-direction: column; gap: 10px; }
+      .phase-block:not(:last-child)::after { display: none; }
+      .phase-inner { margin-right: 0; }
+      .oas-demo { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav class="top-nav">
+  <a class="nav-logo" href="default.html">
+    <div class="nav-logo-icon">🤖</div>
+    <div class="nav-logo-text">AI <span>PM</span> Tool</div>
+  </a>
+  <a class="back-btn" href="ai-learning.html">← AI Learning Hub</a>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="badge">Week 4 · Multi-Agent Systems</div>
+  <h1>Multi-Agent Systems & Architectures</h1>
+  <p>How multiple AI agents collaborate as a system — orchestrator-worker design, sub-agents, tools, shared memory, the six core architecture patterns, and how to choose between them.</p>
+  <div class="topics-count">🤝 10 Topics &nbsp;·&nbsp; 4 Phases &nbsp;·&nbsp; Agent Architecture Lens</div>
+</section>
+
+<!-- ── LEARNING PATH ── -->
+<div class="path-wrapper">
+  <h2>📍 Week 4 Learning Path</h2>
+  <div class="path-phases">
+    <div class="phase-block ph1">
+      <div class="phase-inner">
+        <div class="phase-label">Phase 1 — Foundations</div>
+        <div class="phase-topics">
+          <a href="#what-is-multi-agent">What is Multi-Agent?</a>
+          <a href="#core-architecture">Core Architecture</a>
+          <a href="#agent-memory">Memory: Shared vs Own</a>
+          <a href="#why-multi-agent">Why Multi-Agent?</a>
+        </div>
+      </div>
+    </div>
+    <div class="phase-block ph2">
+      <div class="phase-inner">
+        <div class="phase-label">Phase 2 — Patterns & Types</div>
+        <div class="phase-topics">
+          <a href="#common-patterns">Common Patterns</a>
+          <a href="#agent-types">The 6 Architecture Types</a>
+        </div>
+      </div>
+    </div>
+    <div class="phase-block ph3">
+      <div class="phase-inner">
+        <div class="phase-label">Phase 3 — Decision & Reference</div>
+        <div class="phase-topics">
+          <a href="#single-vs-multi">Single vs Multi & Cases</a>
+          <a href="#agent-diagrams">Architecture Diagrams</a>
+        </div>
+      </div>
+    </div>
+    <div class="phase-block ph4">
+      <div class="phase-inner">
+        <div class="phase-label">Phase 4 — OpenAPI & Tool Use</div>
+        <div class="phase-topics">
+          <a href="#what-is-oas">What is OAS?</a>
+          <a href="#models-use-oas">How Models Use OAS</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── MAIN ── -->
+<div class="main">
+
+  <!-- ════════════════════════════
+       PHASE 1 — FOUNDATIONS
+       ════════════════════════════ -->
+  <div class="phase-divider">
+    <span class="pd-badge pd-1">🤝 Phase 1 — Multi-Agent Foundations</span>
+    <div class="pd-line"></div>
+  </div>
+
+  <!-- What is Multi-Agent -->
+  <div class="card" id="what-is-multi-agent">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.25);">🤝</div>
+      <div>
+        <div class="card-section-label">Topic 1 of 10</div>
+        <div class="card-title">What is a Multi-Agent System?</div>
+      </div>
+    </div>
+
+    <p>A <strong>Multi-Agent system</strong> is a setup where multiple AI agents work together to complete a complex task — each agent handling a specific piece, rather than one agent doing everything.</p>
+
+    <div class="callout callout-amber">
+      <div class="callout-title">🏢 The Company Analogy</div>
+      Think of it like a company: the <strong>CEO (orchestrator)</strong> doesn't do all the work — they delegate to specialists. Each specialist (sub-agent) does one job well, and the CEO synthesises everyone's output into the final result.
+    </div>
+
+    <p>The key insight is that multi-agent isn't just "more agents" — it's about <strong>separation of concerns, parallelism, and specialisation</strong>. Each agent does one thing well, and the orchestrator makes them work as a coordinated system.</p>
+  </div>
+
+  <!-- Core Architecture -->
+  <div class="card" id="core-architecture">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.25);">🏗️</div>
+      <div>
+        <div class="card-section-label">Topic 2 of 10</div>
+        <div class="card-title">Core Architecture</div>
+      </div>
+    </div>
+
+    <p>Every multi-agent system is built from four core building blocks. Together they let independent agents collaborate without ever talking to each other directly.</p>
+
+    <div style="display:flex;flex-direction:column;gap:10px;margin:16px 0;">
+
+      <div style="background:var(--surface2);border:1px solid rgba(245,158,11,.2);border-left:4px solid var(--accent);border-radius:10px;padding:14px 18px;">
+        <div style="font-size:.74rem;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--accent);margin-bottom:4px;">🧠 Orchestrator Agent</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">The "brain." It receives the user's goal, breaks it into subtasks, assigns them to the right agents, and synthesises the final output.</div>
+      </div>
+
+      <div style="background:var(--surface2);border:1px solid rgba(79,142,247,.2);border-left:4px solid var(--primary);border-radius:10px;padding:14px 18px;">
+        <div style="font-size:.74rem;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--primary);margin-bottom:4px;">👷 Sub-Agents</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">Specialised workers. Each has a narrow job (research, code, writing, analysis…) and the tools needed for it. They don't know about each other — they just receive a task and return a result.</div>
+      </div>
+
+      <div style="background:var(--surface2);border:1px solid rgba(159,110,245,.2);border-left:4px solid var(--purple);border-radius:10px;padding:14px 18px;">
+        <div style="font-size:.74rem;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--purple);margin-bottom:4px;">🔧 Tools</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">What agents act on: web search, file systems, browsers, databases, code execution, APIs. Tools are what give agents real-world capability.</div>
+      </div>
+
+      <div style="background:var(--surface2);border:1px solid rgba(45,212,191,.2);border-left:4px solid var(--teal);border-radius:10px;padding:14px 18px;">
+        <div style="font-size:.74rem;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--teal);margin-bottom:4px;">🗂️ Shared Memory / Context Store</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">A shared scratchpad. Agents write their intermediate results here; the orchestrator reads it to synthesise everything. This is how agents "collaborate" without directly talking to each other.</div>
+      </div>
+
+    </div>
+
+    <!-- Core architecture diagram -->
+    <div class="diagram-card" style="margin-top:6px;">
+      <div class="diagram-card-title" style="color:var(--accent);">Orchestrator → Sub-Agents → Tools</div>
+      <div class="diagram-card-sub">The orchestrator delegates to sub-agents, each wired to its own tools; everyone reads &amp; writes the shared memory.</div>
+      <svg viewBox="0 0 460 270" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="ca-amber" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#f59e0b"/></marker>
+          <marker id="ca-blue" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#4f8ef7"/></marker>
+          <marker id="ca-teal" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#2dd4bf"/></marker>
+        </defs>
+        <!-- user -->
+        <text x="230" y="18" text-anchor="middle" fill="#8b9ab4" font-size="11" font-family="Inter,sans-serif">User Goal ↓</text>
+        <!-- orchestrator -->
+        <rect x="160" y="28" width="140" height="40" rx="9" fill="rgba(245,158,11,.14)" stroke="#f59e0b" stroke-width="1.5"/>
+        <text x="230" y="53" text-anchor="middle" fill="#f0f4ff" font-size="13" font-weight="700" font-family="Inter,sans-serif">🧠 Orchestrator</text>
+        <!-- lines to subagents -->
+        <line x1="200" y1="68" x2="80" y2="118" stroke="#4f8ef7" stroke-width="1.6" marker-end="url(#ca-blue)"/>
+        <line x1="230" y1="68" x2="230" y2="118" stroke="#4f8ef7" stroke-width="1.6" marker-end="url(#ca-blue)"/>
+        <line x1="260" y1="68" x2="380" y2="118" stroke="#4f8ef7" stroke-width="1.6" marker-end="url(#ca-blue)"/>
+        <!-- subagents -->
+        <rect x="22" y="120" width="116" height="38" rx="8" fill="rgba(79,142,247,.13)" stroke="#4f8ef7" stroke-width="1.3"/>
+        <text x="80" y="144" text-anchor="middle" fill="#f0f4ff" font-size="11.5" font-weight="600" font-family="Inter,sans-serif">👷 Research</text>
+        <rect x="172" y="120" width="116" height="38" rx="8" fill="rgba(79,142,247,.13)" stroke="#4f8ef7" stroke-width="1.3"/>
+        <text x="230" y="144" text-anchor="middle" fill="#f0f4ff" font-size="11.5" font-weight="600" font-family="Inter,sans-serif">👷 Code</text>
+        <rect x="322" y="120" width="116" height="38" rx="8" fill="rgba(79,142,247,.13)" stroke="#4f8ef7" stroke-width="1.3"/>
+        <text x="380" y="144" text-anchor="middle" fill="#f0f4ff" font-size="11.5" font-weight="600" font-family="Inter,sans-serif">👷 Writing</text>
+        <!-- tools -->
+        <line x1="80" y1="158" x2="80" y2="188" stroke="#9f6ef5" stroke-width="1.4" marker-end="url(#ca-amber)" opacity="0"/>
+        <line x1="80" y1="158" x2="80" y2="186" stroke="#9f6ef5" stroke-width="1.4"/>
+        <line x1="230" y1="158" x2="230" y2="186" stroke="#9f6ef5" stroke-width="1.4"/>
+        <line x1="380" y1="158" x2="380" y2="186" stroke="#9f6ef5" stroke-width="1.4"/>
+        <rect x="34" y="188" width="92" height="30" rx="7" fill="rgba(159,110,245,.12)" stroke="#9f6ef5" stroke-width="1.1"/>
+        <text x="80" y="207" text-anchor="middle" fill="#cdb8fb" font-size="10.5" font-family="Inter,sans-serif">🔧 Web Search</text>
+        <rect x="184" y="188" width="92" height="30" rx="7" fill="rgba(159,110,245,.12)" stroke="#9f6ef5" stroke-width="1.1"/>
+        <text x="230" y="207" text-anchor="middle" fill="#cdb8fb" font-size="10.5" font-family="Inter,sans-serif">🔧 Code Exec</text>
+        <rect x="334" y="188" width="92" height="30" rx="7" fill="rgba(159,110,245,.12)" stroke="#9f6ef5" stroke-width="1.1"/>
+        <text x="380" y="207" text-anchor="middle" fill="#cdb8fb" font-size="10.5" font-family="Inter,sans-serif">🔧 Files / API</text>
+        <!-- shared memory -->
+        <rect x="60" y="238" width="340" height="26" rx="8" fill="rgba(45,212,191,.12)" stroke="#2dd4bf" stroke-width="1.3" stroke-dasharray="5 3"/>
+        <text x="230" y="255" text-anchor="middle" fill="#7fe9da" font-size="11" font-weight="600" font-family="Inter,sans-serif">🗂️ Shared Memory / Context Store</text>
+        <!-- subagent ↔ shared memory -->
+        <line x1="80" y1="218" x2="120" y2="238" stroke="#2dd4bf" stroke-width="1.2" marker-end="url(#ca-teal)"/>
+        <line x1="230" y1="218" x2="230" y2="238" stroke="#2dd4bf" stroke-width="1.2" marker-end="url(#ca-teal)"/>
+        <line x1="380" y1="218" x2="340" y2="238" stroke="#2dd4bf" stroke-width="1.2" marker-end="url(#ca-teal)"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Memory in Multi-Agent Systems -->
+  <div class="card" id="agent-memory">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(45,212,191,.15);border:1px solid rgba(45,212,191,.25);">🧠</div>
+      <div>
+        <div class="card-section-label">Topic 3 of 10</div>
+        <div class="card-title">Memory in Multi-Agent Systems — Shared vs Own</div>
+      </div>
+    </div>
+
+    <p>In a multi-agent system, memory comes in <strong>two layers</strong>. Each agent has its <strong>own (private) memory</strong> — its personal working context — and the system has a <strong>shared memory</strong> that everyone reads from and writes to. Getting the split right is what makes agents both <em>focused</em> and <em>collaborative</em>.</p>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;margin:16px 0;">
+      <div style="background:var(--surface2);border:1px solid rgba(79,142,247,.2);border-top:3px solid var(--primary);border-radius:10px;padding:15px 17px;">
+        <div style="font-size:.76rem;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--primary);margin-bottom:6px;">🔒 Own / Private Memory</div>
+        <div style="font-size:.82rem;color:var(--text-muted);line-height:1.6;">Each agent's personal scratchpad — its task instructions, reasoning, and intermediate thinking. Invisible to other agents. Keeps each agent's context lean and focused, with no cross-talk noise.</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid rgba(45,212,191,.2);border-top:3px solid var(--teal);border-radius:10px;padding:15px 17px;">
+        <div style="font-size:.76rem;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--teal);margin-bottom:6px;">🗂️ Shared Memory</div>
+        <div style="font-size:.82rem;color:var(--text-muted);line-height:1.6;">A common store (context store / blackboard) that all agents and the orchestrator can access. Holds the task state and the <em>distilled results</em> agents publish. This is how agents collaborate without talking directly.</div>
+      </div>
+    </div>
+
+    <!-- Memory diagram -->
+    <div class="diagram-card" style="margin:6px 0 18px;">
+      <div class="diagram-card-title" style="color:var(--teal);">How Memory Flows</div>
+      <div class="diagram-card-sub">Each agent reasons in its own private memory, then publishes only the result to shared memory. The orchestrator reads shared memory to synthesise.</div>
+      <svg viewBox="0 0 460 250" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="mem-teal" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#2dd4bf"/></marker>
+        </defs>
+        <!-- agents row -->
+        <g>
+          <rect x="18" y="16" width="124" height="40" rx="9" fill="rgba(79,142,247,.14)" stroke="#4f8ef7" stroke-width="1.4"/>
+          <text x="80" y="41" text-anchor="middle" fill="#f0f4ff" font-size="12" font-weight="700" font-family="Inter,sans-serif">👷 Agent A</text>
+          <rect x="168" y="16" width="124" height="40" rx="9" fill="rgba(79,142,247,.14)" stroke="#4f8ef7" stroke-width="1.4"/>
+          <text x="230" y="41" text-anchor="middle" fill="#f0f4ff" font-size="12" font-weight="700" font-family="Inter,sans-serif">👷 Agent B</text>
+          <rect x="318" y="16" width="124" height="40" rx="9" fill="rgba(79,142,247,.14)" stroke="#4f8ef7" stroke-width="1.4"/>
+          <text x="380" y="41" text-anchor="middle" fill="#f0f4ff" font-size="12" font-weight="700" font-family="Inter,sans-serif">👷 Agent C</text>
+        </g>
+        <!-- private memory under each -->
+        <g>
+          <rect x="30" y="66" width="100" height="26" rx="7" fill="rgba(79,142,247,.07)" stroke="#4f8ef7" stroke-width="1" stroke-dasharray="4 3"/>
+          <text x="80" y="83" text-anchor="middle" fill="#9db8ef" font-size="9.5" font-family="Inter,sans-serif">🔒 private memory</text>
+          <rect x="180" y="66" width="100" height="26" rx="7" fill="rgba(79,142,247,.07)" stroke="#4f8ef7" stroke-width="1" stroke-dasharray="4 3"/>
+          <text x="230" y="83" text-anchor="middle" fill="#9db8ef" font-size="9.5" font-family="Inter,sans-serif">🔒 private memory</text>
+          <rect x="330" y="66" width="100" height="26" rx="7" fill="rgba(79,142,247,.07)" stroke="#4f8ef7" stroke-width="1" stroke-dasharray="4 3"/>
+          <text x="380" y="83" text-anchor="middle" fill="#9db8ef" font-size="9.5" font-family="Inter,sans-serif">🔒 private memory</text>
+        </g>
+        <!-- read/write arrows to shared memory -->
+        <line x1="80" y1="92" x2="120" y2="158" stroke="#2dd4bf" stroke-width="1.3" marker-start="url(#mem-teal)" marker-end="url(#mem-teal)"/>
+        <line x1="230" y1="92" x2="230" y2="158" stroke="#2dd4bf" stroke-width="1.3" marker-start="url(#mem-teal)" marker-end="url(#mem-teal)"/>
+        <line x1="380" y1="92" x2="340" y2="158" stroke="#2dd4bf" stroke-width="1.3" marker-start="url(#mem-teal)" marker-end="url(#mem-teal)"/>
+        <text x="300" y="128" text-anchor="middle" fill="#8b9ab4" font-size="9" font-family="Inter,sans-serif">read / write</text>
+        <!-- shared memory -->
+        <rect x="70" y="160" width="320" height="42" rx="10" fill="rgba(45,212,191,.13)" stroke="#2dd4bf" stroke-width="1.6" stroke-dasharray="6 3"/>
+        <text x="230" y="186" text-anchor="middle" fill="#f0f4ff" font-size="12" font-weight="700" font-family="Inter,sans-serif">🗂️ Shared Memory / Context Store</text>
+        <!-- orchestrator reads shared -->
+        <line x1="230" y1="202" x2="230" y2="226" stroke="#f59e0b" stroke-width="1.4" marker-end="url(#mem-teal)"/>
+        <rect x="150" y="226" width="160" height="20" rx="7" fill="rgba(245,158,11,.13)" stroke="#f59e0b" stroke-width="1.2"/>
+        <text x="230" y="240" text-anchor="middle" fill="#fbbf24" font-size="9.5" font-weight="600" font-family="Inter,sans-serif">🧠 Orchestrator synthesises</text>
+      </svg>
+    </div>
+
+    <p>The two layers are easiest to compare side by side:</p>
+
+    <table class="analogy-table">
+      <thead><tr><th style="width:22%;">Dimension</th><th>🔒 Own / Private Memory</th><th>🗂️ Shared Memory</th></tr></thead>
+      <tbody>
+        <tr><td>Scope</td><td>One agent only</td><td>All agents + the orchestrator</td></tr>
+        <tr><td>Holds</td><td>Task prompt, reasoning, scratch work</td><td>Task state &amp; the distilled results agents publish</td></tr>
+        <tr><td>Visibility</td><td>Invisible to peers</td><td>Readable by everyone</td></tr>
+        <tr><td>Benefit</td><td>Lean context, focus, no cross-talk noise</td><td>Collaboration &amp; a single source of truth</td></tr>
+        <tr><td>Risk</td><td>Results are lost unless written out</td><td>Can bloat; needs write discipline &amp; consistency</td></tr>
+        <tr><td>Use it for</td><td>An agent's internal thinking</td><td>Handing results between agents</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-teal">
+      <div class="callout-title">🔑 The Golden Pattern</div>
+      Agents <strong>reason privately, publish publicly</strong>. Keep each agent's raw thinking in its own memory to stay focused and cheap — then write only the <em>clean, distilled result</em> to shared memory so others can build on it. Dumping everything into shared memory bloats context and confuses every agent.
+    </div>
+
+    <div class="callout callout-amber">
+      <div class="callout-title">💡 PM Tip — Persistence &amp; Privacy</div>
+      Decide early what lives where: short-term working memory (per agent), shared task memory (this run), and long-term memory (a database / vector store that persists across sessions). And remember — if PII enters shared memory, <em>every</em> agent and tool can see it. Scope sensitive data to private memory.
+    </div>
+  </div>
+
+  <!-- Why Multi-Agent -->
+  <div class="card" id="why-multi-agent">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.25);">⚖️</div>
+      <div>
+        <div class="card-section-label">Topic 4 of 10</div>
+        <div class="card-title">Why Multi-Agent over Single Agent?</div>
+      </div>
+    </div>
+
+    <p>A single agent is simpler, but it hits walls as tasks grow. Multi-agent design exists to solve four specific limitations of the single-agent approach.</p>
+
+    <table class="analogy-table">
+      <thead>
+        <tr>
+          <th style="width:46%;">Problem with Single Agent</th>
+          <th>How Multi-Agent Solves It</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Context window fills up on long tasks</td><td>Each agent handles a chunk, keeping its own context lean</td></tr>
+        <tr><td>One agent can't specialise in everything</td><td>Dedicated agents per domain, each expert at one thing</td></tr>
+        <tr><td>Serial bottleneck — one step at a time</td><td>Agents can run in parallel, cutting wall-clock time</td></tr>
+        <tr><td>Hard to debug a single long trace</td><td>Each agent's output is isolated and inspectable</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-amber">
+      <div class="callout-title">💡 PM Tip</div>
+      Don't reach for multi-agent by default — it adds orchestration cost and failure modes. Use it when you genuinely need <strong>specialisation, parallelism, or long-context relief</strong>. If a single well-prompted agent meets the requirement, ship that first.
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════
+       PHASE 2 — PATTERNS & TYPES
+       ════════════════════════════ -->
+  <div class="phase-divider">
+    <span class="pd-badge pd-2">🧩 Phase 2 — Patterns & Architecture Types</span>
+    <div class="pd-line"></div>
+  </div>
+
+  <!-- Common Patterns -->
+  <div class="card" id="common-patterns">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(79,142,247,.15);border:1px solid rgba(79,142,247,.25);">🔁</div>
+      <div>
+        <div class="card-section-label">Topic 5 of 10</div>
+        <div class="card-title">Common Patterns</div>
+      </div>
+    </div>
+
+    <p>Four collaboration patterns show up again and again. They describe <em>how</em> agents are wired together.</p>
+
+    <div style="display:flex;flex-direction:column;gap:10px;margin:16px 0;">
+      <div style="background:var(--surface2);border:1px solid rgba(245,158,11,.2);border-left:4px solid var(--accent);border-radius:10px;padding:13px 18px;">
+        <div style="font-size:.78rem;font-weight:800;color:var(--accent);margin-bottom:3px;">Orchestrator → Workers <span style="font-size:.66rem;background:rgba(245,158,11,.18);border-radius:5px;padding:1px 7px;margin-left:6px;">most common</span></div>
+        <div style="font-size:.82rem;color:var(--text-muted);">One controller, many executors. The orchestrator fans work out and synthesises the results.</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid rgba(79,142,247,.2);border-left:4px solid var(--primary);border-radius:10px;padding:13px 18px;">
+        <div style="font-size:.78rem;font-weight:800;color:var(--primary);margin-bottom:3px;">Pipeline</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">Agent A → Agent B → Agent C, each passing its output to the next (e.g., research → draft → review).</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid rgba(159,110,245,.2);border-left:4px solid var(--purple);border-radius:10px;padding:13px 18px;">
+        <div style="font-size:.78rem;font-weight:800;color:var(--purple);margin-bottom:3px;">Peer-to-Peer</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">Agents message each other directly — useful for debate/critique loops (one writes, another critiques, repeat).</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid rgba(45,212,191,.2);border-left:4px solid var(--teal);border-radius:10px;padding:13px 18px;">
+        <div style="font-size:.78rem;font-weight:800;color:var(--teal);margin-bottom:3px;">Hierarchical</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">Orchestrators can themselves be sub-agents of a higher-level orchestrator — for very complex workflows.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- The 6 Architecture Types -->
+  <div class="card" id="agent-types">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(79,142,247,.15);border:1px solid rgba(79,142,247,.25);">🗺️</div>
+      <div>
+        <div class="card-section-label">Topic 6 of 10</div>
+        <div class="card-title">The 6 Architecture Types — When to Use Each</div>
+      </div>
+    </div>
+
+    <p>There are <strong>six main types</strong> of multi-agent architecture. Here is the mental model for choosing between them.</p>
+
+    <table class="analogy-table">
+      <thead>
+        <tr>
+          <th style="width:26%;">Type</th>
+          <th>Use it when…</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Orchestrator-Worker</td><td>You have <strong>parallel, independent subtasks</strong> — the most common pattern in production AI systems.</td></tr>
+        <tr><td>Pipeline</td><td>Steps are <strong>strictly sequential</strong> and each stage transforms the output of the last (like an assembly line).</td></tr>
+        <tr><td>Hierarchical</td><td>The problem is so large it needs <strong>multiple layers of managers</strong> — each orchestrator is itself a worker for the level above.</td></tr>
+        <tr><td>Peer-to-Peer</td><td>Agents need to <strong>negotiate or react to each other</strong> dynamically, with no natural "boss" agent.</td></tr>
+        <tr><td>Debate / Critique</td><td><strong>Output quality is paramount</strong> — a proposer generates, a critic tears it apart, repeat until it's good. Great for writing, legal, and code review.</td></tr>
+        <tr><td>Blackboard</td><td>Agents are <strong>event-driven</strong> — they don't talk directly, they read/write a shared store and react to changes.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-blue">
+      <div class="callout-title">🔑 The Real-World Truth</div>
+      Most real systems <strong>combine patterns</strong> — e.g., a hierarchical structure where leaf agents run debate loops, and everyone writes to a blackboard. The patterns are building blocks, not strict either/or choices.
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════
+       PHASE 3 — DECISION & REFERENCE
+       ════════════════════════════ -->
+  <div class="phase-divider">
+    <span class="pd-badge pd-3">🧭 Phase 3 — Decision & Reference</span>
+    <div class="pd-line"></div>
+  </div>
+
+  <!-- Single vs Multi-Agent Decision + Case Studies -->
+  <div class="card" id="single-vs-multi">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.25);">🧭</div>
+      <div>
+        <div class="card-section-label">Topic 7 of 10</div>
+        <div class="card-title">Single vs Multi-Agent — Decision Criteria & Case Studies</div>
+      </div>
+    </div>
+
+    <p>Multi-agent is powerful but not free — it adds orchestration cost, latency, and new failure modes. Before adding agents, run the task through these criteria.</p>
+
+    <!-- ① Decision criteria -->
+    <div style="font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--accent);margin:18px 0 10px;">① Decision Criteria</div>
+    <table class="analogy-table">
+      <thead><tr><th style="width:24%;">Criterion</th><th>Lean Single Agent</th><th>Lean Multi-Agent</th></tr></thead>
+      <tbody>
+        <tr><td>Task shape</td><td>Straight line — one step after another</td><td>Tree / fan-out — branches &amp; parallel paths</td></tr>
+        <tr><td>Latency budget</td><td>Tight, real-time (e.g. &lt;200ms)</td><td>Relaxed — seconds are acceptable</td></tr>
+        <tr><td>Parallelism</td><td>Steps are inherently sequential</td><td>Independent subtasks can run at once</td></tr>
+        <tr><td>Specialisation</td><td>One domain, one skill</td><td>Cross-domain expertise needed</td></tr>
+        <tr><td>Context size</td><td>Everything fits in one context window</td><td>Long task — context would overflow</td></tr>
+        <tr><td>Cost &amp; complexity</td><td>Keep it cheap and simple</td><td>Speed / quality gain justifies overhead</td></tr>
+        <tr><td>Observability</td><td>A single trace is easy to follow</td><td>Need isolated, inspectable per-agent output</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-amber">
+      <div class="callout-title">🧪 The Simplest Test</div>
+      Draw the task as a flowchart. If it's a <strong>straight line → Single Agent</strong>. If it's a <strong>tree or fan-out → Multi-Agent</strong>.
+    </div>
+
+    <!-- ② Credit card case studies -->
+    <div style="font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--primary);margin:24px 0 8px;">② Credit Card Processing — Case Studies</div>
+    <p style="font-size:.86rem;">Rule of thumb for this domain: <strong>Single agent</strong> when the task is real-time and latency-bound; <strong>Multi-agent</strong> when it's cross-domain and parallelism helps. Click each case to expand.</p>
+
+    <details class="case">
+      <summary><span class="case-tag tag-single">Single</span> Transaction Authorization</summary>
+      <div class="case-body">
+        <strong>Scenario:</strong> A card is tapped at a terminal; approve or decline within a ~200ms budget.<br>
+        <strong>Why single:</strong> One tool call (limit / risk check), one decision, a hard latency ceiling. There is simply no time to spin up and coordinate multiple agents.<br>
+        <strong>Pattern:</strong> Single agent → one tool → done.
+      </div>
+    </details>
+
+    <details class="case">
+      <summary><span class="case-tag tag-single">Single</span> Balance &amp; Account Inquiry</summary>
+      <div class="case-body">
+        <strong>Scenario:</strong> "What's my available credit?" / "When is my payment due?" in an app or IVR.<br>
+        <strong>Why single:</strong> A straight-line lookup against one system of record, returned conversationally. No specialisation or parallelism to gain.<br>
+        <strong>Pattern:</strong> Single agent with a read-only account tool.
+      </div>
+    </details>
+
+    <details class="case">
+      <summary><span class="case-tag tag-single">Single</span> Statement Summarisation</summary>
+      <div class="case-body">
+        <strong>Scenario:</strong> Summarise a monthly statement — top merchants, spend by category, due amount.<br>
+        <strong>Why single:</strong> One input (the statement), one output (the summary). It all fits in a single context window; adding agents only adds latency.<br>
+        <strong>Pattern:</strong> Single agent, one summarisation pass.
+      </div>
+    </details>
+
+    <details class="case">
+      <summary><span class="case-tag tag-multi">Multi</span> Fraud Detection</summary>
+      <div class="case-body">
+        <strong>Scenario:</strong> On a suspicious transaction, five signals must be evaluated at once — velocity, geo-location, merchant risk, device fingerprint, and spend-pattern anomaly.<br>
+        <strong>Why multi:</strong> The signals are <em>independent</em>, so they fan out and run in parallel; specialised agents score each far better than one generalist. Speed (parallelism) and quality (specialisation) both win.<br>
+        <strong>Pattern:</strong> Orchestrator-Worker (or Blackboard) — workers score signals concurrently, the orchestrator fuses them into a risk decision.
+      </div>
+    </details>
+
+    <details class="case">
+      <summary><span class="case-tag tag-multi">Multi</span> Dispute / Chargeback Resolution</summary>
+      <div class="case-body">
+        <strong>Scenario:</strong> A cardholder disputes a charge; the case must pass compliance checks, a decision, and a customer-facing resolution letter.<br>
+        <strong>Why multi:</strong> The work is a strict sequence where each stage transforms the last, and each stage needs different expertise (regulatory vs. adjudication vs. writing).<br>
+        <strong>Pattern:</strong> Pipeline — Compliance → Decision → Resolution Letter.
+      </div>
+    </details>
+
+    <details class="case">
+      <summary><span class="case-tag tag-multi">Multi</span> Credit Card Application Processing</summary>
+      <div class="case-body">
+        <strong>Scenario:</strong> A new application must clear KYC (identity), a credit-bureau pull, and AML screening before approval.<br>
+        <strong>Why multi:</strong> The three checks are independent and slow — running them in parallel cuts wall-clock time dramatically, and each is its own specialised domain.<br>
+        <strong>Pattern:</strong> Orchestrator-Worker — KYC, Credit Bureau, and AML agents run in parallel; the orchestrator combines verdicts into an approve / decline.
+      </div>
+    </details>
+
+    <div class="callout callout-blue">
+      <div class="callout-title">🧭 The One-Liner</div>
+      <strong>Single</strong> = real-time, latency-bound, one tool call (auth, balance, summary). <strong>Multi</strong> = cross-domain with parallelism (fraud's 5 signals, dispute's pipeline, application's KYC + bureau + AML). Straight line → single; tree → multi.
+    </div>
+  </div>
+
+  <!-- Diagrams -->
+  <div class="card" id="agent-diagrams">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(159,110,245,.15);border:1px solid rgba(159,110,245,.25);">🗺️</div>
+      <div>
+        <div class="card-section-label">Topic 8 of 10</div>
+        <div class="card-title">All 6 Architectures — Visual Reference</div>
+      </div>
+    </div>
+
+    <p>One diagram and one-line mental model for each of the six architecture types.</p>
+
+    <div class="diagram-grid">
+
+      <!-- 1. Orchestrator-Worker -->
+      <div class="diagram-card">
+        <div class="diagram-card-title" style="color:var(--accent);">1 · Orchestrator-Worker</div>
+        <div class="diagram-card-sub">One boss, many workers running in parallel. Most common in production.</div>
+        <svg viewBox="0 0 360 170" xmlns="http://www.w3.org/2000/svg">
+          <defs><marker id="d1-arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#f59e0b"/></marker></defs>
+          <rect x="130" y="14" width="100" height="38" rx="9" fill="rgba(245,158,11,.16)" stroke="#f59e0b" stroke-width="1.5"/>
+          <text x="180" y="38" text-anchor="middle" fill="#f0f4ff" font-size="12" font-weight="700" font-family="Inter,sans-serif">Orchestrator</text>
+          <line x1="150" y1="52" x2="60" y2="108" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#d1-arr)"/>
+          <line x1="180" y1="52" x2="180" y2="108" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#d1-arr)"/>
+          <line x1="210" y1="52" x2="300" y2="108" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#d1-arr)"/>
+          <rect x="20" y="110" width="80" height="36" rx="8" fill="rgba(79,142,247,.14)" stroke="#4f8ef7" stroke-width="1.2"/>
+          <text x="60" y="133" text-anchor="middle" fill="#f0f4ff" font-size="11" font-family="Inter,sans-serif">Worker A</text>
+          <rect x="140" y="110" width="80" height="36" rx="8" fill="rgba(79,142,247,.14)" stroke="#4f8ef7" stroke-width="1.2"/>
+          <text x="180" y="133" text-anchor="middle" fill="#f0f4ff" font-size="11" font-family="Inter,sans-serif">Worker B</text>
+          <rect x="260" y="110" width="80" height="36" rx="8" fill="rgba(79,142,247,.14)" stroke="#4f8ef7" stroke-width="1.2"/>
+          <text x="300" y="133" text-anchor="middle" fill="#f0f4ff" font-size="11" font-family="Inter,sans-serif">Worker C</text>
+        </svg>
+      </div>
+
+      <!-- 2. Pipeline -->
+      <div class="diagram-card">
+        <div class="diagram-card-title" style="color:var(--primary);">2 · Pipeline</div>
+        <div class="diagram-card-sub">Strict left-to-right chain; each agent transforms and hands off to the next.</div>
+        <svg viewBox="0 0 360 170" xmlns="http://www.w3.org/2000/svg">
+          <defs><marker id="d2-arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#4f8ef7"/></marker></defs>
+          <rect x="16" y="66" width="86" height="40" rx="9" fill="rgba(79,142,247,.14)" stroke="#4f8ef7" stroke-width="1.4"/>
+          <text x="59" y="84" text-anchor="middle" fill="#f0f4ff" font-size="11" font-weight="600" font-family="Inter,sans-serif">Research</text>
+          <text x="59" y="98" text-anchor="middle" fill="#8b9ab4" font-size="9" font-family="Inter,sans-serif">Agent A</text>
+          <line x1="102" y1="86" x2="135" y2="86" stroke="#4f8ef7" stroke-width="1.6" marker-end="url(#d2-arr)"/>
+          <rect x="137" y="66" width="86" height="40" rx="9" fill="rgba(79,142,247,.14)" stroke="#4f8ef7" stroke-width="1.4"/>
+          <text x="180" y="84" text-anchor="middle" fill="#f0f4ff" font-size="11" font-weight="600" font-family="Inter,sans-serif">Draft</text>
+          <text x="180" y="98" text-anchor="middle" fill="#8b9ab4" font-size="9" font-family="Inter,sans-serif">Agent B</text>
+          <line x1="223" y1="86" x2="256" y2="86" stroke="#4f8ef7" stroke-width="1.6" marker-end="url(#d2-arr)"/>
+          <rect x="258" y="66" width="86" height="40" rx="9" fill="rgba(79,142,247,.14)" stroke="#4f8ef7" stroke-width="1.4"/>
+          <text x="301" y="84" text-anchor="middle" fill="#f0f4ff" font-size="11" font-weight="600" font-family="Inter,sans-serif">Review</text>
+          <text x="301" y="98" text-anchor="middle" fill="#8b9ab4" font-size="9" font-family="Inter,sans-serif">Agent C</text>
+        </svg>
+      </div>
+
+      <!-- 3. Hierarchical -->
+      <div class="diagram-card">
+        <div class="diagram-card-title" style="color:var(--teal);">3 · Hierarchical</div>
+        <div class="diagram-card-sub">Tree of managers; orchestrators can themselves be sub-agents of a higher level.</div>
+        <svg viewBox="0 0 360 170" xmlns="http://www.w3.org/2000/svg">
+          <defs><marker id="d3-arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#2dd4bf"/></marker></defs>
+          <rect x="135" y="10" width="90" height="32" rx="8" fill="rgba(245,158,11,.16)" stroke="#f59e0b" stroke-width="1.4"/>
+          <text x="180" y="30" text-anchor="middle" fill="#f0f4ff" font-size="11" font-weight="700" font-family="Inter,sans-serif">Lead</text>
+          <line x1="160" y1="42" x2="95" y2="70" stroke="#2dd4bf" stroke-width="1.4" marker-end="url(#d3-arr)"/>
+          <line x1="200" y1="42" x2="265" y2="70" stroke="#2dd4bf" stroke-width="1.4" marker-end="url(#d3-arr)"/>
+          <rect x="50" y="72" width="90" height="30" rx="8" fill="rgba(45,212,191,.14)" stroke="#2dd4bf" stroke-width="1.2"/>
+          <text x="95" y="91" text-anchor="middle" fill="#f0f4ff" font-size="10.5" font-family="Inter,sans-serif">Manager 1</text>
+          <rect x="220" y="72" width="90" height="30" rx="8" fill="rgba(45,212,191,.14)" stroke="#2dd4bf" stroke-width="1.2"/>
+          <text x="265" y="91" text-anchor="middle" fill="#f0f4ff" font-size="10.5" font-family="Inter,sans-serif">Manager 2</text>
+          <line x1="75" y1="102" x2="48" y2="130" stroke="#4f8ef7" stroke-width="1.2" marker-end="url(#d3-arr)"/>
+          <line x1="115" y1="102" x2="132" y2="130" stroke="#4f8ef7" stroke-width="1.2" marker-end="url(#d3-arr)"/>
+          <line x1="245" y1="102" x2="218" y2="130" stroke="#4f8ef7" stroke-width="1.2" marker-end="url(#d3-arr)"/>
+          <line x1="285" y1="102" x2="302" y2="130" stroke="#4f8ef7" stroke-width="1.2" marker-end="url(#d3-arr)"/>
+          <rect x="18" y="132" width="60" height="26" rx="7" fill="rgba(79,142,247,.13)" stroke="#4f8ef7" stroke-width="1"/>
+          <text x="48" y="149" text-anchor="middle" fill="#cdd8f0" font-size="9.5" font-family="Inter,sans-serif">Worker</text>
+          <rect x="104" y="132" width="60" height="26" rx="7" fill="rgba(79,142,247,.13)" stroke="#4f8ef7" stroke-width="1"/>
+          <text x="134" y="149" text-anchor="middle" fill="#cdd8f0" font-size="9.5" font-family="Inter,sans-serif">Worker</text>
+          <rect x="188" y="132" width="60" height="26" rx="7" fill="rgba(79,142,247,.13)" stroke="#4f8ef7" stroke-width="1"/>
+          <text x="218" y="149" text-anchor="middle" fill="#cdd8f0" font-size="9.5" font-family="Inter,sans-serif">Worker</text>
+          <rect x="274" y="132" width="60" height="26" rx="7" fill="rgba(79,142,247,.13)" stroke="#4f8ef7" stroke-width="1"/>
+          <text x="304" y="149" text-anchor="middle" fill="#cdd8f0" font-size="9.5" font-family="Inter,sans-serif">Worker</text>
+        </svg>
+      </div>
+
+      <!-- 4. Peer-to-Peer -->
+      <div class="diagram-card">
+        <div class="diagram-card-title" style="color:var(--purple);">4 · Peer-to-Peer</div>
+        <div class="diagram-card-sub">No boss; agents message each other directly via a mesh of connections.</div>
+        <svg viewBox="0 0 360 170" xmlns="http://www.w3.org/2000/svg">
+          <!-- mesh lines -->
+          <line x1="90" y1="42" x2="270" y2="42" stroke="#9f6ef5" stroke-width="1.2"/>
+          <line x1="90" y1="128" x2="270" y2="128" stroke="#9f6ef5" stroke-width="1.2"/>
+          <line x1="90" y1="42" x2="90" y2="128" stroke="#9f6ef5" stroke-width="1.2"/>
+          <line x1="270" y1="42" x2="270" y2="128" stroke="#9f6ef5" stroke-width="1.2"/>
+          <line x1="90" y1="42" x2="270" y2="128" stroke="#9f6ef5" stroke-width="1.2" stroke-dasharray="4 3"/>
+          <line x1="270" y1="42" x2="90" y2="128" stroke="#9f6ef5" stroke-width="1.2" stroke-dasharray="4 3"/>
+          <!-- nodes -->
+          <circle cx="90" cy="42" r="26" fill="rgba(159,110,245,.16)" stroke="#9f6ef5" stroke-width="1.5"/>
+          <text x="90" y="46" text-anchor="middle" fill="#f0f4ff" font-size="11" font-weight="600" font-family="Inter,sans-serif">A</text>
+          <circle cx="270" cy="42" r="26" fill="rgba(159,110,245,.16)" stroke="#9f6ef5" stroke-width="1.5"/>
+          <text x="270" y="46" text-anchor="middle" fill="#f0f4ff" font-size="11" font-weight="600" font-family="Inter,sans-serif">B</text>
+          <circle cx="90" cy="128" r="26" fill="rgba(159,110,245,.16)" stroke="#9f6ef5" stroke-width="1.5"/>
+          <text x="90" y="132" text-anchor="middle" fill="#f0f4ff" font-size="11" font-weight="600" font-family="Inter,sans-serif">C</text>
+          <circle cx="270" cy="128" r="26" fill="rgba(159,110,245,.16)" stroke="#9f6ef5" stroke-width="1.5"/>
+          <text x="270" y="132" text-anchor="middle" fill="#f0f4ff" font-size="11" font-weight="600" font-family="Inter,sans-serif">D</text>
+        </svg>
+      </div>
+
+      <!-- 5. Debate / Critique -->
+      <div class="diagram-card">
+        <div class="diagram-card-title" style="color:var(--green);">5 · Debate / Critique</div>
+        <div class="diagram-card-sub">Proposer drafts, critic tears it apart, judge decides — loops until quality is met.</div>
+        <svg viewBox="0 0 360 170" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="d5-arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#34d399"/></marker>
+            <marker id="d5-arr2" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#f59e0b"/></marker>
+          </defs>
+          <rect x="20" y="26" width="100" height="40" rx="9" fill="rgba(52,211,153,.14)" stroke="#34d399" stroke-width="1.4"/>
+          <text x="70" y="50" text-anchor="middle" fill="#f0f4ff" font-size="11" font-weight="600" font-family="Inter,sans-serif">Proposer</text>
+          <rect x="240" y="26" width="100" height="40" rx="9" fill="rgba(245,158,11,.14)" stroke="#f59e0b" stroke-width="1.4"/>
+          <text x="290" y="50" text-anchor="middle" fill="#f0f4ff" font-size="11" font-weight="600" font-family="Inter,sans-serif">Critic</text>
+          <!-- loop arrows -->
+          <line x1="122" y1="38" x2="236" y2="38" stroke="#34d399" stroke-width="1.5" marker-end="url(#d5-arr)"/>
+          <text x="180" y="30" text-anchor="middle" fill="#8b9ab4" font-size="9" font-family="Inter,sans-serif">draft</text>
+          <line x1="238" y1="56" x2="124" y2="56" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#d5-arr2)"/>
+          <text x="180" y="70" text-anchor="middle" fill="#8b9ab4" font-size="9" font-family="Inter,sans-serif">critique ↻</text>
+          <!-- judge -->
+          <line x1="70" y1="66" x2="160" y2="116" stroke="#5a6a84" stroke-width="1.2" marker-end="url(#d5-arr)"/>
+          <line x1="290" y1="66" x2="200" y2="116" stroke="#5a6a84" stroke-width="1.2" marker-end="url(#d5-arr)"/>
+          <rect x="120" y="118" width="120" height="38" rx="9" fill="rgba(79,142,247,.14)" stroke="#4f8ef7" stroke-width="1.4"/>
+          <text x="180" y="142" text-anchor="middle" fill="#f0f4ff" font-size="11" font-weight="700" font-family="Inter,sans-serif">⚖️ Judge</text>
+        </svg>
+      </div>
+
+      <!-- 6. Blackboard -->
+      <div class="diagram-card">
+        <div class="diagram-card-title" style="color:var(--teal);">6 · Blackboard</div>
+        <div class="diagram-card-sub">No direct messaging; agents communicate only by reading/writing a shared state store.</div>
+        <svg viewBox="0 0 360 170" xmlns="http://www.w3.org/2000/svg">
+          <defs><marker id="d6-arr" markerWidth="7" markerHeight="6" refX="6" refY="3" orient="auto"><polygon points="0 0,7 3,0 6" fill="#2dd4bf"/></marker></defs>
+          <!-- central store -->
+          <rect x="120" y="62" width="120" height="46" rx="10" fill="rgba(45,212,191,.14)" stroke="#2dd4bf" stroke-width="1.6" stroke-dasharray="6 3"/>
+          <text x="180" y="82" text-anchor="middle" fill="#f0f4ff" font-size="11" font-weight="700" font-family="Inter,sans-serif">Blackboard</text>
+          <text x="180" y="97" text-anchor="middle" fill="#7fe9da" font-size="9" font-family="Inter,sans-serif">shared state</text>
+          <!-- agents -->
+          <rect x="20" y="14" width="78" height="30" rx="8" fill="rgba(159,110,245,.13)" stroke="#9f6ef5" stroke-width="1.1"/>
+          <text x="59" y="33" text-anchor="middle" fill="#cdd8f0" font-size="10" font-family="Inter,sans-serif">Agent 1</text>
+          <rect x="262" y="14" width="78" height="30" rx="8" fill="rgba(159,110,245,.13)" stroke="#9f6ef5" stroke-width="1.1"/>
+          <text x="301" y="33" text-anchor="middle" fill="#cdd8f0" font-size="10" font-family="Inter,sans-serif">Agent 2</text>
+          <rect x="20" y="126" width="78" height="30" rx="8" fill="rgba(159,110,245,.13)" stroke="#9f6ef5" stroke-width="1.1"/>
+          <text x="59" y="145" text-anchor="middle" fill="#cdd8f0" font-size="10" font-family="Inter,sans-serif">Agent 3</text>
+          <rect x="262" y="126" width="78" height="30" rx="8" fill="rgba(159,110,245,.13)" stroke="#9f6ef5" stroke-width="1.1"/>
+          <text x="301" y="145" text-anchor="middle" fill="#cdd8f0" font-size="10" font-family="Inter,sans-serif">Agent 4</text>
+          <!-- bidirectional read/write lines -->
+          <line x1="92" y1="36" x2="124" y2="66" stroke="#2dd4bf" stroke-width="1.2" marker-start="url(#d6-arr)" marker-end="url(#d6-arr)"/>
+          <line x1="268" y1="36" x2="236" y2="66" stroke="#2dd4bf" stroke-width="1.2" marker-start="url(#d6-arr)" marker-end="url(#d6-arr)"/>
+          <line x1="92" y1="134" x2="124" y2="104" stroke="#2dd4bf" stroke-width="1.2" marker-start="url(#d6-arr)" marker-end="url(#d6-arr)"/>
+          <line x1="268" y1="134" x2="236" y2="104" stroke="#2dd4bf" stroke-width="1.2" marker-start="url(#d6-arr)" marker-end="url(#d6-arr)"/>
+        </svg>
+      </div>
+
+    </div>
+
+    <div class="callout callout-amber">
+      <div class="callout-title">🧭 One-Line Mental Models</div>
+      <strong>Orchestrator-Worker</strong> — one boss, many parallel workers · <strong>Pipeline</strong> — left-to-right transform chain · <strong>Hierarchical</strong> — tree of managers · <strong>Peer-to-Peer</strong> — direct mesh, no boss · <strong>Debate/Critique</strong> — propose → critique → judge, looped · <strong>Blackboard</strong> — communicate only via shared state.
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════
+       PHASE 4 — OPENAPI & TOOL USE
+       ════════════════════════════ -->
+  <div class="phase-divider">
+    <span class="pd-badge pd-4">🔌 Phase 4 — OpenAPI Specification & Tool Use</span>
+    <div class="pd-line"></div>
+  </div>
+
+  <!-- What is OAS -->
+  <div class="card" id="what-is-oas">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.25);">📄</div>
+      <div>
+        <div class="card-section-label">Topic 9 of 10</div>
+        <div class="card-title">What is the OpenAPI Specification (OAS)?</div>
+      </div>
+    </div>
+
+    <div class="callout callout-purple">
+      <div class="callout-title">📘 Definition</div>
+      The <strong>OpenAPI Specification</strong> (formerly Swagger) is a standard, language-agnostic format for describing REST APIs. It's a JSON or YAML file that defines everything about an API — its endpoints, request/response formats, authentication, parameters, and data schemas.
+    </div>
+
+    <p>Think of it as a <strong>contract between an API provider and its consumers</strong>: anyone — or any tool — can read the spec and know exactly how to use the API, without reading source code or docs.</p>
+
+    <p>A basic OAS file looks like this:</p>
+    <div class="code-block">openapi: 3.0.0
+info:
+  title: My API
+  version: 1.0.0
+paths:
+  /users/{id}:
+    get:
+      summary: Get a user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: A user object</div>
+
+    <div style="font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--green);margin:18px 0 10px;">How OAS is Used</div>
+    <div style="display:flex;flex-direction:column;gap:9px;">
+      <div style="background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:8px;padding:11px 15px;"><strong style="color:var(--text);">📑 Documentation</strong> <span style="font-size:.82rem;color:var(--text-muted);">— Swagger UI / Redoc auto-generate interactive docs from the spec; developers browse and test endpoints in the browser.</span></div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:8px;padding:11px 15px;"><strong style="color:var(--text);">⚙️ Code generation</strong> <span style="font-size:.82rem;color:var(--text-muted);">— Tools like openapi-generator scaffold client SDKs and server stubs, so you don't write boilerplate by hand.</span></div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:8px;padding:11px 15px;"><strong style="color:var(--text);">✅ Validation</strong> <span style="font-size:.82rem;color:var(--text-muted);">— Middleware validates incoming requests and outgoing responses against the spec at runtime, catching contract violations early.</span></div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:8px;padding:11px 15px;"><strong style="color:var(--text);">🧪 Mocking</strong> <span style="font-size:.82rem;color:var(--text-muted);">— Tools like Prism spin up a mock server from the spec, so frontend teams build before the backend is ready.</span></div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:8px;padding:11px 15px;"><strong style="color:var(--text);">🔬 Testing</strong> <span style="font-size:.82rem;color:var(--text-muted);">— Tools like Schemathesis auto-generate test cases by fuzzing every defined endpoint against the spec.</span></div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:8px;padding:11px 15px;"><strong style="color:var(--text);">🚪 API gateways</strong> <span style="font-size:.82rem;color:var(--text-muted);">— AWS API Gateway, Kong and others import an OAS file to configure routing, auth, and rate limiting automatically.</span></div>
+      <div style="background:var(--surface2);border:1px solid rgba(245,158,11,.25);border-left:3px solid var(--accent);border-radius:8px;padding:11px 15px;"><strong style="color:var(--text);">🤖 AI / LLM tool use</strong> <span style="font-size:.82rem;color:var(--text-muted);">— LLMs (including Claude) read an OAS file to understand an API's capabilities and call it correctly — increasingly common in agent workflows.</span></div>
+    </div>
+
+    <div class="callout callout-teal">
+      <div class="callout-title">📌 Current Version</div>
+      The current version is <strong>OAS 3.1</strong>, which aligns fully with JSON Schema. The spec lives at <span class="mono">spec.openapis.org</span>.
+    </div>
+  </div>
+
+  <!-- How AI Models Use OAS -->
+  <div class="card" id="models-use-oas">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.25);">🤖</div>
+      <div>
+        <div class="card-section-label">Topic 10 of 10</div>
+        <div class="card-title">How AI Models Use OAS</div>
+      </div>
+    </div>
+
+    <p>AI models interact with OAS in several distinct ways — from simply <em>understanding</em> an API to <em>autonomously calling</em> it inside an agent loop.</p>
+
+    <div style="display:flex;flex-direction:column;gap:10px;margin:16px 0;">
+      <div style="background:var(--surface2);border:1px solid rgba(79,142,247,.2);border-left:4px solid var(--primary);border-radius:10px;padding:13px 17px;">
+        <div style="font-size:.8rem;font-weight:800;color:var(--primary);margin-bottom:3px;">1 · Tool / Function Calling <span style="font-size:.64rem;background:rgba(79,142,247,.18);border-radius:5px;padding:1px 7px;margin-left:6px;">most common</span></div>
+        <div style="font-size:.82rem;color:var(--text-muted);">The OAS is the "manual" the model reads to know what tools exist and how to call them. It picks an endpoint, constructs a valid request, gets the response, and synthesises an answer. This is how Claude tool use, OpenAI Assistants, and LangChain agents operate.</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid rgba(45,212,191,.2);border-left:4px solid var(--teal);border-radius:10px;padding:13px 17px;">
+        <div style="font-size:.8rem;font-weight:800;color:var(--teal);margin-bottom:3px;">2 · Agentic Workflows</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">OAS lets an agent <em>discover</em> what an API can do and chain multiple calls without hard-coding each step — e.g., <span class="mono">GET /customers?sort=revenue</span> → get the ID → <span class="mono">POST /emails</span>. LangChain, LlamaIndex, and AutoGen have native OAS loaders.</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid rgba(159,110,245,.2);border-left:4px solid var(--purple);border-radius:10px;padding:13px 17px;">
+        <div style="font-size:.8rem;font-weight:800;color:var(--purple);margin-bottom:3px;">3 · OAS → Structured Tool Schema</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">Claude and GPT-4 require tools in a specific JSON-schema format. OAS is the upstream source that gets converted into that format (libraries like openapi-llm, or custom parsers, do it automatically).</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid rgba(245,158,11,.2);border-left:4px solid var(--accent);border-radius:10px;padding:13px 17px;">
+        <div style="font-size:.8rem;font-weight:800;color:var(--accent);margin-bottom:3px;">4 · RAG over API Documentation</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">For APIs with hundreds of endpoints, teams chunk the spec into a vector DB and retrieve only the relevant endpoint at query time — instead of stuffing the whole spec into context.</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid rgba(52,211,153,.2);border-left:4px solid var(--green);border-radius:10px;padding:13px 17px;">
+        <div style="font-size:.8rem;font-weight:800;color:var(--green);margin-bottom:3px;">5 · Code Generation</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">Paste an OAS and ask "write a Python client for this API" — the model reads the schemas, params, and auth and generates accurate, typed code, avoiding hallucinated endpoints or wrong parameter types.</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid rgba(248,113,113,.2);border-left:4px solid var(--red);border-radius:10px;padding:13px 17px;">
+        <div style="font-size:.8rem;font-weight:800;color:var(--red);margin-bottom:3px;">6 · Validation & Self-Correction</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">Some agents pass the OAS back to the model after it drafts a request, asking it to validate against the spec before sending — catching missing required fields or wrong params before they hit the real API.</div>
+      </div>
+    </div>
+
+    <!-- Core pattern flow -->
+    <div style="font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--green);margin:18px 0 10px;">The Core Pattern</div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:0;background:var(--surface2);border:1px solid var(--border2);border-radius:12px;padding:20px;">
+      <div style="background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.3);border-radius:8px;padding:8px 16px;font-size:.8rem;font-weight:700;color:var(--green);">📄 OAS File</div>
+      <div style="color:var(--text-dim);font-size:1.1rem;margin:5px 0;">↓</div>
+      <div style="background:var(--surface3);border:1px solid var(--border2);border-radius:8px;padding:8px 16px;font-size:.8rem;color:var(--text-muted);">Parse into tool definitions</div>
+      <div style="color:var(--text-dim);font-size:1.1rem;margin:5px 0;">↓</div>
+      <div style="background:var(--surface3);border:1px solid var(--border2);border-radius:8px;padding:8px 16px;font-size:.8rem;color:var(--text-muted);">Inject into model context (system prompt / tool list)</div>
+      <div style="color:var(--text-dim);font-size:1.1rem;margin:5px 0;">↓</div>
+      <div style="background:var(--surface3);border:1px solid var(--border2);border-radius:8px;padding:8px 16px;font-size:.8rem;color:var(--text-muted);">Model reasons over available tools</div>
+      <div style="color:var(--text-dim);font-size:1.1rem;margin:5px 0;">↓</div>
+      <div style="background:var(--surface3);border:1px solid var(--border2);border-radius:8px;padding:8px 16px;font-size:.8rem;color:var(--text-muted);">Constructs a valid API call</div>
+      <div style="color:var(--text-dim);font-size:1.1rem;margin:5px 0;">↓</div>
+      <div style="background:rgba(79,142,247,.12);border:1px solid rgba(79,142,247,.3);border-radius:8px;padding:8px 16px;font-size:.8rem;font-weight:700;color:var(--primary);">Executes → response → reasons → continues ↻</div>
+    </div>
+
+    <!-- Interactive chatboard demo -->
+    <div style="font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--primary);margin:22px 0 6px;">🕹️ Interactive Demo — Watch a Model Use OAS</div>
+    <p style="font-size:.86rem;">Pick a preset (or type your own) and watch the model scan the spec, pick an endpoint, call it, and turn the response into an answer.</p>
+
+    <div class="oas-demo">
+      <div class="oas-spec">
+        <div class="oas-spec-title">📄 demo-api.yaml &nbsp;(OAS)</div>
+        <div class="oas-ep" id="ep-customers"><span class="m m-get">GET</span>/customers <span class="ep-desc">— list (sort, limit)</span></div>
+        <div class="oas-ep" id="ep-users"><span class="m m-get">GET</span>/users/{id} <span class="ep-desc">— get a user</span></div>
+        <div class="oas-ep" id="ep-weather"><span class="m m-get">GET</span>/weather <span class="ep-desc">— current (city)</span></div>
+        <div class="oas-ep" id="ep-emails"><span class="m m-post">POST</span>/emails <span class="ep-desc">— send an email</span></div>
+      </div>
+      <div class="oas-chat">
+        <div class="oas-transcript" id="oasTranscript">
+          <div class="oas-hint">▶ Pick a question or type your own — watch the model use the spec step by step.</div>
+        </div>
+        <div class="oas-presets">
+          <button type="button" data-q="Who is our top customer?">Top customer?</button>
+          <button type="button" data-q="Get details for user 42">User 42</button>
+          <button type="button" data-q="What's the weather in Paris?">Weather in Paris</button>
+        </div>
+        <div class="oas-inputrow">
+          <input id="oasInput" type="text" placeholder="Ask something…" autocomplete="off" />
+          <button type="button" id="oasSend">Ask →</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-green">
+      <div class="callout-title">🔑 The Core Insight</div>
+      The OAS is the <strong>interface layer</strong> between the unstructured reasoning of an LLM and the structured, typed world of real APIs. Without it, a model would have to <em>guess</em> how an API works — with it, the model knows which endpoint exists, what parameters it needs, and what format to send, so it can call APIs reliably and autonomously.
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════
+       KEY TAKEAWAYS
+       ════════════════════════════ -->
+  <div class="phase-divider" style="margin-top:56px;">
+    <span class="pd-badge pd-1">🎯 Key Takeaways — Week 4</span>
+    <div class="pd-line"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.25);">🎯</div>
+      <div>
+        <div class="card-section-label">Summary</div>
+        <div class="card-title">What You Now Know</div>
+      </div>
+    </div>
+
+    <div class="takeaway-grid">
+      <div class="takeaway-item">
+        <div class="takeaway-num">01</div>
+        <div class="takeaway-text"><strong>Multi-agent = a system, not just more agents.</strong> The win comes from separation of concerns, parallelism, and specialisation — each agent does one thing well.</div>
+      </div>
+      <div class="takeaway-item">
+        <div class="takeaway-num">02</div>
+        <div class="takeaway-text"><strong>Four building blocks.</strong> Orchestrator (brain), sub-agents (specialised workers), tools (real-world capability), and shared memory (the collaboration scratchpad).</div>
+      </div>
+      <div class="takeaway-item">
+        <div class="takeaway-num">03</div>
+        <div class="takeaway-text"><strong>Agents collaborate without talking.</strong> They write intermediate results to shared memory; the orchestrator reads it to synthesise the final output.</div>
+      </div>
+      <div class="takeaway-item">
+        <div class="takeaway-num">04</div>
+        <div class="takeaway-text"><strong>Use multi-agent to beat single-agent limits.</strong> Context overflow, lack of specialisation, serial bottlenecks, and hard debugging are the four problems it solves.</div>
+      </div>
+      <div class="takeaway-item">
+        <div class="takeaway-num">05</div>
+        <div class="takeaway-text"><strong>Six architecture types.</strong> Orchestrator-Worker, Pipeline, Hierarchical, Peer-to-Peer, Debate/Critique, and Blackboard — pick by how the work actually flows.</div>
+      </div>
+      <div class="takeaway-item">
+        <div class="takeaway-num">06</div>
+        <div class="takeaway-text"><strong>Orchestrator-Worker is the default.</strong> For parallel, independent subtasks it's the most common production pattern — reach for it first.</div>
+      </div>
+      <div class="takeaway-item">
+        <div class="takeaway-num">07</div>
+        <div class="takeaway-text"><strong>Patterns are building blocks, not choices.</strong> Real systems combine them — hierarchical trees with debate loops at the leaves, all writing to a blackboard.</div>
+      </div>
+      <div class="takeaway-item">
+        <div class="takeaway-num">08</div>
+        <div class="takeaway-text"><strong>Don't over-engineer.</strong> Multi-agent adds orchestration cost and new failure modes. If one well-prompted agent meets the requirement, ship that first.</div>
+      </div>
+      <div class="takeaway-item">
+        <div class="takeaway-num">09</div>
+        <div class="takeaway-text"><strong>OAS is the API contract.</strong> A JSON/YAML spec (OpenAPI 3.1) that describes endpoints, params, schemas, and auth — so any tool or model can use the API without reading source code.</div>
+      </div>
+      <div class="takeaway-item">
+        <div class="takeaway-num">10</div>
+        <div class="takeaway-text"><strong>OAS is how models call APIs reliably.</strong> It's the interface layer between LLM reasoning and typed APIs — parsed into tool schemas, injected into context, so the model picks the right endpoint and builds a valid call instead of guessing.</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<footer>
+  Week 4 · AI Learning Summary &nbsp;·&nbsp; <span>Robin AI Learnings</span> &nbsp;·&nbsp; AI PM Tool
+</footer>
+
+<script>
+(function () {
+  var SPEC = [
+    { id: 'ep-customers', keys: ['customer', 'top', 'revenue', 'client', 'biggest'],
+      call: 'GET /customers?sort=revenue&limit=1',
+      resp: '{ "id": 7, "name": "Acme Corp", "revenue": 1280000 }',
+      answer: 'Your top customer is Acme Corp — $1.28M in revenue.' },
+    { id: 'ep-users', keys: ['user', 'account', 'member', '42', 'profile'],
+      call: 'GET /users/42',
+      resp: '{ "id": 42, "name": "Jordan Lee", "tier": "Gold" }',
+      answer: 'User 42 is Jordan Lee, a Gold-tier member.' },
+    { id: 'ep-weather', keys: ['weather', 'temperature', 'temp', 'paris', 'rain', 'forecast', 'sky', 'climate'],
+      call: 'GET /weather?city=Paris',
+      resp: '{ "city": "Paris", "tempC": 19, "sky": "Partly cloudy" }',
+      answer: "It's 19°C and partly cloudy in Paris right now." }
+  ];
+
+  var transcript = document.getElementById('oasTranscript');
+  var input = document.getElementById('oasInput');
+  var busy = false;
+
+  function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function clearHits() { SPEC.forEach(function (s) { var el = document.getElementById(s.id); if (el) el.classList.remove('hit'); }); }
+  function match(q) {
+    var t = q.toLowerCase();
+    for (var i = 0; i < SPEC.length; i++) {
+      for (var j = 0; j < SPEC[i].keys.length; j++) {
+        if (t.indexOf(SPEC[i].keys[j]) > -1) return SPEC[i];
+      }
+    }
+    return null;
+  }
+  function addStep(label, content, cls) {
+    var d = document.createElement('div');
+    d.className = 'step ' + (cls || '');
+    var l = document.createElement('div'); l.className = 'step-label'; l.textContent = label;
+    var c = document.createElement('div'); c.className = 'step-content'; c.innerHTML = content;
+    d.appendChild(l); d.appendChild(c);
+    transcript.appendChild(d);
+    transcript.scrollTop = transcript.scrollHeight;
+  }
+  function run(q) {
+    if (busy || !q || !q.trim()) return;
+    busy = true;
+    clearHits();
+    var hint = transcript.querySelector('.oas-hint');
+    if (hint) hint.parentNode.removeChild(hint);
+    addStep('🙋 You', esc(q), 'you');
+    var hit = match(q);
+    if (!hit) {
+      setTimeout(function () {
+        addStep('🔍 OAS Lookup', 'Scanned the spec — <strong>no matching endpoint</strong> for that request. Try one of the presets.', 'muted');
+        busy = false;
+      }, 450);
+      return;
+    }
+    var path = hit.call.split('?')[0].replace(/^GET\s+/, '').replace(/^POST\s+/, '');
+    var steps = [
+      function () { addStep('🔍 OAS Lookup', 'Scanning the spec for a matching endpoint…', 'muted'); },
+      function () { var el = document.getElementById(hit.id); if (el) el.classList.add('hit'); addStep('📍 Endpoint Selected', 'Matched <span class="mono">' + esc(path) + '</span> in the spec.'); },
+      function () { addStep('📡 API Call', '<span class="mono">' + esc(hit.call) + '</span>'); },
+      function () { addStep('📦 API Response', '<span class="mono">' + esc(hit.resp) + '</span>'); },
+      function () { addStep('💬 Answer', '<strong>' + esc(hit.answer) + '</strong>', 'answer'); busy = false; }
+    ];
+    var delay = 0;
+    steps.forEach(function (fn) { delay += 600; setTimeout(fn, delay); });
+  }
+
+  var btns = document.querySelectorAll('.oas-presets button');
+  for (var i = 0; i < btns.length; i++) {
+    btns[i].addEventListener('click', function () { run(this.getAttribute('data-q')); });
+  }
+  document.getElementById('oasSend').addEventListener('click', function () { run(input.value); input.value = ''; });
+  input.addEventListener('keydown', function (e) { if (e.key === 'Enter') { run(input.value); input.value = ''; } });
+})();
+</script>
+
+</body>
+</html>

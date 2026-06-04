@@ -48,6 +48,12 @@ h4{font-size:.9rem;font-weight:600;color:var(--text);margin:16px 0 8px}
 .lb-w1{background:rgba(79,142,247,.15);border:1px solid rgba(79,142,247,.3);color:var(--w1)}
 .lb-w2{background:rgba(159,110,245,.15);border:1px solid rgba(159,110,245,.3);color:var(--w2)}
 .lb-w3{background:rgba(45,212,191,.15);border:1px solid rgba(45,212,191,.3);color:var(--w3)}
+.lb-found{background:rgba(79,142,247,.15);border:1px solid rgba(79,142,247,.3);color:var(--w1)}
+.lb-ctx{background:rgba(159,110,245,.15);border:1px solid rgba(159,110,245,.3);color:var(--w2)}
+.lb-agentic{background:rgba(45,212,191,.15);border:1px solid rgba(45,212,191,.3);color:var(--w3)}
+.lb-eval{background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.3);color:#34d399}
+.lb-resp{background:rgba(248,113,113,.15);border:1px solid rgba(248,113,113,.3);color:#f87171}
+.lb-multi{background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);color:#fbbf24}
 
 /* TABLES */
 table{width:100%;border-collapse:collapse;font-size:.84rem;margin:12px 0 20px}
@@ -178,7 +184,8 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
 <!-- NAV -->
 <nav class="topnav">
   <a class="nav-logo" href="default.html">← Hub</a>
-  <a href="#learning">Learning Applied</a>
+  <a href="#applied-ai">Applied AI</a>
+  <a href="#multi-agent">Multi-Agent</a>
   <a href="#problem">1. Problem</a>
   <a href="#solution">2. Solution</a>
   <a href="#agents">3. Agents</a>
@@ -196,12 +203,13 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
 <!-- HERO -->
 <div class="hero">
   <div class="week-strip">
-    <span class="wk-chip wk1">Week 1 · Foundations</span>
-    <span class="wk-chip wk2">Week 2 · Context & Agentic RAG</span>
-    <span class="wk-chip wk3">Week 3 · Agentic AI & Responsible AI</span>
+    <span class="wk-chip wk3">🤖 Multi-Agent System</span>
+    <span class="wk-chip wk1">RAG &amp; Grounding</span>
+    <span class="wk-chip wk2">Agentic Evaluation</span>
+    <span class="wk-chip wk3">Responsible AI</span>
   </div>
   <h1>AI-Powered Multi-Project Tracker</h1>
-  <p>Agentic platform with four specialised AI agents — this PRD demonstrates how 33 topics across 3 weeks of AI PM learning are directly applied to product decisions, agent design, evaluation strategy, and responsible AI governance.</p>
+  <p>An agentic platform built on a <strong>multi-agent architecture</strong> — four specialised AI agents collaborating over a shared project data layer to generate live dashboards, answer natural-language queries, monitor deadlines, and evaluate dependencies. This PRD applies production-grade agentic AI, evaluation, and responsible-AI techniques to every product decision.</p>
   <div class="meta-chips">
     <span class="chip">PRD v2.0</span>
     <span class="chip">May 2026</span>
@@ -214,18 +222,18 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
 <!-- ═══════════════════════════════════════
      LEARNING IN PRACTICE — CENTRAL SECTION
      ═══════════════════════════════════════ -->
-<div class="section" id="learning" style="background:var(--surface)">
+<div class="section" id="applied-ai" style="background:var(--surface)">
   <div class="section-num" style="background:rgba(45,212,191,.12);border-color:rgba(45,212,191,.3);color:var(--secondary)">★</div>
-  <h2>Learning in Practice</h2>
-  <p class="subtitle">How every major product decision in this PRD maps to a specific concept from Weeks 1–3</p>
+  <h2>Applied AI Techniques</h2>
+  <p class="subtitle">How every major product decision maps to a specific, deliberate AI technique — grouped by capability area</p>
 
   <!-- 3 Week Cards -->
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;margin-bottom:36px;">
 
-    <!-- Week 1 -->
+    <!-- Foundations card -->
     <div style="background:var(--surface2);border:1px solid rgba(79,142,247,.3);border-radius:var(--radius);overflow:hidden;">
       <div style="background:rgba(79,142,247,.12);padding:16px 20px;border-bottom:1px solid rgba(79,142,247,.2);">
-        <div style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:var(--w1);margin-bottom:4px;">Week 1 · Blue</div>
+        <div style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:var(--w1);margin-bottom:4px;">Capability · Foundations</div>
         <div style="font-size:1rem;font-weight:800;letter-spacing:-.2px;">Foundations — Tokens, Transformers & RAG</div>
       </div>
       <div style="padding:16px 20px;display:flex;flex-direction:column;gap:10px;">
@@ -236,10 +244,10 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
       </div>
     </div>
 
-    <!-- Week 2 -->
+    <!-- Context card -->
     <div style="background:var(--surface2);border:1px solid rgba(159,110,245,.3);border-radius:var(--radius);overflow:hidden;">
       <div style="background:rgba(159,110,245,.12);padding:16px 20px;border-bottom:1px solid rgba(159,110,245,.2);">
-        <div style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:var(--w2);margin-bottom:4px;">Week 2 · Purple</div>
+        <div style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:var(--w2);margin-bottom:4px;">Capability · Context & Retrieval</div>
         <div style="font-size:1rem;font-weight:800;letter-spacing:-.2px;">Context Management & Agentic RAG</div>
       </div>
       <div style="padding:16px 20px;display:flex;flex-direction:column;gap:10px;">
@@ -250,10 +258,10 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
       </div>
     </div>
 
-    <!-- Week 3 -->
+    <!-- Agentic & Responsible AI card -->
     <div style="background:var(--surface2);border:1px solid rgba(45,212,191,.3);border-radius:var(--radius);overflow:hidden;">
       <div style="background:rgba(45,212,191,.12);padding:16px 20px;border-bottom:1px solid rgba(45,212,191,.2);">
-        <div style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:var(--w3);margin-bottom:4px;">Week 3 · Teal</div>
+        <div style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:var(--w3);margin-bottom:4px;">Capability · Agentic AI & Governance</div>
         <div style="font-size:1rem;font-weight:800;letter-spacing:-.2px;">Agentic AI, Evaluation & Responsible AI</div>
       </div>
       <div style="padding:16px 20px;display:flex;flex-direction:column;gap:10px;">
@@ -267,45 +275,110 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
   </div>
 
   <!-- Full mapping table -->
-  <h3>Complete Learning → Product Decision Mapping</h3>
+  <h3>AI Technique → Product Decision Mapping</h3>
   <table>
     <thead>
       <tr>
-        <th>Week</th>
-        <th>Learning Topic</th>
+        <th>Area</th>
+        <th>AI Technique</th>
         <th>Where It Shows Up in This PRD</th>
         <th>Agent / Section</th>
       </tr>
     </thead>
     <tbody>
-      <tr><td><span class="learn-badge lb-w1">W1</span></td><td><strong>Tokens & Context Windows</strong></td><td>Project snapshots compressed to JSON; context budget explicitly designed per agent</td><td>Agent 2 · §8 Prompts</td></tr>
-      <tr><td><span class="learn-badge lb-w1">W1</span></td><td><strong>RAG Architecture</strong></td><td>Agent 2 retrieves from project HTML pages before answering; never answers from weights</td><td>Agent 2 · §8 Prompts</td></tr>
-      <tr><td><span class="learn-badge lb-w1">W1</span></td><td><strong>Grounding</strong></td><td>All system prompts include strict "only use provided data" constraint + fallback response</td><td>All Agents · §8 Prompts</td></tr>
-      <tr><td><span class="learn-badge lb-w1">W1</span></td><td><strong>Encoder/Decoder</strong></td><td>Encoder embeddings for semantic search; decoder (Claude) for generation. Separate roles.</td><td>Agent 2 architecture</td></tr>
-      <tr><td><span class="learn-badge lb-w2">W2</span></td><td><strong>Agentic RAG</strong></td><td>Agent 2 decomposes query → plans tool calls → retrieves → evaluates quality → loops</td><td>Agent 2 · §2 Solution</td></tr>
-      <tr><td><span class="learn-badge lb-w2">W2</span></td><td><strong>Context Management — Good Design</strong></td><td>Structured JSON project state vs raw HTML. State persists across multi-turn conversations.</td><td>Agent 2 · §8 Prompts</td></tr>
-      <tr><td><span class="learn-badge lb-w2">W2</span></td><td><strong>Context Types (4 types)</strong></td><td>Short-term (chat), structured (project JSON), unstructured (HTML) — each retrieved differently</td><td>Agent 2 design</td></tr>
-      <tr><td><span class="learn-badge lb-w2">W2</span></td><td><strong>In-Context Learning (few-shot)</strong></td><td>Agent 3 email prompt includes example of good/bad tone to steer output without fine-tuning</td><td>Agent 3 · §8 Prompts</td></tr>
-      <tr><td><span class="learn-badge lb-w3">W3</span></td><td><strong>Knowledge Graph</strong></td><td>Steps = nodes, dependencies = edges. Agent 4 traverses to find critical path & cascade risk.</td><td>Agent 4 · §2 Solution</td></tr>
-      <tr><td><span class="learn-badge lb-w3">W3</span></td><td><strong>Agentic Skills — Perceive→Plan→Act</strong></td><td>Agent 3 loop: observe deadlines → reason about urgency → act (send DRI email)</td><td>Agent 3 spec</td></tr>
-      <tr><td><span class="learn-badge lb-w3">W3</span></td><td><strong>Agentic Skills — Tool Use & Planning</strong></td><td>Agent 4 multi-step plan: read graph → traverse chain → compute critical path → output JSON</td><td>Agent 4 spec</td></tr>
-      <tr><td><span class="learn-badge lb-w3">W3</span></td><td><strong>HHH Framework</strong></td><td>Agent 3: Helpful (timely), Honest (data-only), Harmless (no blame, PM approval for sensitive steps)</td><td>Agent 3 · §9 Responsible AI</td></tr>
-      <tr><td><span class="learn-badge lb-w3">W3</span></td><td><strong>SMART Goals</strong></td><td>Agent 4 milestone recommendations follow SMART criteria: specific step, measurable date, achievable sequence</td><td>Agent 4 spec</td></tr>
-      <tr><td><span class="learn-badge lb-w3">W3</span></td><td><strong>Agent Metrics (3 layers)</strong></td><td>KPIs mapped to: Task Performance (accuracy), Process Quality (latency), Operational Health (uptime)</td><td>§4 Metrics</td></tr>
-      <tr><td><span class="learn-badge lb-w3">W3</span></td><td><strong>Agent Evaluation — Precision & Recall</strong></td><td>Agent 4: P≥0.80, R≥0.75. Recall prioritised — missing a cascade risk costs more than a false flag.</td><td>§7 Evaluation</td></tr>
-      <tr><td><span class="learn-badge lb-w3">W3</span></td><td><strong>LLM as Judge</strong></td><td>Agent 3 email quality evaluated by LLM-as-Judge rubric (tone, relevance, urgency accuracy)</td><td>§7 Evaluation</td></tr>
-      <tr><td><span class="learn-badge lb-w3">W3</span></td><td><strong>Model Optimization — Prompt Caching</strong></td><td>Repeated project context cached across Agent 2 queries. Target: 70%+ cost reduction.</td><td>§2 Architecture · §10 Pricing</td></tr>
-      <tr><td><span class="learn-badge lb-w3">W3</span></td><td><strong>Claude Ecosystem</strong></td><td>Claude Sonnet as LLM backbone for all agents. Constitutional AI alignment matches our HHH requirements.</td><td>All Agents · §8 Prompts</td></tr>
-      <tr><td><span class="learn-badge lb-w3">W3</span></td><td><strong>AI Risks — Hallucination</strong></td><td>Agent 2: RAG-grounded + "I don't know" fallback. Never answers financial/step data from weights.</td><td>§9 Responsible AI</td></tr>
-      <tr><td><span class="learn-badge lb-w3">W3</span></td><td><strong>AI Risks — Over-reliance / Automation Bias</strong></td><td>Agent 4: confidence threshold gate. PM cannot act on milestone rec without explicit acceptance.</td><td>§9 Responsible AI</td></tr>
-      <tr><td><span class="learn-badge lb-w3">W3</span></td><td><strong>AI Risks — Prompt Injection</strong></td><td>Agent 2 input sanitised before LLM call. User cannot override system prompt via chat input.</td><td>§9 Responsible AI</td></tr>
-      <tr><td><span class="learn-badge lb-w3">W3</span></td><td><strong>Risk Mitigation — Defence in Depth</strong></td><td>5-layer mitigation stack: training → system prompt → output filter → human-in-loop → monitoring</td><td>§9 Responsible AI</td></tr>
+      <tr><td><span class="learn-badge lb-found">Foundations</span></td><td><strong>Tokens & Context Windows</strong></td><td>Project snapshots compressed to JSON; context budget explicitly designed per agent</td><td>Agent 2 · §8 Prompts</td></tr>
+      <tr><td><span class="learn-badge lb-found">Foundations</span></td><td><strong>RAG Architecture</strong></td><td>Agent 2 retrieves from project HTML pages before answering; never answers from weights</td><td>Agent 2 · §8 Prompts</td></tr>
+      <tr><td><span class="learn-badge lb-found">Foundations</span></td><td><strong>Grounding</strong></td><td>All system prompts include strict "only use provided data" constraint + fallback response</td><td>All Agents · §8 Prompts</td></tr>
+      <tr><td><span class="learn-badge lb-found">Foundations</span></td><td><strong>Encoder/Decoder</strong></td><td>Encoder embeddings for semantic search; decoder (Claude) for generation. Separate roles.</td><td>Agent 2 architecture</td></tr>
+      <tr><td><span class="learn-badge lb-ctx">Context</span></td><td><strong>Agentic RAG</strong></td><td>Agent 2 decomposes query → plans tool calls → retrieves → evaluates quality → loops</td><td>Agent 2 · §2 Solution</td></tr>
+      <tr><td><span class="learn-badge lb-ctx">Context</span></td><td><strong>Context Management — Good Design</strong></td><td>Structured JSON project state vs raw HTML. State persists across multi-turn conversations.</td><td>Agent 2 · §8 Prompts</td></tr>
+      <tr><td><span class="learn-badge lb-ctx">Context</span></td><td><strong>Context Types (4 types)</strong></td><td>Short-term (chat), structured (project JSON), unstructured (HTML) — each retrieved differently</td><td>Agent 2 design</td></tr>
+      <tr><td><span class="learn-badge lb-ctx">Context</span></td><td><strong>In-Context Learning (few-shot)</strong></td><td>Agent 3 email prompt includes example of good/bad tone to steer output without fine-tuning</td><td>Agent 3 · §8 Prompts</td></tr>
+      <tr><td><span class="learn-badge lb-multi">Multi-Agent</span></td><td><strong>Multi-Agent Architecture</strong></td><td>Four specialised agents over a shared data layer — an Orchestrator-Worker × Blackboard design</td><td>§ Multi-Agent Architecture</td></tr>
+      <tr><td><span class="learn-badge lb-multi">Multi-Agent</span></td><td><strong>Agent Specialisation</strong></td><td>Each agent owns one domain (generation, Q&amp;A, monitoring, dependency analysis) — separation of concerns</td><td>§3 Agents</td></tr>
+      <tr><td><span class="learn-badge lb-multi">Multi-Agent</span></td><td><strong>Shared vs Private Memory</strong></td><td>Each agent keeps a lean private context; the shared project data layer is the common store all agents read/write</td><td>§ Multi-Agent Architecture</td></tr>
+      <tr><td><span class="learn-badge lb-multi">Multi-Agent</span></td><td><strong>Parallelism</strong></td><td>Agents 2, 3 and 4 run concurrently over all projects rather than as a serial pipeline</td><td>§2 Architecture</td></tr>
+      <tr><td><span class="learn-badge lb-multi">Multi-Agent</span></td><td><strong>Tool Use via Typed Schemas (OAS)</strong></td><td>Agent tool calls (Smartsheet API, email) described as typed OpenAPI schemas so the model calls them reliably</td><td>§2 Architecture · §8 Prompts</td></tr>
+      <tr><td><span class="learn-badge lb-agentic">Agentic AI</span></td><td><strong>Knowledge Graph</strong></td><td>Steps = nodes, dependencies = edges. Agent 4 traverses to find critical path & cascade risk.</td><td>Agent 4 · §2 Solution</td></tr>
+      <tr><td><span class="learn-badge lb-agentic">Agentic AI</span></td><td><strong>Agentic Skills — Perceive→Plan→Act</strong></td><td>Agent 3 loop: observe deadlines → reason about urgency → act (send DRI email)</td><td>Agent 3 spec</td></tr>
+      <tr><td><span class="learn-badge lb-agentic">Agentic AI</span></td><td><strong>Agentic Skills — Tool Use & Planning</strong></td><td>Agent 4 multi-step plan: read graph → traverse chain → compute critical path → output JSON</td><td>Agent 4 spec</td></tr>
+      <tr><td><span class="learn-badge lb-agentic">Agentic AI</span></td><td><strong>SMART Goals</strong></td><td>Agent 4 milestone recommendations follow SMART criteria: specific step, measurable date, achievable sequence</td><td>Agent 4 spec</td></tr>
+      <tr><td><span class="learn-badge lb-agentic">Agentic AI</span></td><td><strong>Claude Ecosystem</strong></td><td>Claude Sonnet as LLM backbone for all agents. Constitutional AI alignment matches our HHH requirements.</td><td>All Agents · §8 Prompts</td></tr>
+      <tr><td><span class="learn-badge lb-found">Foundations</span></td><td><strong>Model Optimization — Prompt Caching</strong></td><td>Repeated project context cached across Agent 2 queries. Target: 70%+ cost reduction.</td><td>§2 Architecture · §10 Pricing</td></tr>
+      <tr><td><span class="learn-badge lb-eval">Evaluation</span></td><td><strong>Agent Metrics (3 layers)</strong></td><td>KPIs mapped to: Task Performance (accuracy), Process Quality (latency), Operational Health (uptime)</td><td>§4 Metrics</td></tr>
+      <tr><td><span class="learn-badge lb-eval">Evaluation</span></td><td><strong>Agent Evaluation — Precision & Recall</strong></td><td>Agent 4: P≥0.80, R≥0.75. Recall prioritised — missing a cascade risk costs more than a false flag.</td><td>§7 Evaluation</td></tr>
+      <tr><td><span class="learn-badge lb-eval">Evaluation</span></td><td><strong>LLM as Judge</strong></td><td>Agent 3 email quality evaluated by LLM-as-Judge rubric (tone, relevance, urgency accuracy)</td><td>§7 Evaluation</td></tr>
+      <tr><td><span class="learn-badge lb-resp">Responsible AI</span></td><td><strong>HHH Framework</strong></td><td>Agent 3: Helpful (timely), Honest (data-only), Harmless (no blame, PM approval for sensitive steps)</td><td>Agent 3 · §9 Responsible AI</td></tr>
+      <tr><td><span class="learn-badge lb-resp">Responsible AI</span></td><td><strong>AI Risks — Hallucination</strong></td><td>Agent 2: RAG-grounded + "I don't know" fallback. Never answers financial/step data from weights.</td><td>§9 Responsible AI</td></tr>
+      <tr><td><span class="learn-badge lb-resp">Responsible AI</span></td><td><strong>AI Risks — Over-reliance / Automation Bias</strong></td><td>Agent 4: confidence threshold gate. PM cannot act on milestone rec without explicit acceptance.</td><td>§9 Responsible AI</td></tr>
+      <tr><td><span class="learn-badge lb-resp">Responsible AI</span></td><td><strong>AI Risks — Prompt Injection</strong></td><td>Agent 2 input sanitised before LLM call. User cannot override system prompt via chat input.</td><td>§9 Responsible AI</td></tr>
+      <tr><td><span class="learn-badge lb-resp">Responsible AI</span></td><td><strong>Risk Mitigation — Defence in Depth</strong></td><td>5-layer mitigation stack: training → system prompt → output filter → human-in-loop → monitoring</td><td>§9 Responsible AI</td></tr>
     </tbody>
   </table>
 
   <div class="callout callout-teal">
-    <div class="callout-title">The Learning → Product Principle</div>
-    Every section of this PRD was written with a specific learning concept in mind. The agent loop design came from Week 3 agentic skills. The evaluation framework came from Week 3 precision/recall and LLM-as-Judge. The prompt guardrails came from Week 1 grounding and Week 3 HHH. This is not a theoretical exercise — the 3 weeks of learning are the architectural foundation of this product.
+    <div class="callout-title">From Capability to Product</div>
+    Every section of this PRD is anchored to a specific, deliberate AI technique. The agent-loop design follows the Perceive→Plan→Act pattern; the evaluation framework is built on precision/recall and LLM-as-Judge; the prompt guardrails combine strict grounding with the HHH safety framework. These techniques are the architectural foundation of the product — not an afterthought.
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     MULTI-AGENT ARCHITECTURE
+     ═══════════════════════════════════════ -->
+<div class="section" id="multi-agent">
+  <div class="section-num" style="background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.3);color:var(--accent)">🤖</div>
+  <h2>Multi-Agent Architecture</h2>
+  <p class="subtitle">Four specialised AI agents collaborating over a shared project data layer</p>
+
+  <div class="callout callout-amber">
+    <div class="callout-title">Architecture Pattern — Orchestrator-Worker × Blackboard</div>
+    A lightweight <strong>orchestrator</strong> routes each user goal to the right specialist agent (<strong>Orchestrator-Worker</strong>). The agents never message each other directly — they read from and write to a single <strong>shared project data layer</strong>, reacting to its current state (<strong>Blackboard</strong>). This combination gives the product three properties a single agent can't deliver: <strong>specialisation</strong>, <strong>parallelism</strong>, and a <strong>single source of truth</strong>.
+  </div>
+
+  <!-- Diagram -->
+  <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:14px;padding:24px 20px;margin:18px 0;">
+    <div style="text-align:center;margin-bottom:8px;">
+      <span style="display:inline-block;background:rgba(245,158,11,.14);border:1px solid rgba(245,158,11,.35);color:var(--accent);border-radius:9px;padding:9px 20px;font-weight:700;font-size:.85rem;">🧠 Orchestrator — routes each goal to a specialist</span>
+    </div>
+    <div style="text-align:center;color:var(--text-dim);font-size:.8rem;margin:6px 0;">↓ &nbsp; delegates &nbsp; ↓</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:12px;">
+      <div style="background:rgba(79,142,247,.1);border:1px solid rgba(79,142,247,.3);border-radius:10px;padding:12px 14px;text-align:center;"><div style="font-weight:700;font-size:.82rem;color:var(--w1);">👷 Agent 1</div><div style="font-size:.74rem;color:var(--text-muted);margin-top:2px;">Tracker Generator</div></div>
+      <div style="background:rgba(159,110,245,.1);border:1px solid rgba(159,110,245,.3);border-radius:10px;padding:12px 14px;text-align:center;"><div style="font-weight:700;font-size:.82rem;color:var(--w2);">👷 Agent 2</div><div style="font-size:.74rem;color:var(--text-muted);margin-top:2px;">Project Chatbot</div></div>
+      <div style="background:rgba(45,212,191,.1);border:1px solid rgba(45,212,191,.3);border-radius:10px;padding:12px 14px;text-align:center;"><div style="font-weight:700;font-size:.82rem;color:var(--w3);">👷 Agent 3</div><div style="font-size:.74rem;color:var(--text-muted);margin-top:2px;">Deadline Monitor</div></div>
+      <div style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:10px;padding:12px 14px;text-align:center;"><div style="font-weight:700;font-size:.82rem;color:var(--accent);">👷 Agent 4</div><div style="font-size:.74rem;color:var(--text-muted);margin-top:2px;">Dependency Evaluator</div></div>
+    </div>
+    <div style="text-align:center;color:var(--text-dim);font-size:.8rem;margin:6px 0;">↕ &nbsp; read / write &nbsp; ↕</div>
+    <div style="text-align:center;">
+      <span style="display:inline-block;width:100%;max-width:560px;background:rgba(45,212,191,.1);border:1px dashed var(--secondary);color:var(--secondary);border-radius:10px;padding:11px 18px;font-weight:700;font-size:.82rem;">🗂️ Shared Project Data Layer — the Blackboard (parsed Excel / project JSON)</span>
+    </div>
+  </div>
+
+  <h3>Why Multi-Agent — not a single agent?</h3>
+  <table>
+    <thead><tr><th style="width:42%;">Single-Agent Limitation</th><th>How This System Solves It</th></tr></thead>
+    <tbody>
+      <tr><td>Context window fills up across many projects</td><td>Each agent handles only its slice of the project data, keeping its context lean</td></tr>
+      <tr><td>One agent can't specialise in everything</td><td>A dedicated agent per job — generation, Q&amp;A, monitoring, dependency analysis</td></tr>
+      <tr><td>Serial bottleneck — one task at a time</td><td>Agents 2, 3 and 4 run in parallel over all tracked projects</td></tr>
+      <tr><td>Hard to debug one long trace</td><td>Each agent's output is isolated and independently inspectable</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Agent → Worker Mapping</h3>
+  <table>
+    <thead><tr><th>Agent</th><th>Specialist Role</th><th>Worker Type / Pattern</th></tr></thead>
+    <tbody>
+      <tr><td><span class="learn-badge lb-found">Agent 1</span></td><td>Source Configurator & Tracker Generator</td><td>Generator — Excel → validated JSON → HTML (mini pipeline)</td></tr>
+      <tr><td><span class="learn-badge lb-ctx">Agent 2</span></td><td>Project Intelligence Chatbot</td><td>Retrieval worker — Agentic RAG over the shared data layer</td></tr>
+      <tr><td><span class="learn-badge lb-agentic">Agent 3</span></td><td>Deadline Monitor & DRI Notifier</td><td>Event-driven worker — Perceive → Plan → Act loop</td></tr>
+      <tr><td><span class="learn-badge lb-multi">Agent 4</span></td><td>Dependency & Risk Evaluator</td><td>Analyst worker — knowledge-graph traversal</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Memory Model — Shared vs Private</h3>
+  <div class="callout callout-teal">
+    <div class="callout-title">Reason Privately, Publish Publicly</div>
+    Each agent reasons in its own <strong>private context</strong> (its task prompt, retrieved chunks, and intermediate steps) to stay focused and cost-efficient. It then writes only the <strong>distilled result</strong> — a generated tracker, an answer, a risk score, an email decision — to the <strong>shared project data layer</strong>, which is the single source of truth every other agent builds on. Sensitive data (DRI emails, PII) is scoped to the agent that needs it, never broadcast into shared memory unnecessarily.
   </div>
 </div>
 
@@ -353,10 +426,10 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
   <p class="subtitle">A multi-agent web application — four specialised AI agents collaborating over a shared project data layer</p>
 
   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
-    <span class="learn-badge lb-w1">W1 · RAG Architecture</span>
-    <span class="learn-badge lb-w2">W2 · Agentic RAG</span>
-    <span class="learn-badge lb-w3">W3 · Knowledge Graph → Agent 4</span>
-    <span class="learn-badge lb-w3">W3 · Prompt Caching</span>
+    <span class="learn-badge lb-w1">RAG Architecture</span>
+    <span class="learn-badge lb-w2">Agentic RAG</span>
+    <span class="learn-badge lb-w3">Knowledge Graph → Agent 4</span>
+    <span class="learn-badge lb-w3">Prompt Caching</span>
   </div>
 
   <h3>Product Vision</h3>
@@ -369,7 +442,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
 
   <h3>High-Level Architecture</h3>
   <div class="callout callout-teal" style="margin-bottom:16px">
-    <div class="callout-title">W3 Learning Applied — Knowledge Graph as Dependency Layer</div>
+    <div class="callout-title">Knowledge Graph as Dependency Layer</div>
     Agent 4's dependency model is a direct application of the Knowledge Graph pattern: steps are nodes, dependency relationships are typed edges, and critical path detection is graph traversal. This is exactly how a Knowledge Graph enables multi-hop reasoning — applied to project risk.
   </div>
   <table>
@@ -405,7 +478,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
 <div class="section" id="agents">
   <div class="section-num">3</div>
   <h2>Agent Specifications</h2>
-  <p class="subtitle">Four specialised AI agents — each designed around specific learning concepts from Weeks 1–3</p>
+  <p class="subtitle">Four specialised AI agents — each designed around a specific, deliberate AI technique</p>
 
   <div class="agent-grid">
     <div class="agent-card a1">
@@ -414,8 +487,8 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
       </div>
       <div class="agent-body">
         <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
-          <span class="learn-badge lb-w1">W1 · Tokens</span>
-          <span class="learn-badge lb-w1">W1 · Grounding</span>
+          <span class="learn-badge lb-w1">Tokens</span>
+          <span class="learn-badge lb-w1">Grounding</span>
         </div>
         <p><strong>Trigger:</strong> User uploads Excel file via web UI.</p>
         <ul>
@@ -437,11 +510,11 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
       </div>
       <div class="agent-body">
         <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
-          <span class="learn-badge lb-w1">W1 · RAG</span>
-          <span class="learn-badge lb-w1">W1 · Grounding</span>
-          <span class="learn-badge lb-w2">W2 · Agentic RAG</span>
-          <span class="learn-badge lb-w2">W2 · Context Management</span>
-          <span class="learn-badge lb-w3">W3 · Prompt Caching</span>
+          <span class="learn-badge lb-w1">RAG</span>
+          <span class="learn-badge lb-w1">Grounding</span>
+          <span class="learn-badge lb-w2">Agentic RAG</span>
+          <span class="learn-badge lb-w2">Context Management</span>
+          <span class="learn-badge lb-w3">Prompt Caching</span>
         </div>
         <p><strong>Trigger:</strong> User types a natural language question in the chat panel.</p>
         <ul>
@@ -449,10 +522,10 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
           <li>Decomposes complex queries into multi-step retrieval plans — <em>Agentic RAG pattern</em></li>
           <li>Maintains structured context state across turns — not raw conversation history</li>
           <li>Supports: "Which projects are at risk?", "Who owns the blocked step in Project X?"</li>
-          <li>Strictly grounded — never extrapolates beyond project data (<em>W1 Grounding</em>)</li>
+          <li>Strictly grounded — never extrapolates beyond project data (<em>Grounding</em>)</li>
           <li>Prompt caching applied to repeated project context — reduces query cost by ~70%</li>
         </ul>
-        <p style="margin-top:10px"><strong>Agentic behaviour:</strong> Plans a sequence of tool calls to answer complex queries. Does not answer in one static prompt — decomposes the question first. (<em>W2 Agentic RAG loop</em>)</p>
+        <p style="margin-top:10px"><strong>Agentic behaviour:</strong> Plans a sequence of tool calls to answer complex queries. Does not answer in one static prompt — decomposes the question first. (<em>Agentic RAG loop</em>)</p>
       </div>
     </div>
 
@@ -462,9 +535,9 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
       </div>
       <div class="agent-body">
         <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
-          <span class="learn-badge lb-w2">W2 · In-Context Learning</span>
-          <span class="learn-badge lb-w3">W3 · Perceive→Plan→Act</span>
-          <span class="learn-badge lb-w3">W3 · HHH Framework</span>
+          <span class="learn-badge lb-w2">In-Context Learning</span>
+          <span class="learn-badge lb-w3">Perceive→Plan→Act</span>
+          <span class="learn-badge lb-w3">HHH Framework</span>
         </div>
         <p><strong>Trigger:</strong> Scheduled run (nightly) or on-demand by PM.</p>
         <ul>
@@ -474,7 +547,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
           <li>HHH guardrails: Helpful (timely), Honest (data-only), Harmless (no blame language)</li>
           <li>Security flag respected — never emails about flagged steps without PM approval</li>
         </ul>
-        <p style="margin-top:10px"><strong>Agentic behaviour:</strong> Observe → Reason → Act loop. This is the core agentic pattern from <em>W3 Agentic Skills</em> applied directly to project monitoring.</p>
+        <p style="margin-top:10px"><strong>Agentic behaviour:</strong> Observe → Reason → Act loop. This is the core agentic pattern from <em>Agentic Skills</em> applied directly to project monitoring.</p>
       </div>
     </div>
 
@@ -484,18 +557,18 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
       </div>
       <div class="agent-body">
         <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
-          <span class="learn-badge lb-w3">W3 · Knowledge Graph</span>
-          <span class="learn-badge lb-w3">W3 · SMART Goals</span>
-          <span class="learn-badge lb-w3">W3 · Precision & Recall</span>
-          <span class="learn-badge lb-w3">W3 · Agent Metrics</span>
+          <span class="learn-badge lb-w3">Knowledge Graph</span>
+          <span class="learn-badge lb-w3">SMART Goals</span>
+          <span class="learn-badge lb-w3">Precision & Recall</span>
+          <span class="learn-badge lb-w3">Agent Metrics</span>
         </div>
         <p><strong>Trigger:</strong> On project load and after each status update.</p>
         <ul>
-          <li>Knowledge Graph traversal: Column I dependency data → nodes + edges → critical path (<em>W3 Knowledge Graph</em>)</li>
+          <li>Knowledge Graph traversal: Column I dependency data → nodes + edges → critical path (<em>Knowledge Graph</em>)</li>
           <li>Identifies all steps currently blocked by incomplete upstream steps</li>
           <li>Detects cascade risk — if Step N delayed, which downstream steps are at risk?</li>
-          <li>Milestone recommendations follow SMART criteria: specific, measurable, time-bound (<em>W3 SMART Goals</em>)</li>
-          <li>Cascade risk target: P≥0.80, R≥0.75 — recall prioritised over precision (<em>W3 Precision/Recall</em>)</li>
+          <li>Milestone recommendations follow SMART criteria: specific, measurable, time-bound (<em>SMART Goals</em>)</li>
+          <li>Cascade risk target: P≥0.80, R≥0.75 — recall prioritised over precision (<em>Precision/Recall</em>)</li>
         </ul>
         <p style="margin-top:10px"><strong>Agentic behaviour:</strong> Multi-step planning — reads graph, traverses chain, computes critical path, outputs prioritised action plan. Memory: retains prior milestone suggestions to detect regressions.</p>
       </div>
@@ -518,17 +591,17 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
 <div class="section" id="metrics">
   <div class="section-num">4</div>
   <h2>Core Metrics</h2>
-  <p class="subtitle">Metrics framework built on W3 learning — 3-layer Agent Metrics model applied to all agents</p>
+  <p class="subtitle">Metrics framework — a 3-layer Agent Metrics model applied to all agents</p>
 
   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
-    <span class="learn-badge lb-w3">W3 · Agent Metrics (3 layers)</span>
-    <span class="learn-badge lb-w3">W3 · Precision & Recall</span>
-    <span class="learn-badge lb-w3">W3 · Agent Evaluation</span>
+    <span class="learn-badge lb-w3">Agent Metrics (3 layers)</span>
+    <span class="learn-badge lb-w3">Precision & Recall</span>
+    <span class="learn-badge lb-w3">Agent Evaluation</span>
   </div>
 
   <div class="callout callout-teal">
-    <div class="callout-title">W3 Learning Applied — 3-Layer Agent Metrics Framework</div>
-    The KPIs below are organised by the 3-layer framework from Week 3: <strong style="color:var(--text)">Task Performance</strong> (did the agent do the right thing?), <strong style="color:var(--text)">Process Quality</strong> (did it do it well?), and <strong style="color:var(--text)">Operational Health</strong> (is it reliable at scale?). Every agent has metrics in all three layers.
+    <div class="callout-title">3-Layer Agent Metrics Framework</div>
+    The KPIs below are organised by a 3-layer framework: <strong style="color:var(--text)">Task Performance</strong> (did the agent do the right thing?), <strong style="color:var(--text)">Process Quality</strong> (did it do it well?), and <strong style="color:var(--text)">Operational Health</strong> (is it reliable at scale?). Every agent has metrics in all three layers.
   </div>
 
   <h3>North Star Metric</h3>
@@ -561,7 +634,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
 <div class="section" id="priority">
   <div class="section-num">5</div>
   <h2>Prioritisation — MoSCoW</h2>
-  <p class="subtitle">POC phase features — prioritised by learning concept complexity and delivery risk</p>
+  <p class="subtitle">POC phase features — prioritised by technical complexity and delivery risk</p>
 
   <div class="moscow-grid">
     <div class="moscow-card must">
@@ -649,7 +722,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
       <h4>Smartsheet Integration + Prompt Caching + Database</h4>
       <ul>
         <li>Smartsheet API connector: agents poll live (no manual upload)</li>
-        <li>Prompt caching: repeated project context cached — target 70%+ cost reduction (W3 Model Optimization)</li>
+        <li>Prompt caching: repeated project context cached — target 70%+ cost reduction (Model Optimization)</li>
         <li>Backend database: project persistence, event sourcing, audit log</li>
         <li>Agent 3: Smartsheet-triggered email on status change (real-time, not nightly)</li>
         <li>Agent 4: Cross-project dependency analysis</li>
@@ -673,17 +746,17 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
 <div class="section" id="evaluation">
   <div class="section-num">7</div>
   <h2>Evaluation Plan</h2>
-  <p class="subtitle">Evaluation framework directly from W3 learning — Precision/Recall, LLM-as-Judge, and human review layers</p>
+  <p class="subtitle">Evaluation framework — Precision/Recall, LLM-as-Judge, and human review layers</p>
 
   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
-    <span class="learn-badge lb-w3">W3 · Agent Evaluation (4 dimensions)</span>
-    <span class="learn-badge lb-w3">W3 · Precision & Recall</span>
-    <span class="learn-badge lb-w3">W3 · LLM as Judge</span>
+    <span class="learn-badge lb-w3">Agent Evaluation (4 dimensions)</span>
+    <span class="learn-badge lb-w3">Precision & Recall</span>
+    <span class="learn-badge lb-w3">LLM as Judge</span>
   </div>
 
   <div class="callout callout-teal">
-    <div class="callout-title">W3 Learning Applied — Evaluation Strategy</div>
-    Week 3 taught four evaluation dimensions (correctness, relevance, completeness, safety) and three methods (human review, LLM-as-Judge, automated metrics). Each agent below uses the method appropriate to its output type. Agent 3 email quality uses LLM-as-Judge rubric. Agent 4 cascade risk uses Precision/Recall against historical datasets.
+    <div class="callout-title">Evaluation Strategy</div>
+    The evaluation strategy defines four dimensions (correctness, relevance, completeness, safety) and three methods (human review, LLM-as-Judge, automated metrics). Each agent below uses the method appropriate to its output type. Agent 3 email quality uses LLM-as-Judge rubric. Agent 4 cascade risk uses Precision/Recall against historical datasets.
   </div>
 
   <table>
@@ -700,7 +773,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
 
   <div class="callout callout-purple" style="margin-top:16px">
     <div class="callout-title">Precision vs Recall Trade-off Decision (Agent 4)</div>
-    For cascade risk detection, we deliberately bias toward <strong style="color:var(--text)">Recall (R≥0.75)</strong> over Precision. A false negative (missed cascade risk) causes a real project delay. A false positive (unnecessary alert) costs a PM 5 minutes of review. This is a direct application of the W3 Precision/Recall case study — the business cost asymmetry determines the dial setting.
+    For cascade risk detection, we deliberately bias toward <strong style="color:var(--text)">Recall (R≥0.75)</strong> over Precision. A false negative (missed cascade risk) causes a real project delay. A false positive (unnecessary alert) costs a PM 5 minutes of review. This is a direct application of the Precision/Recall trade-off — the business cost asymmetry determines the dial setting.
   </div>
 </div>
 
@@ -708,19 +781,19 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
 <div class="section" id="prompts">
   <div class="section-num">8</div>
   <h2>Prompt Strategy</h2>
-  <p class="subtitle">Structured, auditable prompts — built on W1 Grounding, W2 Context Management, W3 HHH Framework</p>
+  <p class="subtitle">Structured, auditable prompts — built on Grounding, Context Management, and the HHH Framework</p>
 
   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
-    <span class="learn-badge lb-w1">W1 · Grounding</span>
-    <span class="learn-badge lb-w2">W2 · Context Management</span>
-    <span class="learn-badge lb-w2">W2 · In-Context Learning</span>
-    <span class="learn-badge lb-w3">W3 · HHH Framework</span>
+    <span class="learn-badge lb-w1">Grounding</span>
+    <span class="learn-badge lb-w2">Context Management</span>
+    <span class="learn-badge lb-w2">In-Context Learning</span>
+    <span class="learn-badge lb-w3">HHH Framework</span>
   </div>
 
   <h3>Design Principles</h3>
-  <p style="color:var(--text-muted);margin-bottom:16px"><strong style="color:var(--w1)">Grounded (W1)</strong> — always use real project data, never hallucinate. <strong style="color:var(--w2)">Scoped (W2)</strong> — structured context objects, not raw document dumps. <strong style="color:var(--w3)">HHH-Aligned (W3)</strong> — every prompt enforces Helpful, Honest, Harmless. <strong style="color:var(--text)">Auditable</strong> — every AI output logged with its input context.</p>
+  <p style="color:var(--text-muted);margin-bottom:16px"><strong style="color:var(--w1)">Grounded</strong> — always use real project data, never hallucinate. <strong style="color:var(--w2)">Scoped</strong> — structured context objects, not raw document dumps. <strong style="color:var(--w3)">HHH-Aligned</strong> — every prompt enforces Helpful, Honest, Harmless. <strong style="color:var(--text)">Auditable</strong> — every AI output logged with its input context.</p>
 
-  <h3>Agent 2 — Project Chatbot <span class="learn-badge lb-w1">W1 · RAG</span><span class="learn-badge lb-w2">W2 · Agentic RAG</span></h3>
+  <h3>Agent 2 — Project Chatbot <span class="learn-badge lb-w1">RAG</span><span class="learn-badge lb-w2">Agentic RAG</span></h3>
   <div class="prompt-block">
 <span class="role">SYSTEM:</span> You are a helpful project assistant with read access to all projects tracked on the Multi-Project Tracker platform. You will be given live project data as JSON context. Answer only based on the provided data. If information is not in the data, say "I don't have that information." Never guess or extrapolate. Keep answers under 3 sentences unless the user asks for a list. You may query multiple projects to answer a question — plan your tool calls before responding.
 
@@ -728,7 +801,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
 User question: <span class="var">{{user_question}}</span>
   </div>
 
-  <h3>Agent 3 — DRI Deadline Alert Email <span class="learn-badge lb-w3">W3 · HHH — Helpful, Honest, Harmless</span></h3>
+  <h3>Agent 3 — DRI Deadline Alert Email <span class="learn-badge lb-w3">HHH — Helpful, Honest, Harmless</span></h3>
   <div class="prompt-block">
 <span class="role">SYSTEM:</span> You are a professional project coordinator. Write a brief, friendly, and professional reminder email to a stakeholder about an overdue or upcoming project step. Keep it under 100 words. Do not use blame language (Harmless). Be specific about the step, deadline, and the downstream impact of the delay (Helpful + Honest). Sign off with the PM's name.
 
@@ -742,7 +815,7 @@ PM Name: <span class="var">{{pm_name}}</span>
 Write the email body only. No subject line.
   </div>
 
-  <h3>Agent 4 — Dependency Risk &amp; Milestone Planner <span class="learn-badge lb-w3">W3 · Knowledge Graph</span><span class="learn-badge lb-w3">W3 · SMART Goals</span></h3>
+  <h3>Agent 4 — Dependency Risk &amp; Milestone Planner <span class="learn-badge lb-w3">Knowledge Graph</span><span class="learn-badge lb-w3">SMART Goals</span></h3>
   <div class="prompt-block">
 <span class="role">SYSTEM:</span> You are a senior project risk analyst specialising in dependency management. Analyse the provided project dependency graph and current step statuses. Identify all blocked steps, cascade risks, and the critical path. Then recommend the next 3–5 milestones the team should prioritise — each milestone must be SMART: Specific, Measurable, Achievable, Relevant, Time-bound. Be concise, data-driven, and actionable. Output as JSON.
 
@@ -757,11 +830,11 @@ Provide: (1) blocked_steps, (2) cascade_risks with impact, (3) critical_path, (4
   <table>
     <thead><tr><th>Guardrail</th><th>Learning Source</th><th>Implementation</th></tr></thead>
     <tbody>
-      <tr><td>No PII beyond DRI name/email</td><td><span class="learn-badge lb-w3">W3 · AI Risks</span></td><td>Data sanitised before injection; security-flagged rows excluded entirely</td></tr>
-      <tr><td>Output length enforcement</td><td><span class="learn-badge lb-w1">W1 · Tokens</span></td><td>Max token limits set per prompt; truncation fallback to prevent context overflow</td></tr>
-      <tr><td>Human override on all AI outputs</td><td><span class="learn-badge lb-w3">W3 · HHH Harmless</span></td><td>PM can edit any AI email before send; all outputs labelled "AI Suggested"</td></tr>
-      <tr><td>Confidence threshold</td><td><span class="learn-badge lb-w3">W3 · Agent Evaluation</span></td><td>Agent 4 risk score only surfaced if model confidence &gt;0.75</td></tr>
-      <tr><td>Full audit trail</td><td><span class="learn-badge lb-w3">W3 · AI Risks</span></td><td>Every AI prompt + output logged with timestamp, project ID, and model version</td></tr>
+      <tr><td>No PII beyond DRI name/email</td><td><span class="learn-badge lb-w3">AI Risks</span></td><td>Data sanitised before injection; security-flagged rows excluded entirely</td></tr>
+      <tr><td>Output length enforcement</td><td><span class="learn-badge lb-w1">Tokens</span></td><td>Max token limits set per prompt; truncation fallback to prevent context overflow</td></tr>
+      <tr><td>Human override on all AI outputs</td><td><span class="learn-badge lb-w3">HHH Harmless</span></td><td>PM can edit any AI email before send; all outputs labelled "AI Suggested"</td></tr>
+      <tr><td>Confidence threshold</td><td><span class="learn-badge lb-w3">Agent Evaluation</span></td><td>Agent 4 risk score only surfaced if model confidence &gt;0.75</td></tr>
+      <tr><td>Full audit trail</td><td><span class="learn-badge lb-w3">AI Risks</span></td><td>Every AI prompt + output logged with timestamp, project ID, and model version</td></tr>
     </tbody>
   </table>
 </div>
@@ -770,23 +843,23 @@ Provide: (1) blocked_steps, (2) cascade_risks with impact, (3) critical_path, (4
 <div class="section" id="ai-risk">
   <div class="section-num">9</div>
   <h2>Responsible AI Risk &amp; Mitigation</h2>
-  <p class="subtitle">Ethical, security, and compliance considerations — built directly from W3 AI Risks & HHH Framework learning</p>
+  <p class="subtitle">Ethical, security, and compliance considerations — built on the AI Risks &amp; HHH Framework</p>
 
   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
-    <span class="learn-badge lb-w3">W3 · HHH Framework</span>
-    <span class="learn-badge lb-w3">W3 · AI Risks — Hallucination</span>
-    <span class="learn-badge lb-w3">W3 · AI Risks — Prompt Injection</span>
-    <span class="learn-badge lb-w3">W3 · AI Risks — Over-reliance</span>
-    <span class="learn-badge lb-w3">W3 · Defence in Depth</span>
+    <span class="learn-badge lb-w3">HHH Framework</span>
+    <span class="learn-badge lb-w3">AI Risks — Hallucination</span>
+    <span class="learn-badge lb-w3">AI Risks — Prompt Injection</span>
+    <span class="learn-badge lb-w3">AI Risks — Over-reliance</span>
+    <span class="learn-badge lb-w3">Defence in Depth</span>
   </div>
 
   <div class="callout callout-teal">
-    <div class="callout-title">W3 Learning Applied — Defence in Depth</div>
-    Week 3 introduced the defence-in-depth mitigation stack: Model Training → System Prompt → Output Filter → Human-in-Loop → Monitoring. Every risk row below maps to one or more layers of this stack. Risk without an owner is a liability — each row has a named layer and a measurable mitigation signal.
+    <div class="callout-title">Defence in Depth</div>
+    We apply a defence-in-depth mitigation stack: Model Training → System Prompt → Output Filter → Human-in-Loop → Monitoring. Every risk row below maps to one or more layers of this stack. Risk without an owner is a liability — each row has a named layer and a measurable mitigation signal.
   </div>
 
   <table>
-    <thead><tr><th>Risk</th><th>Agent</th><th>Severity</th><th>W3 Risk Category</th><th>Mitigation</th></tr></thead>
+    <thead><tr><th>Risk</th><th>Agent</th><th>Severity</th><th>Risk Category</th><th>Mitigation</th></tr></thead>
     <tbody>
       <tr class="risk-high"><td><strong>AI hallucination in chatbot responses</strong> — Agent 2 fabricates step data</td><td><span class="badge badge-purple">A2</span></td><td><span class="badge badge-red">High</span></td><td><span class="learn-badge lb-w3">Hallucination</span></td><td>Strictly grounded prompting; "I don't have that information" fallback; RAG-only (never training weights)</td></tr>
       <tr class="risk-high"><td><strong>Security-flagged steps included in AI prompts</strong> — card key data sent to LLM</td><td><span class="badge badge-blue">A1</span> <span class="badge badge-green">A3</span></td><td><span class="badge badge-red">Critical</span></td><td><span class="learn-badge lb-w3">Data Privacy</span></td><td>Column J = Y rows hard-excluded from all AI prompts; key values never passed; dual PM authorisation</td></tr>
@@ -800,7 +873,7 @@ Provide: (1) blocked_steps, (2) cascade_risks with impact, (3) critical_path, (4
 
   <div class="callout callout-green">
     <div class="callout-title">AI Governance Commitments</div>
-    Human-in-the-loop for all consequential AI actions (emails, milestone changes) · No AI training on customer project data without consent · Full audit trail of every AI prompt and output · AI feature toggle — any agent can be disabled per project · Quarterly AI risk review aligned to W3 risk framework
+    Human-in-the-loop for all consequential AI actions (emails, milestone changes) · No AI training on customer project data without consent · Full audit trail of every AI prompt and output · AI feature toggle — any agent can be disabled per project · Quarterly AI risk review aligned to our risk framework
   </div>
 </div>
 
@@ -860,7 +933,7 @@ Provide: (1) blocked_steps, (2) cascade_risks with impact, (3) critical_path, (4
       <tr><td>Gross Margin target</td><td>75%+</td></tr>
       <tr><td>Payback period (CAC)</td><td>&lt;12 months</td></tr>
       <tr><td>Break-even ARR</td><td>~$800K (~25 Professional customers)</td></tr>
-      <tr><td>LLM cost reduction via prompt caching (W3)</td><td>Target 70%+ on repeated project context queries</td></tr>
+      <tr><td>LLM cost reduction via prompt caching</td><td>Target 70%+ on repeated project context queries</td></tr>
     </tbody>
   </table>
 </div>
@@ -873,7 +946,7 @@ Provide: (1) blocked_steps, (2) cascade_risks with impact, (3) critical_path, (4
 
   <div class="callout callout-amber">
     <div class="callout-title">POC Constraints</div>
-    No backend database. No user authentication system. HTML pages and Excel files are stored and managed by the user locally. Smartsheet integration is deferred to the future phase. Claude Sonnet used as LLM backbone for all agents (W3 Claude Ecosystem).
+    No backend database. No user authentication system. HTML pages and Excel files are stored and managed by the user locally. Smartsheet integration is deferred to the future phase. Claude Sonnet used as LLM backbone for all agents (Claude Ecosystem).
   </div>
 
   <h3>POC Deliverables</h3>
@@ -881,11 +954,11 @@ Provide: (1) blocked_steps, (2) cascade_risks with impact, (3) critical_path, (4
     <thead><tr><th>Deliverable</th><th>Learning Concepts Applied</th><th>Description</th></tr></thead>
     <tbody>
       <tr><td><strong>Web Upload UI</strong></td><td>—</td><td>Single-page web form for Excel upload; schema validation with inline error feedback</td></tr>
-      <tr><td><strong>Agent 1 — Tracker Generator</strong></td><td><span class="learn-badge lb-w1">W1 · Tokens</span></td><td>Python script; parses .xlsx, generates project-{slug}.html with RAG, progress bar, steps table</td></tr>
+      <tr><td><strong>Agent 1 — Tracker Generator</strong></td><td><span class="learn-badge lb-w1">Tokens</span></td><td>Python script; parses .xlsx, generates project-{slug}.html with RAG, progress bar, steps table</td></tr>
       <tr><td><strong>Dashboard (index.html)</strong></td><td>—</td><td>Central hub showing all generated project cards; each card links to its tracker HTML page</td></tr>
-      <tr><td><strong>Agent 3 — Email Monitor</strong></td><td><span class="learn-badge lb-w3">W3 · Perceive→Plan→Act</span><span class="learn-badge lb-w3">W3 · HHH</span></td><td>Python script (cron); reads project Excel; sends SMTP emails; logs to email-log.json</td></tr>
-      <tr><td><strong>Agent 4 — Dependency Evaluator</strong></td><td><span class="learn-badge lb-w3">W3 · Knowledge Graph</span><span class="learn-badge lb-w3">W3 · SMART Goals</span></td><td>Python script; parses Column I dependency graph; outputs blocked steps + milestone JSON</td></tr>
-      <tr><td><strong>Agent 2 — Chatbot UI</strong></td><td><span class="learn-badge lb-w1">W1 · RAG</span><span class="learn-badge lb-w2">W2 · Agentic RAG</span></td><td>Chat panel; calls Claude API with project HTML as RAG context; multi-turn conversation</td></tr>
+      <tr><td><strong>Agent 3 — Email Monitor</strong></td><td><span class="learn-badge lb-w3">Perceive→Plan→Act</span><span class="learn-badge lb-w3">HHH</span></td><td>Python script (cron); reads project Excel; sends SMTP emails; logs to email-log.json</td></tr>
+      <tr><td><strong>Agent 4 — Dependency Evaluator</strong></td><td><span class="learn-badge lb-w3">Knowledge Graph</span><span class="learn-badge lb-w3">SMART Goals</span></td><td>Python script; parses Column I dependency graph; outputs blocked steps + milestone JSON</td></tr>
+      <tr><td><strong>Agent 2 — Chatbot UI</strong></td><td><span class="learn-badge lb-w1">RAG</span><span class="learn-badge lb-w2">Agentic RAG</span></td><td>Chat panel; calls Claude API with project HTML as RAG context; multi-turn conversation</td></tr>
     </tbody>
   </table>
 
@@ -911,7 +984,7 @@ Provide: (1) blocked_steps, (2) cascade_risks with impact, (3) critical_path, (4
 <div class="flow-section" id="flow">
   <div class="section-num" style="background:var(--secondary-dim);border-color:rgba(45,212,191,.3);color:var(--secondary)">⬡</div>
   <h2 style="margin-top:12px">BIN Procurement — Reference Process Flow</h2>
-  <p class="subtitle">Example implementation: 31 steps across 6 phases — showing all 4 agents applying W1/W2/W3 learning in a live card launch</p>
+  <p class="subtitle">Example implementation: 31 steps across 6 phases — showing all 4 agents working end-to-end in a live card launch</p>
 
   <svg viewBox="0 0 900 1100" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:900px;display:block;margin:0 auto;font-family:'Inter',sans-serif">
     <rect x="5" y="5" width="168" height="1090" fill="rgba(79,142,247,0.07)" rx="6"/>
@@ -970,7 +1043,7 @@ Provide: (1) blocked_steps, (2) cascade_risks with impact, (3) critical_path, (4
     <text x="796" y="84" text-anchor="middle" font-size="9" font-weight="700" fill="#f59e0b">🤖 Agent 4 Active</text>
     <text x="796" y="97" text-anchor="middle" font-size="8" fill="#8b9ab4">Knowledge Graph loaded</text>
     <text x="796" y="110" text-anchor="middle" font-size="8" fill="#8b9ab4">Critical path: 1→3→4→5→6</text>
-    <text x="796" y="123" text-anchor="middle" font-size="8" fill="#f59e0b">W3 · Knowledge Graph</text>
+    <text x="796" y="123" text-anchor="middle" font-size="8" fill="#f59e0b">Knowledge Graph</text>
 
     <!-- PHASE B -->
     <rect x="5" y="230" width="860" height="20" fill="rgba(79,142,247,0.2)" rx="4"/>
@@ -1018,7 +1091,7 @@ Provide: (1) blocked_steps, (2) cascade_risks with impact, (3) critical_path, (4
     <text x="796" y="361" text-anchor="middle" font-size="8" fill="#8b9ab4">Agent 3: AI emails DISABLED</text>
     <text x="796" y="374" text-anchor="middle" font-size="8" fill="#8b9ab4">PM manual approval required</text>
     <text x="796" y="387" text-anchor="middle" font-size="8" fill="#8b9ab4">Agent 4: Dependency check ON</text>
-    <text x="796" y="400" text-anchor="middle" font-size="8" fill="#9f6ef5">W3 · HHH — Harmless</text>
+    <text x="796" y="400" text-anchor="middle" font-size="8" fill="#9f6ef5">HHH — Harmless</text>
 
     <!-- PHASE D -->
     <rect x="5" y="498" width="860" height="20" fill="rgba(79,142,247,0.2)" rx="4"/>
@@ -1057,7 +1130,7 @@ Provide: (1) blocked_steps, (2) cascade_risks with impact, (3) critical_path, (4
     <text x="796" y="542" text-anchor="middle" font-size="9" font-weight="700" fill="#34d399">📧 Agent 3 Monitor</text>
     <text x="796" y="555" text-anchor="middle" font-size="8" fill="#8b9ab4">Steps 14–19: daily checks</text>
     <text x="796" y="568" text-anchor="middle" font-size="8" fill="#8b9ab4">Perceive→Plan→Act loop</text>
-    <text x="796" y="581" text-anchor="middle" font-size="8" fill="#34d399">W3 · HHH + Agentic Skills</text>
+    <text x="796" y="581" text-anchor="middle" font-size="8" fill="#34d399">HHH + Agentic Skills</text>
 
     <!-- PHASE E -->
     <rect x="5" y="730" width="860" height="20" fill="rgba(79,142,247,0.2)" rx="4"/>
@@ -1120,13 +1193,13 @@ Provide: (1) blocked_steps, (2) cascade_risks with impact, (3) critical_path, (4
     <text x="796" y="1007" text-anchor="middle" font-size="8" fill="#f59e0b">A4 Graph: Critical path 28→31</text>
     <text x="796" y="1020" text-anchor="middle" font-size="8" fill="#f59e0b">SMART milestone: Card Valid</text>
     <text x="796" y="1033" text-anchor="middle" font-size="8" fill="#8b9ab4">Risk score monitored nightly</text>
-    <text x="796" y="1046" text-anchor="middle" font-size="8" fill="#2dd4bf">W1+W2+W3 applied end-to-end</text>
+    <text x="796" y="1046" text-anchor="middle" font-size="8" fill="#2dd4bf">AI techniques applied end-to-end</text>
   </svg>
 </div>
 
 <footer>
   <p>AI-Powered Multi-Project Tracker · PRD v2.0 · Built on 3 Weeks of AI PM Learning · May 2026 · Author: Robin Khatwani</p>
-  <p style="margin-top:6px">W1: Tokens · RAG · Grounding &nbsp;|&nbsp; W2: Agentic RAG · Context Management &nbsp;|&nbsp; W3: Knowledge Graph · HHH · Precision/Recall · AI Risks</p>
+  <p style="margin-top:6px">Foundations: Tokens · RAG · Grounding &nbsp;|&nbsp; Context: Agentic RAG · Context Management &nbsp;|&nbsp; Agentic &amp; Responsible AI: Knowledge Graph · HHH · Precision/Recall · AI Risks</p>
   <p style="margin-top:6px">POC data source: Project_Input_BIN_SS.xlsx (31 steps, Jun–Oct 2026)</p>
 </footer>
 
