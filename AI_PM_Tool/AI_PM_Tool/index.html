@@ -184,10 +184,10 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
 <!-- NAV -->
 <nav class="topnav">
   <a class="nav-logo" href="default.html">← Hub</a>
-  <a href="#applied-ai">Applied AI</a>
-  <a href="#multi-agent">Multi-Agent</a>
   <a href="#problem">1. Problem</a>
   <a href="#solution">2. Solution</a>
+  <a href="#applied-ai">Applied AI</a>
+  <a href="#multi-agent">Multi-Agent</a>
   <a href="#agents">3. Agents</a>
   <a href="#metrics">4. Metrics</a>
   <a href="#priority">5. MoSCoW</a>
@@ -219,8 +219,100 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
   </div>
 </div>
 
+<!-- 1. PROBLEM -->
+<div class="section" id="problem">
+  <div class="section-num">1</div>
+  <h2>Problem Definition</h2>
+  <p class="subtitle">Why multi-party project tracking fails without a unified agentic platform</p>
+
+  <h3>Background</h3>
+  <p style="color:var(--text-muted);margin-bottom:10px">Organisations managing complex, multi-party projects — procurement cycles, card launches, regulatory workflows — coordinate across dozens of sequential and parallel steps involving multiple stakeholder groups. Without a unified platform, these projects live in disconnected tools: static Excel or Smartsheet files, siloed Jira boards, or scattered Confluence pages — with no cross-tool visibility, no dependency intelligence, and no automated risk detection.</p>
+  <p style="color:var(--text-muted)"><strong style="color:var(--text)">Reference Example — BIN Procurement:</strong> Launching a new payment card requires procuring a Bank Identification Number (BIN) from the card network. This is a complex, multi-party process involving the Issuer, Network, Processor, and Embosser — 31 sequential and parallel steps spanning ~5 months, currently managed in a static Excel file with no automation.</p>
+
+  <h3>Core Pain Points</h3>
+  <table>
+    <thead><tr><th>#</th><th>Pain Point</th><th>Impact</th><th>Affected Party</th></tr></thead>
+    <tbody>
+      <tr><td>P1</td><td><strong>Manual status tracking in spreadsheets</strong> — 31 steps in a static Excel with no automation or alerting</td><td><span class="badge badge-red">High</span></td><td>All parties</td></tr>
+      <tr><td>P2</td><td><strong>No cross-party visibility</strong> — parties cannot see each other's status in real time</td><td><span class="badge badge-red">High</span></td><td>Issuer, Network, Processor</td></tr>
+      <tr><td>P3</td><td><strong>No dependency management</strong> — downstream steps start before upstream ones complete</td><td><span class="badge badge-red">High</span></td><td>Network, Processor</td></tr>
+      <tr><td>P4</td><td><strong>No intelligent reminders</strong> — PMs rely on manual follow-up with each DRI</td><td><span class="badge badge-amber">Medium</span></td><td>PM, Issuer</td></tr>
+      <tr><td>P5</td><td><strong>No risk prediction</strong> — early-step delays are not flagged as risks to downstream milestones</td><td><span class="badge badge-red">High</span></td><td>Issuer, Network</td></tr>
+      <tr><td>P6</td><td><strong>No natural language project query</strong> — stakeholders must manually inspect spreadsheets</td><td><span class="badge badge-amber">Medium</span></td><td>All parties</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Current State vs. Desired State</h3>
+  <table>
+    <thead><tr><th>Dimension</th><th>Current State</th><th>Desired State</th></tr></thead>
+    <tbody>
+      <tr><td>Status Tracking</td><td>Manual Excel, updated ad hoc</td><td>Auto-generated HTML dashboard from Excel/Smartsheet</td></tr>
+      <tr><td>Stakeholder Visibility</td><td>Email chains per step</td><td>Live HTML tracker per project; shared portal</td></tr>
+      <tr><td>Risk Detection</td><td>Reactive (after delays occur)</td><td>Proactive AI-driven risk scoring (Agent 4)</td></tr>
+      <tr><td>Reminders</td><td>Manual PM follow-up</td><td>Automated, context-aware email to DRI (Agent 3)</td></tr>
+      <tr><td>Project Queries</td><td>Manual spreadsheet inspection</td><td>Natural language chatbot across all projects (Agent 2)</td></tr>
+      <tr><td>Dashboard Creation</td><td>Manual HTML coding</td><td>Auto-generated on Excel upload (Agent 1)</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- 2. SOLUTION -->
+<div class="section" id="solution">
+  <div class="section-num">2</div>
+  <h2>Solution Definition</h2>
+  <p class="subtitle">A multi-agent web application — four specialised AI agents collaborating over a shared project data layer</p>
+
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+    <span class="learn-badge lb-w1">RAG Architecture</span>
+    <span class="learn-badge lb-w2">Agentic RAG</span>
+    <span class="learn-badge lb-w3">Knowledge Graph → Agent 4</span>
+    <span class="learn-badge lb-w3">Prompt Caching</span>
+  </div>
+
+  <h3>Product Vision</h3>
+  <p style="color:var(--text-muted);margin-bottom:16px">An <strong style="color:var(--text)">AI-Powered Multi-Project Tracker</strong> built as a web application. Users upload an Excel sheet and Agent 1 instantly generates a live HTML Status Tracker page. Three additional agents — a chatbot (Agent 2), a deadline monitor (Agent 3), and a dependency evaluator (Agent 4) — run continuously over all tracked projects.</p>
+
+  <div class="callout callout-amber">
+    <div class="callout-title">POC Scope</div>
+    In the POC phase, HTML pages and authentication are managed by the user locally. No backend database is required. Excel is the data source. The future phase replaces Excel with Smartsheet via live API and adds a proper database and auth layer.
+  </div>
+
+  <h3>High-Level Architecture</h3>
+  <div class="callout callout-teal" style="margin-bottom:16px">
+    <div class="callout-title">Knowledge Graph as Dependency Layer</div>
+    Agent 4's dependency model is a direct application of the Knowledge Graph pattern: steps are nodes, dependency relationships are typed edges, and critical path detection is graph traversal. This is exactly how a Knowledge Graph enables multi-hop reasoning — applied to project risk.
+  </div>
+  <table>
+    <thead><tr><th>Layer</th><th>POC Implementation</th><th>Future Phase</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Data Layer</strong></td><td>Excel (.xlsx) uploaded by user; parsed on demand by Agent 1</td><td>Smartsheet API (live); relational DB with event sourcing</td></tr>
+      <tr><td><strong>Agent Layer</strong></td><td>4 agents running as Python/Node services; shared access to parsed project data</td><td>Same agents; persistent memory; multi-tenant isolation</td></tr>
+      <tr><td><strong>Presentation Layer</strong></td><td>Static HTML pages generated per project; user manages file hosting and auth</td><td>Web portal with SSO, role-based access, API integrations</td></tr>
+      <tr><td><strong>Communication Layer</strong></td><td>Email via SMTP (DRI name + email from Excel)</td><td>Slack/Teams + email; in-app notifications</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Excel Sheet Requirements (POC)</h3>
+  <table>
+    <thead><tr><th>Column</th><th>Field</th><th>Required</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>A</td><td>Step Number</td><td><span class="badge badge-red">Yes</span></td><td>Integer, sequential</td></tr>
+      <tr><td>B</td><td>Step Description</td><td><span class="badge badge-red">Yes</span></td><td>Plain text</td></tr>
+      <tr><td>C</td><td>Responsible Party / DRI Name</td><td><span class="badge badge-red">Yes</span></td><td>Used by Agent 3 for email targeting</td></tr>
+      <tr><td>D</td><td>DRI Email Address</td><td><span class="badge badge-red">Yes</span></td><td>Agent 3 sends deadline alerts here</td></tr>
+      <tr><td>E</td><td>Estimated Start Date</td><td><span class="badge badge-red">Yes</span></td><td>DD/MM/YYYY</td></tr>
+      <tr><td>F</td><td>Estimated End Date</td><td><span class="badge badge-red">Yes</span></td><td>DD/MM/YYYY</td></tr>
+      <tr><td>G</td><td>Actual Completion Date</td><td><span class="badge badge-amber">Optional</span></td><td>Blank if not yet complete</td></tr>
+      <tr><td>H</td><td>Status</td><td><span class="badge badge-red">Yes</span></td><td>To Do / In Progress / Done / Blocked</td></tr>
+      <tr><td>I</td><td>Depends On (Step #)</td><td><span class="badge badge-amber">Optional</span></td><td>Comma-separated step numbers — Agent 4 Knowledge Graph input</td></tr>
+      <tr><td>J</td><td>Security Flag</td><td><span class="badge badge-amber">Optional</span></td><td>Y = elevated security step; AI monitoring disabled</td></tr>
+      <tr><td>K</td><td>Notes</td><td><span class="badge badge-amber">Optional</span></td><td>Free-text context for Agent 2 RAG retrieval</td></tr>
+    </tbody>
+  </table>
+</div>
+
 <!-- ═══════════════════════════════════════
-     LEARNING IN PRACTICE — CENTRAL SECTION
+     APPLIED AI TECHNIQUES
      ═══════════════════════════════════════ -->
 <div class="section" id="applied-ai" style="background:var(--surface)">
   <div class="section-num" style="background:rgba(45,212,191,.12);border-color:rgba(45,212,191,.3);color:var(--secondary)">★</div>
@@ -380,98 +472,6 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
     <div class="callout-title">Reason Privately, Publish Publicly</div>
     Each agent reasons in its own <strong>private context</strong> (its task prompt, retrieved chunks, and intermediate steps) to stay focused and cost-efficient. It then writes only the <strong>distilled result</strong> — a generated tracker, an answer, a risk score, an email decision — to the <strong>shared project data layer</strong>, which is the single source of truth every other agent builds on. Sensitive data (DRI emails, PII) is scoped to the agent that needs it, never broadcast into shared memory unnecessarily.
   </div>
-</div>
-
-<!-- 1. PROBLEM -->
-<div class="section" id="problem">
-  <div class="section-num">1</div>
-  <h2>Problem Definition</h2>
-  <p class="subtitle">Why multi-party project tracking fails without a unified agentic platform</p>
-
-  <h3>Background</h3>
-  <p style="color:var(--text-muted);margin-bottom:10px">Organisations managing complex, multi-party projects — procurement cycles, card launches, regulatory workflows — coordinate across dozens of sequential and parallel steps involving multiple stakeholder groups. Without a unified platform, these projects live in disconnected tools: static Excel or Smartsheet files, siloed Jira boards, or scattered Confluence pages — with no cross-tool visibility, no dependency intelligence, and no automated risk detection.</p>
-  <p style="color:var(--text-muted)"><strong style="color:var(--text)">Reference Example — BIN Procurement:</strong> Launching a new payment card requires procuring a Bank Identification Number (BIN) from the card network. This is a complex, multi-party process involving the Issuer, Network, Processor, and Embosser — 31 sequential and parallel steps spanning ~5 months, currently managed in a static Excel file with no automation.</p>
-
-  <h3>Core Pain Points</h3>
-  <table>
-    <thead><tr><th>#</th><th>Pain Point</th><th>Impact</th><th>Affected Party</th></tr></thead>
-    <tbody>
-      <tr><td>P1</td><td><strong>Manual status tracking in spreadsheets</strong> — 31 steps in a static Excel with no automation or alerting</td><td><span class="badge badge-red">High</span></td><td>All parties</td></tr>
-      <tr><td>P2</td><td><strong>No cross-party visibility</strong> — parties cannot see each other's status in real time</td><td><span class="badge badge-red">High</span></td><td>Issuer, Network, Processor</td></tr>
-      <tr><td>P3</td><td><strong>No dependency management</strong> — downstream steps start before upstream ones complete</td><td><span class="badge badge-red">High</span></td><td>Network, Processor</td></tr>
-      <tr><td>P4</td><td><strong>No intelligent reminders</strong> — PMs rely on manual follow-up with each DRI</td><td><span class="badge badge-amber">Medium</span></td><td>PM, Issuer</td></tr>
-      <tr><td>P5</td><td><strong>No risk prediction</strong> — early-step delays are not flagged as risks to downstream milestones</td><td><span class="badge badge-red">High</span></td><td>Issuer, Network</td></tr>
-      <tr><td>P6</td><td><strong>No natural language project query</strong> — stakeholders must manually inspect spreadsheets</td><td><span class="badge badge-amber">Medium</span></td><td>All parties</td></tr>
-    </tbody>
-  </table>
-
-  <h3>Current State vs. Desired State</h3>
-  <table>
-    <thead><tr><th>Dimension</th><th>Current State</th><th>Desired State</th></tr></thead>
-    <tbody>
-      <tr><td>Status Tracking</td><td>Manual Excel, updated ad hoc</td><td>Auto-generated HTML dashboard from Excel/Smartsheet</td></tr>
-      <tr><td>Stakeholder Visibility</td><td>Email chains per step</td><td>Live HTML tracker per project; shared portal</td></tr>
-      <tr><td>Risk Detection</td><td>Reactive (after delays occur)</td><td>Proactive AI-driven risk scoring (Agent 4)</td></tr>
-      <tr><td>Reminders</td><td>Manual PM follow-up</td><td>Automated, context-aware email to DRI (Agent 3)</td></tr>
-      <tr><td>Project Queries</td><td>Manual spreadsheet inspection</td><td>Natural language chatbot across all projects (Agent 2)</td></tr>
-      <tr><td>Dashboard Creation</td><td>Manual HTML coding</td><td>Auto-generated on Excel upload (Agent 1)</td></tr>
-    </tbody>
-  </table>
-</div>
-
-<!-- 2. SOLUTION -->
-<div class="section" id="solution">
-  <div class="section-num">2</div>
-  <h2>Solution Definition</h2>
-  <p class="subtitle">A multi-agent web application — four specialised AI agents collaborating over a shared project data layer</p>
-
-  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
-    <span class="learn-badge lb-w1">RAG Architecture</span>
-    <span class="learn-badge lb-w2">Agentic RAG</span>
-    <span class="learn-badge lb-w3">Knowledge Graph → Agent 4</span>
-    <span class="learn-badge lb-w3">Prompt Caching</span>
-  </div>
-
-  <h3>Product Vision</h3>
-  <p style="color:var(--text-muted);margin-bottom:16px">An <strong style="color:var(--text)">AI-Powered Multi-Project Tracker</strong> built as a web application. Users upload an Excel sheet and Agent 1 instantly generates a live HTML Status Tracker page. Three additional agents — a chatbot (Agent 2), a deadline monitor (Agent 3), and a dependency evaluator (Agent 4) — run continuously over all tracked projects.</p>
-
-  <div class="callout callout-amber">
-    <div class="callout-title">POC Scope</div>
-    In the POC phase, HTML pages and authentication are managed by the user locally. No backend database is required. Excel is the data source. The future phase replaces Excel with Smartsheet via live API and adds a proper database and auth layer.
-  </div>
-
-  <h3>High-Level Architecture</h3>
-  <div class="callout callout-teal" style="margin-bottom:16px">
-    <div class="callout-title">Knowledge Graph as Dependency Layer</div>
-    Agent 4's dependency model is a direct application of the Knowledge Graph pattern: steps are nodes, dependency relationships are typed edges, and critical path detection is graph traversal. This is exactly how a Knowledge Graph enables multi-hop reasoning — applied to project risk.
-  </div>
-  <table>
-    <thead><tr><th>Layer</th><th>POC Implementation</th><th>Future Phase</th></tr></thead>
-    <tbody>
-      <tr><td><strong>Data Layer</strong></td><td>Excel (.xlsx) uploaded by user; parsed on demand by Agent 1</td><td>Smartsheet API (live); relational DB with event sourcing</td></tr>
-      <tr><td><strong>Agent Layer</strong></td><td>4 agents running as Python/Node services; shared access to parsed project data</td><td>Same agents; persistent memory; multi-tenant isolation</td></tr>
-      <tr><td><strong>Presentation Layer</strong></td><td>Static HTML pages generated per project; user manages file hosting and auth</td><td>Web portal with SSO, role-based access, API integrations</td></tr>
-      <tr><td><strong>Communication Layer</strong></td><td>Email via SMTP (DRI name + email from Excel)</td><td>Slack/Teams + email; in-app notifications</td></tr>
-    </tbody>
-  </table>
-
-  <h3>Excel Sheet Requirements (POC)</h3>
-  <table>
-    <thead><tr><th>Column</th><th>Field</th><th>Required</th><th>Notes</th></tr></thead>
-    <tbody>
-      <tr><td>A</td><td>Step Number</td><td><span class="badge badge-red">Yes</span></td><td>Integer, sequential</td></tr>
-      <tr><td>B</td><td>Step Description</td><td><span class="badge badge-red">Yes</span></td><td>Plain text</td></tr>
-      <tr><td>C</td><td>Responsible Party / DRI Name</td><td><span class="badge badge-red">Yes</span></td><td>Used by Agent 3 for email targeting</td></tr>
-      <tr><td>D</td><td>DRI Email Address</td><td><span class="badge badge-red">Yes</span></td><td>Agent 3 sends deadline alerts here</td></tr>
-      <tr><td>E</td><td>Estimated Start Date</td><td><span class="badge badge-red">Yes</span></td><td>DD/MM/YYYY</td></tr>
-      <tr><td>F</td><td>Estimated End Date</td><td><span class="badge badge-red">Yes</span></td><td>DD/MM/YYYY</td></tr>
-      <tr><td>G</td><td>Actual Completion Date</td><td><span class="badge badge-amber">Optional</span></td><td>Blank if not yet complete</td></tr>
-      <tr><td>H</td><td>Status</td><td><span class="badge badge-red">Yes</span></td><td>To Do / In Progress / Done / Blocked</td></tr>
-      <tr><td>I</td><td>Depends On (Step #)</td><td><span class="badge badge-amber">Optional</span></td><td>Comma-separated step numbers — Agent 4 Knowledge Graph input</td></tr>
-      <tr><td>J</td><td>Security Flag</td><td><span class="badge badge-amber">Optional</span></td><td>Y = elevated security step; AI monitoring disabled</td></tr>
-      <tr><td>K</td><td>Notes</td><td><span class="badge badge-amber">Optional</span></td><td>Free-text context for Agent 2 RAG retrieval</td></tr>
-    </tbody>
-  </table>
 </div>
 
 <!-- 3. AGENTS -->
