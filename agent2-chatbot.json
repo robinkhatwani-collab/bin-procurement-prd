@@ -19,32 +19,11 @@
     {
       "id": "node-2",
       "name": "Extract Fields",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3,
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
       "position": [460, 300],
       "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "f1",
-              "name": "user_message",
-              "value": "={{ $json.body.message }}",
-              "type": "string"
-            },
-            {
-              "id": "f2",
-              "name": "conversation_id",
-              "value": "={{ $json.body.conversation_id ?? 'default' }}",
-              "type": "string"
-            },
-            {
-              "id": "f3",
-              "name": "history",
-              "value": "={{ $json.body.history ?? [] }}",
-              "type": "array"
-            }
-          ]
-        }
+        "jsCode": "// Handle both $json.body.x and $json.x depending on n8n webhook version\nconst src = $json.body && $json.body.message !== undefined ? $json.body : $json;\n\nconst user_message     = (src.message     || '').trim();\nconst conversation_id  =  src.conversation_id || 'default';\nconst history          = Array.isArray(src.history) ? src.history : [];\n\nreturn [{ json: { user_message, conversation_id, history } }];"
       }
     },
     {
@@ -95,7 +74,7 @@
       "position": [900, 140],
       "parameters": {
         "method": "GET",
-        "url": "http://localhost:8080/bin-tracker",
+        "url": "http://127.0.0.1:8080/bin-tracker",
         "options": {
           "response": {
             "response": {
@@ -122,7 +101,7 @@
       "typeVersion": 2,
       "position": [1340, 140],
       "parameters": {
-        "jsCode": "const item = $input.first().json;\nconst history = Array.isArray(item.history) ? item.history : [];\n\n// System prompt — grounded, scoped, ≤3 sentences\nconst systemPrompt =\n  `You are a project assistant for the AI PM Tool. ` +\n  `Answer ONLY based on the project data provided below. ` +\n  `If information is not in the data, say \"I don't have that information in the current tracker.\" ` +\n  `Never guess or fabricate step data or dates. ` +\n  `Keep answers under 3 sentences unless the user explicitly asks for a list. ` +\n  `Politely decline any question outside project status, steps, DRI assignments, deadlines, milestones, or dependencies.\\n\\n` +\n  `Project Data (today: ${new Date().toISOString().split('T')[0]}):\\n` +\n  item.project_context;\n\n// Messages array for Claude API — history + current user turn\nconst messages = [\n  ...history,\n  { role: 'user', content: item.user_message }\n];\n\n// Pre-serialise the full Anthropic API request body\nconst requestBody = JSON.stringify({\n  model: 'claude-sonnet-4-6',\n  max_tokens: 300,\n  system: systemPrompt,\n  messages\n});\n\nreturn [{\n  json: {\n    conversation_id: item.conversation_id,\n    project_context: item.project_context,\n    request_body:    requestBody\n  }\n}];"
+        "jsCode": "const item = $input.first().json;\nconst history = Array.isArray(item.history) ? item.history : [];\n\n// System prompt — grounded, scoped, ≤3 sentences\nconst systemPrompt =\n  `You are a project assistant for the AI PM Tool. ` +\n  `Answer ONLY based on the project data provided below. ` +\n  `If information is not in the data, say \"I don't have that information in the current tracker.\" ` +\n  `Never guess or fabricate step data or dates. ` +\n  `Keep answers under 3 sentences unless the user explicitly asks for a list. ` +\n  `Politely decline any question outside project status, steps, DRI assignments, deadlines, milestones, or dependencies.\\n\\n` +\n  `Project Data (today: ${new Date().toISOString().split('T')[0]}):\\n` +\n  item.project_context;\n\n// Messages array for Claude API — history + current user turn\nconst userMsg = (item.user_message || '').trim() || 'Hello';\nconst messages = [\n  ...history,\n  { role: 'user', content: userMsg }\n];\n\n// Return as object (not stringified) so HTTP Request node can send it as JSON\nreturn [{\n  json: {\n    conversation_id: item.conversation_id,\n    project_context: item.project_context,\n    request_body: {\n      model: 'claude-sonnet-4-6',\n      max_tokens: 300,\n      system: systemPrompt,\n      messages\n    }\n  }\n}];"
       }
     },
     {
@@ -150,8 +129,8 @@
           ]
         },
         "sendBody": true,
-        "specifyBody": "string",
-        "body": "={{ $json.request_body }}",
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.request_body }}",
         "options": {}
       },
       "credentials": {
