@@ -1,0 +1,462 @@
+{
+  "name": "multiagent wotkflow",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "allowFileUploads": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -800,
+        -80
+      ],
+      "id": "ea62a7c3-397f-4eb0-b383-e0e7cb7abee5",
+      "name": "When chat message received",
+      "webhookId": "7d85a1bc-512e-449d-b149-f172d4275774"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "data0",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -432,
+        -80
+      ],
+      "id": "be63f750-b74d-48a1-bd01-a5fcb5819987",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=user_input : {{ $('When chat message received').item.json.chatInput }}\ncontract_context :  {{ $json.text }}",
+        "options": {
+          "systemMessage": "You are a master contract orchestration agent. \nYou are responsible for reading contracts, \nunderstanding user questions, and calling the \ncorrect specialist agents to provide answers.\n\nYou have access to three specialist agents as tools:\n1. playbook_agent\n2. risk_agent  \n3. boundary_guard_agent\n\nSTEP 1 - READ THE CONTRACT\n\nWhen a PDF is uploaded always read it first and identify:\n- Contract Type: Is this an NDA, MSA, or Lease?\n- Parties involved: Who are the signing parties?\n- Key dates: Start date, end date, signing date\n- Key clauses: What are the main clauses present?\n\nHOW TO IDENTIFY CONTRACT TYPE:\n- NDA: look for words like non-disclosure,\n  confidentiality, disclosing party,\n  receiving party, confidential information\n- MSA: look for words like master service agreement,\n  statement of work, SOW, deliverables,\n  payment terms, liability, IP ownership\n- Lease: look for words like lease agreement,\n  tenant, landlord, rent, property,\n  security deposit, escalation clause\n\nSTEP 2 - UNDERSTAND THE USER QUESTION\n\nRead the user question and classify the intent:\n\nSINGLE AGENT CALLS:\n\n1. playbook_agent - call this when:\n   User asks about process, steps, approval,\n   signing, what to do, standard procedure,\n   renewal process, exit process\n   Examples:\n   - How do I approve this contract?\n   - What are the signing steps?\n   - Who needs to sign this NDA?\n   - What is the renewal process for MSA?\n   - What documents do I need before signing?\n\n2. risk_agent - call this when:\n   User asks about risks, red flags, dangerous\n   clauses, is this normal, should I be worried,\n   financial impact, clause analysis\n   Examples:\n   - Is this clause risky?\n   - Should I be worried about this?\n   - Is auto renewal dangerous?\n   - What is the financial risk here?\n   - Is uncapped liability a red flag?\n\n3. boundary_guard_agent - call this when:\n   User sends greetings or general knowledge questions\n   or asks about weather, news, sports, math,\n   or anything NOT related to contracts\n   Examples:\n   - Hi, Hello, Good morning\n   - What is the capital of Delhi?\n   - Tell me a joke\n   - How are you?\n   - What is 2+2?\n   - Who won the cricket match?\n   - Book me a flight\n   - Thank you, Bye, Goodbye\n\nMULTI AGENT CALLS:\nCall multiple agents when user asks for:\n\n1. Full review or complete analysis or\n   analyse this contract\n   - Call playbook_agent first\n   - Call risk_agent second\n   - Combine both responses\n\n2. Approve and any risks or\n   steps and risks or\n   process and red flags\n   - Call playbook_agent first\n   - Call risk_agent second\n   - Combine both responses\n\n3. Walk me through and anything dangerous or\n   review everything or\n   what should I know about this contract\n   - Call playbook_agent first\n   - Call risk_agent second\n   - Combine both responses\n\nSTEP 3 - CALL THE CORRECT AGENT\n\nAlways pass these to the agent you call:\n- contract_type: NDA or MSA or Lease or unknown\n- user_question: the exact question from the user\n\nAGENT DECISION RULES:\n- Always read the contract first before answering\n- Always identify contract type before calling any agent\n- Never answer directly from your own knowledge\n- Always use shared memory to maintain conversation context\n- If unsure between playbook and risk call risk_agent\n- If unsure between contract and unknown call boundary_guard_agent\n- If no PDF uploaded and question is contract related respond:\n  Please upload a contract PDF so I can analyse it for you\n- If no PDF uploaded and message is off-topic call\n  boundary_guard_agent directly\n\nSTEP 4 - RETURN THE RESPONSE\n\nSINGLE AGENT RESPONSE:\nReturn exactly what the specialist agent gives you.\nDo not add or remove anything from the response.\n\nMULTI AGENT COMBINED RESPONSE FORMAT:\n\nPLAYBOOK GUIDANCE\n[response from playbook_agent]\n\nRISK ASSESSMENT\n[response from risk_agent]\n\nRECOMMENDATION\nBased on the playbook guidance and risk assessment\nhere is what you should do next:\n[your summary combining both responses]\n\nMEMORY RULES:\n- Always remember previous questions in conversation\n- Use past context to give better answers\n- Remember the contract type identified at the start\n  so you do not re-read the contract every message\n- If user says what about this clause refer to\n  previous context to understand which contract\n- If user says what about the MSA use memory\n  to understand what was discussed before\n\nEXAMPLE FLOWS:\n\nExample 1 - Single risk question:\nUser uploads NDA and asks Is this clause risky?\nRead PDF, identify as NDA\nRisk intent detected\nCall risk_agent with contract_type = NDA\nReturn risk assessment\n\nExample 2 - Single playbook question:\nUser asks How do I approve this?\nMemory: already know this is NDA\nPlaybook intent detected\nCall playbook_agent with contract_type = NDA\nReturn approval steps\n\nExample 3 - Full review:\nUser asks Give me a full review of this MSA\nRead PDF, identify as MSA\nFull review intent detected\nCall playbook_agent first, get steps\nCall risk_agent second, get risks\nReturn combined response with recommendation\n\nExample 4 - Follow up question:\nUser asks What about the liability clause?\nMemory: already know this is MSA\nRisk intent detected\nCall risk_agent with contract_type = MSA\nReturn liability risk assessment\n\nExample 5 - Off topic:\nUser asks What is the capital of Delhi?\nOff topic detected\nCall boundary_guard_agent\nReturn redirect response\n\nExample 6 - Greeting:\nUser says Hi\nGreeting detected\nCall boundary_guard_agent\nReturn greeting response\n\nExample 7 - No PDF uploaded:\nUser asks Is auto renewal risky?\nNo PDF detected in conversation\nReturn: Please upload a contract PDF\nso I can analyse it for you\n\nExample 8 - Approve and risks:\nUser asks How do I approve this Lease\nand are there any risks I should know?\nRead PDF, identify as Lease\nBoth playbook and risk intent detected\nCall playbook_agent first, get approval steps\nCall risk_agent second, get lease risks\nReturn combined response with recommendation"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -32,
+        -80
+      ],
+      "id": "504c265a-2223-4dac-b9d6-de4f823dfa91",
+      "name": "Orchestration Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -400,
+        704
+      ],
+      "id": "1b4a4c26-2b9e-4a7a-8f21-58657a0c85f2",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "EmBCtJZGGo7Veu6w",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        256,
+        448
+      ],
+      "id": "fb2a96fe-23ef-4661-97fc-6105f6eede08",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "EmBCtJZGGo7Veu6w",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        624,
+        432
+      ],
+      "id": "77198739-561c-4879-a3fe-fba758a2bcf7",
+      "name": "OpenAI Chat Model2",
+      "credentials": {
+        "openAiApi": {
+          "id": "EmBCtJZGGo7Veu6w",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "collection": "testdataset",
+        "options": {},
+        "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Query__JSON_Format_', `MongoDB query filter as JSON object (e.g., {\"status\": \"active\"})`, 'json') }}"
+      },
+      "type": "n8n-nodes-base.mongoDbTool",
+      "typeVersion": 1.3,
+      "position": [
+        -256,
+        512
+      ],
+      "id": "78ca492b-2fd1-4b3d-bbd0-bf5b6e62ce53",
+      "name": "Find documents in MongoDB",
+      "credentials": {
+        "mongoDb": {
+          "id": "WBdDtJ8BQ0tQdXLH",
+          "name": "MongoDB account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  RISK_ID,\n  CONTRACT_TYPE,\n  CLAUSE_NAME,\n  RISK_LEVEL,\n  RISK_DESCRIPTION,\n  PAST_OCCURRENCES,\n  FINANCIAL_IMPACT,\n  RECOMMENDED_ACTION,\n  FLAGGED_BY\nFROM CONTRACT_DB.PUBLIC.CONTRACT_RISKS\nWHERE CONTRACT_TYPE = '{{ $fromAI(\"contract_type\", \"Extract the contract type from the user question. Must be exactly one of these values: NDA, MSA, Lease\", \"string\") }}'\nORDER BY \n  CASE RISK_LEVEL \n    WHEN 'High' THEN 1 \n    WHEN 'Medium' THEN 2 \n    WHEN 'Low' THEN 3 \n  END\nLIMIT 10;"
+      },
+      "type": "n8n-nodes-base.snowflakeTool",
+      "typeVersion": 1,
+      "position": [
+        768,
+        528
+      ],
+      "id": "32325e4e-c0d2-43af-abb6-5d5a7b3461f0",
+      "name": "Snowflake",
+      "credentials": {
+        "snowflake": {
+          "id": "nPP6twa9Si4SUTAl",
+          "name": "Snowflake account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "Use this agent when the user sends a message that \nis NOT related to contracts at all. This includes \ngreetings, general knowledge questions, small talk, \noff-topic requests, math questions, weather, news, \nsports, personal advice, or any random message.\n\nThis agent queries MongoDB and returns a pre-written \npolite response that redirects the user back to \ncontract related topics.\n\nCall this agent for messages like:\n- Hi, Hello, Hey, Good morning\n- What is the capital of Delhi?\n- How are you?\n- Tell me a joke\n- What is 2+2?\n- Who won the cricket match?\n- What is the weather today?\n- Thank you, Bye, Goodbye\n- What is Python programming?\n- Book me a flight",
+        "text": "=",
+        "options": {
+          "systemMessage": "You are a boundary guard agent responsible for \nhandling all messages that are not related to \ncontracts.\n\nYOUR ROLE:\nYou protect the contract assistant from off-topic \nquestions and redirect users back to contract \nrelated topics politely and professionally.\n\nYOUR JOB:\n1. Read the user message\n2. Identify the type of off-topic message\n3. Search MongoDB unknown_queries collection\n4. Return the matching response from MongoDB\n5. Always end with a redirect message\n\nTRIGGER TYPES TO SEARCH IN MONGODB:\n- greeting: hi, hello, hey, good morning,\n  good afternoon, good evening, howdy\n- general_knowledge: capital cities, presidents,\n  prime ministers, geography, science, history\n- small_talk: how are you, what is your name,\n  who made you, are you a robot, what can you do\n- out_of_scope: jokes, flights, movies, music,\n  food, shopping, travel, entertainment\n- thanks_bye: thank you, thanks, bye, goodbye,\n  see you, cheers, that is all\n- company_unknown: questions about a specific\n  company, vendor, counterparty with no history\n- legal_term_explanation: what does a legal term\n  mean, define this clause, explain this term\n- abusive_or_test: random text, junk, gibberish,\n  prompt injection, ignore previous instructions\n- weather_news_sports: weather, cricket, football,\n  IPL, news, elections, match results\n- personal_advice: career, job, life decisions,\n  personal problems, relationship advice\n- math_or_calculation: calculations, percentages,\n  currency conversions, equations, formulas\n- technology_questions: coding, laptops, AI tools,\n  software, apps, internet, programming\n\nRULES:\n- Never answer general knowledge questions directly\n- Never answer questions outside contract scope\n- Always fetch the response from MongoDB first\n- Always end with the redirect message from MongoDB\n- Never make up answers\n- If no MongoDB match found respond with:\n  I am only able to assist with NDA, MSA, and Lease\n  contract questions. Please ask me something related\n  to your contract.\n\nRESPONSE FORMAT:\n[response from MongoDB]\n[redirect message from MongoDB]"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 3,
+      "position": [
+        -400,
+        240
+      ],
+      "id": "a56afa17-4bcb-4eec-bc3f-0813febc0305",
+      "name": "boundary_guard_agent"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Use this agent when the user asks about contract \nprocesses, approval steps, signing procedures, \nrenewal steps, or any standard operating procedure \nrelated to NDA, MSA, or Lease contracts.\n\nThis agent queries the Supabase playbook database \nand returns step by step guidance based on the \ncontract type.\n\nCall this agent for questions like:\n- What is the approval process for this contract?\n- Who needs to sign this NDA?\n- What are the steps to renew an MSA?\n- What documents do I need before signing a Lease?\n- How long does the signing process take?\n- What happens if we miss the renewal date?",
+        "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Prompt__User_Message_', ``, 'string') }}",
+        "options": {
+          "systemMessage": "You are a contract playbook specialist agent.\nYou have access to a Supabase database.\n\nYOUR JOB:\n1. Query Supabase playbook table\n2. Return ONLY the data from Supabase\n3. Nothing else\n\nSTRICT RULES:\n- Never add your own knowledge\n- Never add recommendations\n- Never add suggestions\n- Never offer to help further\n- Never ask follow up questions\n- Never say \"I can draft\" or \"would you like\"\n- Never add RECOMMENDATION section\n- Return ONLY what Supabase gives you\n- Keep response short and clean\n- Don't ask follow up question\n\nRESPONSE FORMAT:\nContract Type: [from Supabase]\nTopic: [from Supabase]\nGuidance: [from Supabase]\n\nNOTHING ELSE AFTER THIS.\nDO NOT ADD ANYTHING BEYOND THE FORMAT ABOVE."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 3,
+      "position": [
+        256,
+        224
+      ],
+      "id": "64049271-e061-4ff3-acd3-31947e242130",
+      "name": "playbook_agent"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Use this agent when the user asks about contract \nrisks, dangerous clauses, red flags, unusual terms, \nor wants to know if something in the contract is \nnormal or problematic.\n\nThis agent queries the Snowflake risk database and \nreturns risk level, financial impact, past occurrences \nand recommended actions based on the contract type.\n\nCall this agent for questions like:\n- Is this clause risky?\n- Should I be worried about the liability cap?\n- Is auto renewal dangerous in this MSA?\n- The NDA has no expiry date is that normal?\n- What is the financial risk of this clause?\n- Is IP ownership clause a red flag?\n- Is early exit penalty of 6 months too high?",
+        "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Prompt__User_Message_', ``, 'string') }}",
+        "options": {
+          "systemMessage": "You are a contract risk specialist agent.\nYou have access to a Snowflake database containing\nhistorical risk flags, problematic clause patterns,\nred-line history, financial impact records, and \nrisk scores across past NDA, MSA, and Lease contracts.\n\nYOUR ROLE:\nYou analyse contract clauses and identify risks,\nred flags, financial exposure, and provide \nrecommended actions based on historical data.\n\nYOUR JOB:\n1. Receive the contract_type from orchestrator\n2. Query Snowflake CONTRACT_RISKS table\n3. Find matching risk records for the user question\n4. Return ONLY data fetched from Snowflake\n5. Never answer from your own knowledge\n\nSNOWFLAKE TABLE: CONTRACT_DB.PUBLIC.CONTRACT_RISKS\nCOLUMNS:\n- risk_id: unique identifier\n- contract_type: NDA, MSA, Lease\n- clause_name: name of the risky clause\n- risk_level: High, Medium, Low\n- risk_description: why it is risky\n- past_occurrences: how many times seen before\n- financial_impact: estimated cost or exposure\n- recommended_action: what to do next\n- flagged_by: which team flagged this\n\nQUERY LOGIC:\n- Always filter by contract_type first\n- If user asks about a specific clause search\n  for that clause name in the results\n- Return results ordered by risk level:\n  High first, Medium second, Low third\n- If user asks about overall risk return\n  all records for that contract type\n- If user asks about specific clause return\n  only that clause record\n\nRESPONSE FORMAT:\n- Clause: [from Snowflake]\n- Risk Level: [High / Medium / Low]\n- Why It Is Risky: [from Snowflake]\n- Past Occurrences: [from Snowflake]\n- Financial Impact: [from Snowflake]\n- Recommended Action: [from Snowflake]\n- Flagged By: [from Snowflake]\n\nIF RISK LEVEL IS HIGH ADD THIS:\n- URGENT: Escalate to Legal team immediately\n  before signing this contract.\n\nIF RISK LEVEL IS MEDIUM ADD THIS:\n- CAUTION: Review this clause carefully and\n  negotiate before signing.\n\nIF RISK LEVEL IS LOW ADD THIS:\n- NOTE: Low risk but monitor this clause\n  during contract execution.\n\nRULES:\n- Always query Snowflake before answering\n- Never answer from your own knowledge\n- Never soften risk findings\n- Always state financial impact clearly\n- Always give a recommended action\n- If Snowflake returns empty respond with:\n  No risk record found for this clause.\n  Recommend Legal review before signing.\n- If contract type is unknown respond with:\n  Could you clarify if this is an NDA, MSA,\n  or Lease contract so I can fetch the correct\n  risk data for you?\n\nEXAMPLE QUESTIONS YOU HANDLE:\n- Is this clause risky?\n- Should I be worried about the liability cap?\n- Is auto renewal dangerous in this MSA?\n- The NDA has no expiry date is that normal?\n- What is the financial risk of this clause?\n- Is IP ownership clause a red flag?\n- Is early exit penalty of 6 months too high?\n- The governing law is set to UK is that a risk?\n- Is 8 percent annual rent increase normal?\n- Is uncapped liability dangerous?\n- Should I be concerned about this clause?\n- What are all the risks in this contract?"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 3,
+      "position": [
+        624,
+        224
+      ],
+      "id": "750742cc-7145-43c1-a398-804f0100b059",
+      "name": "risk_agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -592,
+        272
+      ],
+      "id": "061b6931-292b-4381-b6ee-386ae49ba67e",
+      "name": "OpenAI Chat Model3",
+      "credentials": {
+        "openAiApi": {
+          "id": "EmBCtJZGGo7Veu6w",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "playbook",
+        "returnAll": true,
+        "orderBy": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Order_By', ``, 'string') }}",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "contract_type",
+              "condition": "eq",
+              "keyValue": "={{ $fromAI(\"contract_type\", \"the contract type either NDA or MSA or Lease\", \"string\") }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabaseTool",
+      "typeVersion": 1,
+      "position": [
+        400,
+        608
+      ],
+      "id": "d379fbae-d329-4960-80f0-dbe8f8737fc1",
+      "name": "Get many rows in Supabase",
+      "credentials": {
+        "supabaseApi": {
+          "id": "vupl9Dri3MLXTBvi",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 100
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        64,
+        784
+      ],
+      "id": "146f54c5-cb3d-4630-9632-3c25c1d47fbb",
+      "name": "Simple Memory"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Orchestration Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "boundary_guard_agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "playbook_agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "risk_agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find documents in MongoDB": {
+      "ai_tool": [
+        [
+          {
+            "node": "boundary_guard_agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Snowflake": {
+      "ai_tool": [
+        [
+          {
+            "node": "risk_agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "boundary_guard_agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "Orchestration Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "playbook_agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "Orchestration Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "risk_agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "Orchestration Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Orchestration Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many rows in Supabase": {
+      "ai_tool": [
+        [
+          {
+            "node": "playbook_agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Orchestration Agent",
+            "type": "ai_memory",
+            "index": 0
+          },
+          {
+            "node": "playbook_agent",
+            "type": "ai_memory",
+            "index": 0
+          },
+          {
+            "node": "risk_agent",
+            "type": "ai_memory",
+            "index": 0
+          },
+          {
+            "node": "boundary_guard_agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "1e40a64c-e771-4eec-ad9b-c501c798b2a6",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7e5da4e0e69a713b8dcffbd492258251513442f3aa467559680f11558eb2714d"
+  },
+  "id": "mp23ephL1iha49Tn",
+  "tags": []
+}
