@@ -197,6 +197,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
   <a href="#ai-risk">9. Responsible AI</a>
   <a href="#pricing">10. Pricing</a>
   <a href="#poc-tech">11. POC Scope</a>
+  <a href="#n8n-spec">12. n8n Spec</a>
   <a href="#flow">BIN Flow</a>
 </nav>
 
@@ -515,6 +516,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
           <span class="learn-badge lb-w2">Agentic RAG</span>
           <span class="learn-badge lb-w2">Context Management</span>
           <span class="learn-badge lb-w3">Prompt Caching</span>
+          <span class="learn-badge lb-multi">n8n Orchestration</span>
         </div>
         <p><strong>Trigger:</strong> User types a natural language question in the chat panel.</p>
         <ul>
@@ -524,8 +526,10 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
           <li>Supports: "Which projects are at risk?", "Who owns the blocked step in Project X?"</li>
           <li>Strictly grounded — never extrapolates beyond project data (<em>Grounding</em>)</li>
           <li>Prompt caching applied to repeated project context — reduces query cost by ~70%</li>
+          <li>Out-of-scope questions (e.g. general advice) rejected before any LLM call — <em>Scope Guard node</em></li>
         </ul>
-        <p style="margin-top:10px"><strong>Agentic behaviour:</strong> Plans a sequence of tool calls to answer complex queries. Does not answer in one static prompt — decomposes the question first. (<em>Agentic RAG loop</em>)</p>
+        <p style="margin-top:10px"><strong>Implementation (POC):</strong> Orchestrated by an <strong>n8n workflow</strong> running locally. The chat panel POSTs to an n8n Webhook → n8n fetches live tracker HTML → Scope Guard IF node filters off-topic questions → Claude Sonnet called via Anthropic API → answer returned to UI. See <a href="#n8n-spec" style="color:var(--secondary)">Section 12</a> for the full node-by-node spec.</p>
+        <p style="margin-top:8px"><strong>Agentic behaviour:</strong> Plans a sequence of n8n tool calls to answer complex queries. Does not answer in one static prompt — decomposes the question first. (<em>Agentic RAG loop</em>)</p>
       </div>
     </div>
 
@@ -958,7 +962,7 @@ Provide: (1) blocked_steps, (2) cascade_risks with impact, (3) critical_path, (4
       <tr><td><strong>Dashboard (index.html)</strong></td><td>—</td><td>Central hub showing all generated project cards; each card links to its tracker HTML page</td></tr>
       <tr><td><strong>Agent 3 — Email Monitor</strong></td><td><span class="learn-badge lb-w3">Perceive→Plan→Act</span><span class="learn-badge lb-w3">HHH</span></td><td>Python script (cron); reads project Excel; sends SMTP emails; logs to email-log.json</td></tr>
       <tr><td><strong>Agent 4 — Dependency Evaluator</strong></td><td><span class="learn-badge lb-w3">Knowledge Graph</span><span class="learn-badge lb-w3">SMART Goals</span></td><td>Python script; parses Column I dependency graph; outputs blocked steps + milestone JSON</td></tr>
-      <tr><td><strong>Agent 2 — Chatbot UI</strong></td><td><span class="learn-badge lb-w1">RAG</span><span class="learn-badge lb-w2">Agentic RAG</span></td><td>Chat panel; calls Claude API with project HTML as RAG context; multi-turn conversation</td></tr>
+      <tr><td><strong>Agent 2 — Chatbot UI + n8n Workflow</strong></td><td><span class="learn-badge lb-w1">RAG</span><span class="learn-badge lb-w2">Agentic RAG</span><span class="learn-badge lb-multi">n8n</span></td><td>Chat panel POSTs to n8n Webhook; n8n fetches live tracker HTML, runs Scope Guard, calls Claude Sonnet via Anthropic API, returns answer. Workflow exported as <code>agent2-chatbot.json</code>. See <a href="#n8n-spec" style="color:var(--secondary)">Section 12</a>.</td></tr>
     </tbody>
   </table>
 
@@ -971,13 +975,116 @@ Provide: (1) blocked_steps, (2) cascade_risks with impact, (3) critical_path, (4
       <tr><td><code>agent1.py</code></td><td>HTML tracker generator — reads Excel, outputs project-{slug}.html</td></tr>
       <tr><td><code>agent3.py</code></td><td>Deadline monitor — HHH-compliant DRI emails via SMTP</td></tr>
       <tr><td><code>agent4.py</code></td><td>Knowledge Graph traversal — blocked steps + SMART milestone JSON</td></tr>
-      <tr><td><code>chat.js</code></td><td>Agent 2 Agentic RAG chatbot frontend — calls Claude API</td></tr>
+      <tr><td><code>chat.js</code></td><td>Agent 2 frontend — POSTs to n8n Webhook; renders reply in chat panel</td></tr>
+      <tr><td><code>agent2-chatbot.json</code></td><td>n8n workflow export — import into n8n to activate Agent 2</td></tr>
       <tr><td><code>projects/{slug}/input.xlsx</code></td><td>Source Excel file per project</td></tr>
       <tr><td><code>projects/{slug}/tracker.html</code></td><td>Generated status tracker per project</td></tr>
       <tr><td><code>email-log.json</code></td><td>Agent 3 send log with full audit trail</td></tr>
       <tr><td><code>project-index.json</code></td><td>Shared project registry — all agents read this</td></tr>
     </tbody>
   </table>
+</div>
+
+<!-- 12. n8n WORKFLOW SPEC -->
+<div class="section" id="n8n-spec">
+  <div class="section-num" style="background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.3);color:var(--accent)">12</div>
+  <h2>Agent 2 — n8n Workflow Specification</h2>
+  <p class="subtitle">n8n as the orchestration backbone for the Project Intelligence Chatbot — local, webhook-driven, Claude-powered</p>
+
+  <div class="callout callout-teal">
+    <div class="callout-title">How it works</div>
+    n8n runs locally alongside the Python server (port 8080). The chat panel sends a POST to an n8n Webhook node; n8n fetches live tracker HTML, enforces a Scope Guard, calls Claude Sonnet via the Anthropic API, and returns a grounded answer — all without a separate backend service or database.
+  </div>
+
+  <h3>Workflow Nodes (in order)</h3>
+  <table>
+    <thead><tr><th>#</th><th>Node Type</th><th>Node Name</th><th>Purpose</th><th>Key Config</th></tr></thead>
+    <tbody>
+      <tr><td><strong>1</strong></td><td><span class="badge badge-teal">Webhook</span></td><td>Chat Receiver</td><td>Receives POST from the chat panel UI</td><td>Method: POST · Path: <code>/chat</code> · Response mode: Last node · Body fields: <code>message</code>, <code>conversation_id</code>, <code>history[]</code></td></tr>
+      <tr><td><strong>2</strong></td><td><span class="badge badge-gray">Set</span></td><td>Extract Fields</td><td>Maps incoming JSON to clean variables</td><td><code>user_message</code> ← body.message · <code>history</code> ← body.history · <code>conv_id</code> ← body.conversation_id</td></tr>
+      <tr><td><strong>3</strong></td><td><span class="badge badge-amber">IF</span></td><td>Scope Guard</td><td>Rejects out-of-scope questions before any LLM call is made</td><td>True branch (in scope): message contains project / step / status / overdue / DRI / milestone / blocked / tracker · False branch → Node 4a</td></tr>
+      <tr><td><strong>4a</strong></td><td><span class="badge badge-gray">Respond to Webhook</span></td><td>Out-of-Scope Reply</td><td>Returns boundary message immediately; no LLM called</td><td>Body: <code>&#123; "reply": "I can only answer questions about project status, steps, DRIs, and timelines." &#125;</code></td></tr>
+      <tr><td><strong>4b</strong></td><td><span class="badge badge-blue">HTTP Request</span></td><td>Fetch Tracker HTML</td><td>Pulls the live tracker page from the local server</td><td>Method: GET · URL: <code>http://localhost:8080/bin-tracker</code> · Output: raw HTML string. For multi-project: loop over <code>project-index.json</code> URLs.</td></tr>
+      <tr><td><strong>5</strong></td><td><span class="badge badge-purple">Code</span></td><td>Parse Tracker HTML</td><td>Extracts structured project data from raw HTML</td><td>JS: parse step rows (number, description, DRI, status, dates), RAG status, overdue count · Output: <code>project_context_json</code> string</td></tr>
+      <tr><td><strong>6</strong></td><td><span class="badge badge-purple">Code</span></td><td>Build Prompt Context</td><td>Assembles the full LLM input from project data + conversation history</td><td>Combines <code>project_context_json</code> + <code>history[]</code> into a structured context string · Tags repeated project data with Anthropic prompt cache marker to reduce cost ~70%</td></tr>
+      <tr><td><strong>7</strong></td><td><span class="badge badge-blue">HTTP Request</span></td><td>Claude API Call</td><td>Sends context + user question to Claude Sonnet</td><td>POST <code>https://api.anthropic.com/v1/messages</code> · Header: <code>x-api-key: {{ANTHROPIC_API_KEY}}</code> · Model: <code>claude-sonnet-4-6</code> · Max tokens: 300 · System prompt: see below</td></tr>
+      <tr><td><strong>8</strong></td><td><span class="badge badge-purple">Code</span></td><td>Format Response</td><td>Extracts clean answer text from Claude's API response envelope</td><td><code>response.content[0].text</code> · Appends <code>sources: ["tracker.html"]</code> and <code>timestamp</code></td></tr>
+      <tr><td><strong>9</strong></td><td><span class="badge badge-gray">Respond to Webhook</span></td><td>Return Answer</td><td>Sends the formatted answer back to the chat panel</td><td>Status: 200 · Body: <code>&#123; "reply": "...", "sources": [...], "timestamp": "..." &#125;</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>System Prompt (Node 7)</h3>
+  <div class="prompt-block">
+<span class="role">SYSTEM:</span> You are a project assistant for the AI PM Tool. You have read access to live project tracker data provided as JSON context below. Answer ONLY based on the data provided. If information is not in the data, say "I don't have that information in the current tracker." Never guess, extrapolate, or fabricate step data. Keep answers under 3 sentences unless the user explicitly asks for a list. You may query multiple projects to answer a question — plan before you respond.
+
+Scope: you only answer questions about project status, step status, DRI assignments, overdue steps, dependency relationships, milestones, and project timelines. Politely decline anything outside this scope.
+
+<span class="role">USER:</span>
+Project context: <span class="var">{{project_context_json}}</span>
+Conversation history: <span class="var">{{history}}</span>
+Question: <span class="var">{{user_message}}</span>
+  </div>
+
+  <h3>Scope Guard — Allowed vs. Blocked Topics</h3>
+  <table>
+    <thead><tr><th>Allowed (True branch)</th><th>Blocked (False branch → immediate refusal)</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>
+          Step status (To Do / In Progress / Done / Blocked)<br>
+          RAG status of any project<br>
+          Overdue steps — which steps, by how many days<br>
+          DRI assignments — who owns which step<br>
+          Dependency relationships — what's blocking what<br>
+          Milestone recommendations from Agent 4<br>
+          Project timeline and target dates
+        </td>
+        <td>
+          General AI or product management advice<br>
+          Questions about tools outside this project<br>
+          Requests to modify or update project data<br>
+          Security-flagged steps (Column J = Y) — excluded from context entirely<br>
+          PII beyond DRI name and email<br>
+          Anything not present in the loaded project index
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Frontend Integration (chat.js)</h3>
+  <div class="prompt-block">
+<span class="role">// chat.js — sends user message to n8n webhook and renders reply</span>
+async function sendMessage(userMessage, history) {
+  const res = await fetch('<span class="var">http://localhost:5678/webhook/chat</span>', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      message: userMessage,
+      conversation_id: <span class="var">sessionId</span>,
+      history: history          <span class="role">// array of { role, content } pairs</span>
+    })
+  });
+  const data = await res.json();
+  return data.reply;            <span class="role">// string — render in chat panel</span>
+}
+  </div>
+
+  <h3>Setup Requirements</h3>
+  <table>
+    <thead><tr><th>Requirement</th><th>Detail</th></tr></thead>
+    <tbody>
+      <tr><td><strong>n8n running locally</strong></td><td>Install via <code>npm install -g n8n</code> then <code>n8n start</code> · Default port: 5678 · Must be running when the chat panel is in use</td></tr>
+      <tr><td><strong>Workflow import</strong></td><td>Import <code>agent2-chatbot.json</code> into n8n UI at <code>http://localhost:5678</code> · Activate the workflow</td></tr>
+      <tr><td><strong>Anthropic API Key</strong></td><td>Set <code>ANTHROPIC_API_KEY</code> as an n8n credential (HTTP Header Auth) or environment variable · Never hardcoded in workflow JSON</td></tr>
+      <tr><td><strong>Python server running</strong></td><td><code>bash start_server.sh</code> must be active so n8n can fetch <code>http://localhost:8080/bin-tracker</code></td></tr>
+      <tr><td><strong>CORS</strong></td><td>n8n Webhook node handles CORS by default · No extra config needed for local use</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-amber">
+    <div class="callout-title">POC Limitation</div>
+    Agent 2 reads from the generated HTML snapshot of the tracker. If the source Excel is updated, the tracker page must be re-generated (Agent 1 re-run) before the chatbot reflects the new data. A "Re-index" button in the chat panel triggers a fresh HTML fetch without reloading the page.
+  </div>
 </div>
 
 <!-- BIN FLOW -->
