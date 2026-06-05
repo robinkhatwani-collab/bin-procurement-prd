@@ -910,75 +910,18 @@
     const loadingId = appendLoading();
 
     try {
-      // Route to correct MCP tool based on keywords
-      const MCP_URL = 'http://localhost:5678/mcp/a1add253-065d-4540-b7be-37f945f36dfc';
-      const lowerMsg = msg.toLowerCase();
-
-      let toolName = 'read_page';
-      let toolArgs = {};
-
-      if (lowerMsg.match(/status|red zone|at.?risk|overdue|project health|which project|behind/)) {
-        toolName = 'read_project_status';
-        toolArgs = {};
-      } else if (lowerMsg.match(/week 4|mcp|openapi|multi.?agent/)) {
-        toolName = 'read_page';
-        toolArgs = { page_name: 'Week4_Learning_Summary.html' };
-      } else if (lowerMsg.match(/week 3|agent|tool use/)) {
-        toolName = 'read_page';
-        toolArgs = { page_name: 'Week3_Learning_Summary.html' };
-      } else if (lowerMsg.match(/week 2|rag|vector/)) {
-        toolName = 'read_page';
-        toolArgs = { page_name: 'Week2_Learning_Summary.html' };
-      } else if (lowerMsg.match(/week 1|prompt|llm/)) {
-        toolName = 'read_page';
-        toolArgs = { page_name: 'Week1_Learning_Summary.html' };
-      } else if (lowerMsg.match(/project|summary|all project/)) {
-        toolName = 'read_page';
-        toolArgs = { page_name: 'projects.html' };
-      } else if (lowerMsg.match(/architecture|diagram|system/)) {
-        toolName = 'read_page';
-        toolArgs = { page_name: 'architecture-diagram.html' };
-      } else if (lowerMsg.match(/page|available|list/)) {
-        toolName = 'list_pages';
-        toolArgs = {};
-      } else {
-        toolName = 'read_project_status';
-        toolArgs = {};
-      }
-
-      const res = await fetch(MCP_URL, {
+      const res  = await fetch('http://localhost:5678/webhook/chat', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          jsonrpc: '2.0',
-          id: Date.now(),
-          method: 'tools/call',
-          params: { name: toolName, arguments: toolArgs }
-        }),
+        body:    JSON.stringify({ message: msg, history: chatHistory, conversation_id: sessionId }),
       });
       const data = await res.json();
       removeEl(loadingId);
 
-      // Extract text from MCP response
-      let answer = '';
-      if (data.result && data.result.content) {
-        answer = data.result.content.map(c => c.text || '').join('\n');
-        // Strip HTML tags for display
-        answer = answer.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 2000);
-      } else if (data.error) {
-        answer = '⚠️ ' + (data.error.message || JSON.stringify(data.error));
-      } else {
-        answer = JSON.stringify(data);
-      }
-
-      if (!answer) {
-        answer = "I don't have this information. Sorry!";
-      }
-
       if (data.error) {
         appendBot('⚠️ ' + data.error, []);
       } else {
-        appendBot(answer, []);
+        appendBot(data.output || data.reply || data.response, data.sources || []);
         chatHistory.push({ role: 'user',      content: msg        });
         chatHistory.push({ role: 'assistant', content: data.reply });
         if (chatHistory.length > 12) chatHistory = chatHistory.slice(-12);
