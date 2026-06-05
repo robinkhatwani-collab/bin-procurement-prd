@@ -198,6 +198,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
   <a href="#pricing">10. Pricing</a>
   <a href="#poc-tech">11. POC Scope</a>
   <a href="#n8n-spec">12. n8n Spec</a>
+  <a href="#build-log">13. Build Log</a>
   <a href="#flow">BIN Flow</a>
 </nav>
 
@@ -1304,8 +1305,98 @@ async function sendMessage(userMessage, history) {
   </svg>
 </div>
 
+<!-- ════════════════════════════════════════
+     SECTION 13 — BUILD LOG
+     ════════════════════════════════════════ -->
+<div class="section" id="build-log">
+  <div class="section-num">13</div>
+  <h2>Build Log</h2>
+  <p class="subtitle">What was shipped, fixed, and learned — session by session</p>
+
+  <!-- Jun 5 2026 -->
+  <div style="margin-bottom:32px;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+      <div style="background:rgba(79,142,247,.12);border:1px solid rgba(79,142,247,.3);border-radius:8px;padding:5px 14px;font-size:.78rem;font-weight:700;color:var(--primary);white-space:nowrap;">Jun 5 2026</div>
+      <div style="flex:1;height:1px;background:var(--border2);"></div>
+      <div style="font-size:.72rem;color:var(--text-dim);white-space:nowrap;">Session 4</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+
+      <div style="background:var(--surface2);border:1px solid var(--border);border-left:4px solid var(--green);border-radius:10px;padding:14px 18px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+          <span style="font-size:.72rem;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:.7px;">✅ Shipped</span>
+          <span style="font-size:.82rem;font-weight:700;color:var(--text);">Agent 2 — Dynamic Multi-Project Support</span>
+        </div>
+        <p style="font-size:.82rem;color:var(--text-muted);margin:0;">Replaced hardcoded single-project URL (<code style="font-size:.78rem;background:var(--surface3);padding:1px 6px;border-radius:4px;">bin-tracker</code>) with dynamic routing via <code style="font-size:.78rem;background:var(--surface3);padding:1px 6px;border-radius:4px;">registry.json</code>. Agent now discovers all projects automatically. New flow: Fetch Registry → Identify Project (keyword match) → IF specific/all → Fetch HTML → Claude API. Adding a new project only requires updating <code style="font-size:.78rem;background:var(--surface3);padding:1px 6px;border-radius:4px;">registry.json</code> — no workflow changes.</p>
+      </div>
+
+      <div style="background:var(--surface2);border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:10px;padding:14px 18px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+          <span style="font-size:.72rem;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.7px;">✅ Shipped</span>
+          <span style="font-size:.82rem;font-weight:700;color:var(--text);">MCP Server — Project Tracker (n8n)</span>
+        </div>
+        <p style="font-size:.82rem;color:var(--text-muted);margin:0;">Built <code style="font-size:.78rem;background:var(--surface3);padding:1px 6px;border-radius:4px;">MCP-Project-Tracker.json</code> — n8n workflow exposing 3 MCP tools: <strong>Read Page</strong> (any HTML page), <strong>Read Project Status Tracker</strong> (live project data), <strong>List Pages</strong> (discovery). Connects to Claude Desktop via SSE. Claude does all reasoning; n8n fetches and returns raw HTML. No AI Agent or OpenAI inside n8n — Claude is the brain.</p>
+      </div>
+
+      <div style="background:var(--surface2);border:1px solid var(--border);border-left:4px solid var(--purple);border-radius:10px;padding:14px 18px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+          <span style="font-size:.72rem;font-weight:800;color:var(--purple);text-transform:uppercase;letter-spacing:.7px;">✅ Shipped</span>
+          <span style="font-size:.82rem;font-weight:700;color:var(--text);">Multi Agent Workflow — Bug Fixes</span>
+        </div>
+        <p style="font-size:.82rem;color:var(--text-muted);margin:0;">Fixed MongoDB <code style="font-size:.78rem;background:var(--surface3);padding:1px 6px;border-radius:4px;">$fromAI</code> type bug (<code style="font-size:.78rem;background:var(--surface3);padding:1px 6px;border-radius:4px;">'json'→'string'</code>) causing <em>"[object Object] is not valid JSON"</em> error. Added IF node to skip PDF extraction on follow-up messages — contract context persists in session memory, no re-upload needed per question.</p>
+      </div>
+
+      <div style="background:var(--surface2);border:1px solid var(--border);border-left:4px solid var(--secondary);border-radius:10px;padding:14px 18px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+          <span style="font-size:.72rem;font-weight:800;color:var(--secondary);text-transform:uppercase;letter-spacing:.7px;">📚 Learned</span>
+          <span style="font-size:.82rem;font-weight:700;color:var(--text);">MCP Deep Dive — Week 4 Learning Updated</span>
+        </div>
+        <p style="font-size:.82rem;color:var(--text-muted);margin:0;">Added Phase 5 to Week 4 learning: 4 credit card processing MCP case studies (fraud detection, dispute resolution, dynamic limit management, spend insights), applied MCP mapping for Multi Project Tracker, and MCP trigger reference card covering JSON-RPC format, tool discovery schema, and Webhook vs MCP comparison. Topics updated to 13, phases to 5.</p>
+      </div>
+
+      <div style="background:var(--surface2);border:1px solid var(--border);border-left:4px solid var(--text-dim);border-radius:10px;padding:14px 18px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+          <span style="font-size:.72rem;font-weight:800;color:var(--text-dim);text-transform:uppercase;letter-spacing:.7px;">🔍 Explored</span>
+          <span style="font-size:.82rem;font-weight:700;color:var(--text);">Browser ↔ MCP Connectivity</span>
+        </div>
+        <p style="font-size:.82rem;color:var(--text-muted);margin:0;">Investigated connecting browser chatboard directly to n8n MCP SSE endpoint. Finding: browsers cannot be native MCP clients — MCP requires SSE + JSON-RPC handshake. Resolution: browser chatboard stays on <strong>webhook/chat</strong> (simple HTTP POST); Claude Desktop uses MCP SSE. Same n8n logic, two entry points. MCP over localhost only works with Claude Desktop, not Claude.ai browser.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Jun 3–4 2026 -->
+  <div style="margin-bottom:32px;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+      <div style="background:rgba(159,110,245,.12);border:1px solid rgba(159,110,245,.3);border-radius:8px;padding:5px 14px;font-size:.78rem;font-weight:700;color:var(--purple);white-space:nowrap;">Jun 3–4 2026</div>
+      <div style="flex:1;height:1px;background:var(--border2);"></div>
+      <div style="font-size:.72rem;color:var(--text-dim);white-space:nowrap;">Session 3</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+
+      <div style="background:var(--surface2);border:1px solid var(--border);border-left:4px solid var(--green);border-radius:10px;padding:14px 18px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+          <span style="font-size:.72rem;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:.7px;">✅ Shipped</span>
+          <span style="font-size:.82rem;font-weight:700;color:var(--text);">SubAgent — Multi Agent Contract Workflow</span>
+        </div>
+        <p style="font-size:.82rem;color:var(--text-muted);margin:0;">Built <code style="font-size:.78rem;background:var(--surface3);padding:1px 6px;border-radius:4px;">Multi Agent.json</code> — n8n multi-agent contract analysis system with Orchestration Agent routing to 3 specialist agents (Playbook, Risk, Boundary Guard) backed by Supabase, Snowflake, and MongoDB. Session memory prevents re-uploading PDF per question.</p>
+      </div>
+
+      <div style="background:var(--surface2);border:1px solid var(--border);border-left:4px solid var(--green);border-radius:10px;padding:14px 18px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+          <span style="font-size:.72rem;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:.7px;">✅ Shipped</span>
+          <span style="font-size:.82rem;font-weight:700;color:var(--text);">Week 4 Learning Summary</span>
+        </div>
+        <p style="font-size:.82rem;color:var(--text-muted);margin:0;">Published Week 4 covering Multi-Agent Systems, OpenAPI Specification, MCP Protocol, and MCP case studies. 13 topics across 5 phases with interactive OAS demo, architecture diagrams, comparison tables, and credit card domain examples.</p>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
 <footer>
-  <p>AI-Powered Multi-Project Tracker · PRD v2.0 · Built on 3 Weeks of AI PM Learning · May 2026 · Author: Robin Khatwani</p>
+  <p>AI-Powered Multi-Project Tracker · PRD v2.0 · Built on 4 Weeks of AI PM Learning · Jun 2026 · Author: Robin Khatwani</p>
   <p style="margin-top:6px">Foundations: Tokens · RAG · Grounding &nbsp;|&nbsp; Context: Agentic RAG · Context Management &nbsp;|&nbsp; Agentic &amp; Responsible AI: Knowledge Graph · HHH · Precision/Recall · AI Risks</p>
   <p style="margin-top:6px">POC data source: Project_Input_BIN_SS.xlsx (31 steps, Jun–Oct 2026)</p>
 </footer>
