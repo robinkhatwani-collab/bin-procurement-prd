@@ -894,7 +894,7 @@
        PHASE 4 — OPENAPI & TOOL USE
        ════════════════════════════ -->
   <div class="phase-divider">
-    <span class="pd-badge pd-4">🔌 Phase 4 — OpenAPI Specification & Tool Use</span>
+    <span class="pd-badge pd-4">🔌 Phase 4 — OpenAPI Specification, MCP & Tool Use</span>
     <div class="pd-line"></div>
   </div>
 
@@ -903,7 +903,7 @@
     <div class="card-header">
       <div class="card-icon-wrap" style="background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.25);">📄</div>
       <div>
-        <div class="card-section-label">Topic 9 of 10</div>
+        <div class="card-section-label">Topic 9 of 13</div>
         <div class="card-title">What is the OpenAPI Specification (OAS)?</div>
       </div>
     </div>
@@ -956,7 +956,7 @@ paths:
     <div class="card-header">
       <div class="card-icon-wrap" style="background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.25);">🤖</div>
       <div>
-        <div class="card-section-label">Topic 10 of 10</div>
+        <div class="card-section-label">Topic 10 of 13</div>
         <div class="card-title">How AI Models Use OAS</div>
       </div>
     </div>
@@ -1042,6 +1042,486 @@ paths:
 
 
   <!-- ════════════════════════════
+       TOPIC 11 — WHAT IS MCP
+       ════════════════════════════ -->
+  <div class="card" id="what-is-mcp">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.25);">🔌</div>
+      <div>
+        <div class="card-section-label">Topic 11 of 13</div>
+        <div class="card-title">What is MCP (Model Context Protocol)?</div>
+      </div>
+    </div>
+
+    <div class="callout callout-purple">
+      <div class="callout-title">📘 Definition</div>
+      <strong>MCP (Model Context Protocol)</strong> is an open standard introduced by Anthropic in late 2024 that defines how AI models communicate with external tools, data sources, and services. Think of it as a <strong>universal plug-and-socket system for AI integrations</strong> — the same way USB-C standardised device connections.
+    </div>
+
+    <p>Before MCP, integrating LLMs with external APIs required feeding OpenAPI specs as text into the model's prompt and hoping the model correctly inferred how to call the API. MCP replaces this pattern with a <strong>native, structured protocol</strong>.</p>
+
+    <div style="font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--accent);margin:18px 0 10px;">The Problem Before MCP</div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:18px;">
+      <div style="background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--red);border-radius:8px;padding:11px 15px;font-size:.82rem;color:var(--text-muted);">1. Write an OpenAPI spec describing your API endpoints</div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--red);border-radius:8px;padding:11px 15px;font-size:.82rem;color:var(--text-muted);">2. Feed that spec to the LLM as context (as raw text)</div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--red);border-radius:8px;padding:11px 15px;font-size:.82rem;color:var(--text-muted);">3. LLM <em>guesses</em> how to construct HTTP requests — handles auth, state, errors via prompt engineering</div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--red);border-radius:8px;padding:11px 15px;font-size:.82rem;color:var(--text-muted);">4. Parse the response and feed it back to the LLM</div>
+    </div>
+
+    <div style="font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--green);margin:18px 0 10px;">MCP's Three Core Primitives</div>
+    <div style="display:flex;flex-direction:column;gap:9px;">
+      <div style="background:var(--surface2);border:1px solid rgba(245,158,11,.2);border-left:4px solid var(--accent);border-radius:10px;padding:13px 17px;">
+        <div style="font-size:.8rem;font-weight:800;color:var(--accent);margin-bottom:3px;">🔧 Tools</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">Functions the AI can invoke — e.g., <span class="mono">search_files</span>, <span class="mono">create_task</span>, <span class="mono">send_email</span>. The AI calls these directly through structured JSON messages.</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid rgba(79,142,247,.2);border-left:4px solid var(--primary);border-radius:10px;padding:13px 17px;">
+        <div style="font-size:.8rem;font-weight:800;color:var(--primary);margin-bottom:3px;">📂 Resources</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">Data the AI can read — e.g., documents, database records, file contents. Exposed as structured data at runtime.</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid rgba(159,110,245,.2);border-left:4px solid var(--purple);border-radius:10px;padding:13px 17px;">
+        <div style="font-size:.8rem;font-weight:800;color:var(--purple);margin-bottom:3px;">💬 Prompts</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">Reusable prompt templates the server can provide to the AI host — standardising how common tasks are framed.</div>
+      </div>
+    </div>
+
+    <div class="callout callout-green" style="margin-top:18px;">
+      <div class="callout-title">🔑 Key Insight</div>
+      MCP is quickly becoming the <strong>de facto standard</strong> — GitHub, Slack, Google Drive, Postgres, and hundreds more now have MCP servers. It's to AI agents what REST was to web services: a common lingua franca that makes the ecosystem composable.
+    </div>
+  </div>
+
+  <!-- ════════════════════════════
+       TOPIC 12 — MCP vs OAS
+       ════════════════════════════ -->
+  <div class="card" id="mcp-vs-oas">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(45,212,191,.15);border:1px solid rgba(45,212,191,.25);">⚖️</div>
+      <div>
+        <div class="card-section-label">Topic 12 of 13</div>
+        <div class="card-title">MCP vs OpenAPI Spec — How They Differ &amp; Relate</div>
+      </div>
+    </div>
+
+    <p>MCP did <strong>not replace</strong> OpenAPI — it replaced the <em>pattern</em> of feeding OAS specs into LLM prompts. They operate at different layers and complement each other.</p>
+
+    <div style="overflow-x:auto;margin:18px 0;">
+      <table style="width:100%;border-collapse:collapse;font-size:.82rem;">
+        <thead>
+          <tr style="background:var(--surface2);">
+            <th style="padding:10px 14px;text-align:left;border:1px solid var(--border2);color:var(--text-muted);font-weight:700;text-transform:uppercase;font-size:.72rem;letter-spacing:.8px;">Aspect</th>
+            <th style="padding:10px 14px;text-align:left;border:1px solid var(--border2);color:var(--primary);font-weight:700;">OpenAPI Spec</th>
+            <th style="padding:10px 14px;text-align:left;border:1px solid var(--border2);color:var(--accent);font-weight:700;">MCP</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="background:var(--surface);">
+            <td style="padding:9px 14px;border:1px solid var(--border);color:var(--text-muted);">Purpose</td>
+            <td style="padding:9px 14px;border:1px solid var(--border);color:var(--text-muted);">Describe HTTP REST APIs for humans &amp; machines</td>
+            <td style="padding:9px 14px;border:1px solid var(--text-muted);border-color:var(--border);">Connect AI models to tools/services natively</td>
+          </tr>
+          <tr style="background:var(--surface2);">
+            <td style="padding:9px 14px;border:1px solid var(--border);color:var(--text-muted);">Consumption</td>
+            <td style="padding:9px 14px;border:1px solid var(--border);color:var(--text-muted);">LLM reads the spec as text, <em>infers</em> how to call it</td>
+            <td style="padding:9px 14px;border:1px solid var(--border);color:var(--text-muted);">LLM uses a structured protocol with defined message types</td>
+          </tr>
+          <tr style="background:var(--surface);">
+            <td style="padding:9px 14px;border:1px solid var(--border);color:var(--text-muted);">Interaction model</td>
+            <td style="padding:9px 14px;border:1px solid var(--border);color:var(--text-muted);">Stateless HTTP request/response</td>
+            <td style="padding:9px 14px;border:1px solid var(--border);color:var(--text-muted);">Stateful, bidirectional sessions</td>
+          </tr>
+          <tr style="background:var(--surface2);">
+            <td style="padding:9px 14px;border:1px solid var(--border);color:var(--text-muted);">Discovery</td>
+            <td style="padding:9px 14px;border:1px solid var(--border);color:var(--text-muted);">Static doc at build time</td>
+            <td style="padding:9px 14px;border:1px solid var(--border);color:var(--text-muted);">Dynamic — tools expose themselves at runtime</td>
+          </tr>
+          <tr style="background:var(--surface);">
+            <td style="padding:9px 14px;border:1px solid var(--border);color:var(--text-muted);">Auth / Context</td>
+            <td style="padding:9px 14px;border:1px solid var(--border);color:var(--text-muted);">LLM must handle via prompting</td>
+            <td style="padding:9px 14px;border:1px solid var(--border);color:var(--text-muted);">Built into the protocol layer</td>
+          </tr>
+          <tr style="background:var(--surface2);">
+            <td style="padding:9px 14px;border:1px solid var(--border);color:var(--text-muted);">Error handling</td>
+            <td style="padding:9px 14px;border:1px solid var(--border);color:var(--text-muted);">LLM interprets error text</td>
+            <td style="padding:9px 14px;border:1px solid var(--border);color:var(--text-muted);">Structured error types the model understands natively</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--primary);margin:18px 0 10px;">Architecture — How They Stack Together</div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:0;background:var(--surface2);border:1px solid var(--border2);border-radius:12px;padding:20px 16px;">
+      <div style="background:rgba(79,142,247,.12);border:1px solid rgba(79,142,247,.3);border-radius:8px;padding:9px 18px;font-size:.82rem;font-weight:700;color:var(--primary);text-align:center;">🤖 LLM (Claude / GPT)</div>
+      <div style="color:var(--text-dim);font-size:1.1rem;margin:4px 0;">↕ structured tool calls</div>
+      <div style="background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);border-radius:8px;padding:9px 18px;font-size:.82rem;font-weight:700;color:var(--accent);text-align:center;">🏠 MCP Host (Claude.ai / VS Code / API)</div>
+      <div style="color:var(--text-dim);font-size:1.1rem;margin:4px 0;">↕ MCP protocol (JSON-RPC)</div>
+      <div style="background:rgba(159,110,245,.12);border:1px solid rgba(159,110,245,.3);border-radius:8px;padding:9px 18px;font-size:.82rem;font-weight:700;color:var(--purple);text-align:center;">⚙️ MCP Server (one per service)</div>
+      <div style="color:var(--text-dim);font-size:1.1rem;margin:4px 0;">↕ uses at build time</div>
+      <div style="background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.3);border-radius:8px;padding:9px 18px;font-size:.82rem;font-weight:700;color:var(--green);text-align:center;">🔧 Connector (auth, retries, rate limits)</div>
+      <div style="color:var(--text-dim);font-size:1.1rem;margin:4px 0;">↕ internalized</div>
+      <div style="background:var(--surface3);border:1px solid var(--border2);border-radius:8px;padding:9px 18px;font-size:.82rem;font-weight:700;color:var(--text-muted);text-align:center;">📄 OpenAPI Spec (what endpoints exist, params, auth)</div>
+      <div style="color:var(--text-dim);font-size:1.1rem;margin:4px 0;">↓ HTTP requests</div>
+      <div style="background:var(--surface3);border:1px solid var(--border2);border-radius:8px;padding:9px 18px;font-size:.82rem;font-weight:700;color:var(--text-muted);text-align:center;">🌐 REST API (GitHub, Slack, Google Drive…)</div>
+    </div>
+
+    <div class="callout callout-amber" style="margin-top:18px;">
+      <div class="callout-title">📌 The Key Insight</div>
+      <strong>OpenAPI Spec</strong> solves "what can this API do?" at <em>build time</em>. <strong>MCP</strong> solves "how does an AI invoke it?" at <em>runtime</em>. The spec is never fed to the LLM as text — the Connector already internalized it. They operate at different layers and complement each other.
+    </div>
+  </div>
+
+  <!-- ════════════════════════════
+       TOPIC 13 — MCP SERVER SELECTION
+       ════════════════════════════ -->
+  <div class="card" id="mcp-selection">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(244,114,182,.15);border:1px solid rgba(244,114,182,.25);">🎯</div>
+      <div>
+        <div class="card-section-label">Topic 13 of 13</div>
+        <div class="card-title">How Claude Selects Between Competing MCP Servers</div>
+      </div>
+    </div>
+
+    <p>When multiple MCP servers could handle the same task (e.g., "find my files" → Google Drive MCP, Dropbox MCP, or local filesystem MCP), Claude uses a structured selection process — not a random pick.</p>
+
+    <div style="font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--rose);margin:18px 0 10px;">Selection Rules (in priority order)</div>
+    <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:18px;">
+      <div style="background:var(--surface2);border:1px solid rgba(79,142,247,.2);border-left:4px solid var(--primary);border-radius:10px;padding:13px 17px;">
+        <div style="font-size:.8rem;font-weight:800;color:var(--primary);margin-bottom:3px;">1 · Explicit user mention — highest priority</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">"Find my Q3 report <strong>in Drive</strong>" → immediately routes to Google Drive MCP. Named service is a hard override signal.</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid rgba(245,158,11,.2);border-left:4px solid var(--accent);border-radius:10px;padding:13px 17px;">
+        <div style="font-size:.8rem;font-weight:800;color:var(--accent);margin-bottom:3px;">2 · Tool name + description semantic matching</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">Every MCP tool has a name and description. Claude reads these like a semantic index — "find my Q3 report" matches against all available tool descriptions and the closest wins.</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid rgba(52,211,153,.2);border-left:4px solid var(--green);border-radius:10px;padding:13px 17px;">
+        <div style="font-size:.8rem;font-weight:800;color:var(--green);margin-bottom:3px;">3 · Specificity wins over generality</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">"Search Google Drive spreadsheets and documents" scores higher than "Search files" — the specific tool signals it was built exactly for this case.</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid rgba(159,110,245,.2);border-left:4px solid var(--purple);border-radius:10px;padding:13px 17px;">
+        <div style="font-size:.8rem;font-weight:800;color:var(--purple);margin-bottom:3px;">4 · Recency / last-used as tiebreaker</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">If you used Dropbox MCP five messages ago, it gets a slight bump in ranking when two tools otherwise tie.</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid rgba(244,114,182,.2);border-left:4px solid var(--rose);border-radius:10px;padding:13px 17px;">
+        <div style="font-size:.8rem;font-weight:800;color:var(--rose);margin-bottom:3px;">5 · True tie → surface options to the user</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">When Drive and Dropbox both score equally, Claude doesn't pick silently — it asks the user to choose. This protects user autonomy; Claude won't silently pick your cloud storage provider.</div>
+      </div>
+    </div>
+
+    <div style="font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--text-dim);margin:18px 0 10px;">Concrete Example — "Find My Files"</div>
+    <div style="display:flex;flex-direction:column;gap:6px;background:var(--surface2);border:1px solid var(--border2);border-radius:12px;padding:16px;">
+      <div style="font-size:.8rem;color:var(--text-muted);">Three competing MCPs available:</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin:6px 0;">
+        <div style="background:rgba(79,142,247,.12);border:1px solid rgba(79,142,247,.25);border-radius:7px;padding:6px 12px;font-size:.78rem;font-weight:700;color:var(--primary);">☁️ Google Drive MCP</div>
+        <div style="background:rgba(159,110,245,.12);border:1px solid rgba(159,110,245,.25);border-radius:7px;padding:6px 12px;font-size:.78rem;font-weight:700;color:var(--purple);">📦 Dropbox MCP</div>
+        <div style="background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.25);border-radius:7px;padding:6px 12px;font-size:.78rem;font-weight:700;color:var(--green);">💻 Local Filesystem MCP</div>
+      </div>
+      <div style="font-size:.8rem;color:var(--text-muted);margin-top:4px;">User says: <em>"Find my Q3 report"</em> (no service mentioned) → semantic match runs → all three score similarly → Claude asks: <strong style="color:var(--text);">"I found matching tools in Google Drive, Dropbox, and local files. Which would you like to search?"</strong></div>
+      <div style="font-size:.8rem;color:var(--text-muted);margin-top:4px;">User says: <em>"Find my Q3 report in Drive"</em> → explicit mention → Google Drive MCP selected immediately, no ranking needed.</div>
+    </div>
+
+    <div class="callout callout-blue" style="margin-top:18px;">
+      <div class="callout-title">💡 PM Tip</div>
+      When building products with MCP, <strong>tool descriptions are your ranking signal</strong>. Write them specifically — describe the exact service, file types, and use cases. Vague descriptions like "search files" will lose to specific ones in multi-MCP environments.
+    </div>
+  </div>
+
+  <!-- ════════════════════════════
+       PHASE 5 — MCP CASE STUDIES
+       ════════════════════════════ -->
+  <div class="phase-divider" style="margin-top:56px;">
+    <span class="pd-badge pd-4">💳 Phase 5 — MCP in Practice: Credit Card Processing Case Studies</span>
+    <div class="pd-line"></div>
+  </div>
+
+  <!-- Case Study 1 — Fraud Detection -->
+  <div class="card" id="cs-fraud">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(248,113,113,.15);border:1px solid rgba(248,113,113,.25);">🚨</div>
+      <div>
+        <div class="card-section-label">Case Study 1 of 4</div>
+        <div class="card-title">Real-Time Fraud Detection</div>
+      </div>
+    </div>
+
+    <div class="callout callout-purple">
+      <div class="callout-title">📋 Scenario</div>
+      A customer swipes their card at a petrol station in Mumbai at 2 AM. Three seconds later, the same card is used at a mall in Dubai. The bank's AI agent must detect this anomaly and block the second transaction — all within 200ms.
+    </div>
+
+    <div style="font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--red);margin:18px 0 10px;">MCP Servers Involved</div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
+      <div style="background:var(--surface2);border:1px solid rgba(248,113,113,.2);border-left:4px solid var(--red);border-radius:10px;padding:12px 16px;">
+        <div style="font-size:.8rem;font-weight:800;color:var(--red);margin-bottom:3px;">transaction-history-mcp</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">Tool: <span class="mono">get_last_transactions(card_id, limit)</span> — fetches last N transactions with timestamps and geolocation</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid rgba(248,113,113,.2);border-left:4px solid var(--red);border-radius:10px;padding:12px 16px;">
+        <div style="font-size:.8rem;font-weight:800;color:var(--red);margin-bottom:3px;">geolocation-mcp</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">Tool: <span class="mono">calculate_travel_time(loc_a, loc_b)</span> — returns minimum travel time between two locations</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid rgba(248,113,113,.2);border-left:4px solid var(--red);border-radius:10px;padding:12px 16px;">
+        <div style="font-size:.8rem;font-weight:800;color:var(--red);margin-bottom:3px;">card-control-mcp</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">Tool: <span class="mono">block_transaction(txn_id, reason)</span> / <span class="mono">flag_for_review(card_id)</span></div>
+      </div>
+    </div>
+
+    <div style="font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--primary);margin:14px 0 10px;">How the AI Agent Executes This</div>
+    <div style="display:flex;flex-direction:column;align-items:stretch;gap:0;background:var(--surface2);border:1px solid var(--border2);border-radius:12px;padding:16px;font-size:.8rem;">
+      <div style="display:flex;gap:12px;padding:8px 0;border-bottom:1px solid var(--border);">
+        <div style="min-width:28px;height:28px;background:rgba(248,113,113,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--red);font-size:.75rem;">1</div>
+        <div style="color:var(--text-muted);">New transaction arrives: Card #4532 — Dubai Mall — $340 — 02:03 AM</div>
+      </div>
+      <div style="display:flex;gap:12px;padding:8px 0;border-bottom:1px solid var(--border);">
+        <div style="min-width:28px;height:28px;background:rgba(79,142,247,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--primary);font-size:.75rem;">2</div>
+        <div style="color:var(--text-muted);">Calls <span class="mono">get_last_transactions("4532", 5)</span> → last txn was Mumbai petrol station at 01:58 AM (5 mins ago)</div>
+      </div>
+      <div style="display:flex;gap:12px;padding:8px 0;border-bottom:1px solid var(--border);">
+        <div style="min-width:28px;height:28px;background:rgba(79,142,247,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--primary);font-size:.75rem;">3</div>
+        <div style="color:var(--text-muted);">Calls <span class="mono">calculate_travel_time("Mumbai", "Dubai")</span> → minimum 3 hours by flight</div>
+      </div>
+      <div style="display:flex;gap:12px;padding:8px 0;border-bottom:1px solid var(--border);">
+        <div style="min-width:28px;height:28px;background:rgba(245,158,11,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--accent);font-size:.75rem;">4</div>
+        <div style="color:var(--text-muted);">Agent reasons: 5 min gap vs 3 hr minimum travel = <strong style="color:var(--red);">impossible. Fraud detected.</strong></div>
+      </div>
+      <div style="display:flex;gap:12px;padding:8px 0;">
+        <div style="min-width:28px;height:28px;background:rgba(52,211,153,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--green);font-size:.75rem;">5</div>
+        <div style="color:var(--text-muted);">Calls <span class="mono">block_transaction("TXN-DXB-9821", "impossible_geolocation")</span> + <span class="mono">flag_for_review("4532")</span> → SMS alert sent to customer</div>
+      </div>
+    </div>
+
+    <div class="callout callout-green" style="margin-top:16px;">
+      <div class="callout-title">✅ Why MCP Makes This Better</div>
+      Without MCP, the agent would need to read OpenAPI specs for each service, construct raw HTTP requests, and handle auth for each. With MCP, it calls <span class="mono">block_transaction()</span> like a function — the MCP server handles auth, retries, and the underlying Visa/Mastercard network API calls.
+    </div>
+  </div>
+
+  <!-- Case Study 2 — Dispute Resolution -->
+  <div class="card" id="cs-dispute">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.25);">📝</div>
+      <div>
+        <div class="card-section-label">Case Study 2 of 4</div>
+        <div class="card-title">Automated Dispute Resolution</div>
+      </div>
+    </div>
+
+    <div class="callout callout-purple">
+      <div class="callout-title">📋 Scenario</div>
+      A cardholder calls support: <em>"I never made this ₹8,500 transaction at FashionWorld on 3rd June."</em> The AI agent must verify the claim, gather evidence, initiate a chargeback with the merchant, and send the customer a confirmation — all without a human agent.
+    </div>
+
+    <div style="font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--accent);margin:18px 0 10px;">MCP Servers Involved</div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
+      <div style="background:var(--surface2);border:1px solid rgba(245,158,11,.2);border-left:4px solid var(--accent);border-radius:10px;padding:12px 16px;">
+        <div style="font-size:.8rem;font-weight:800;color:var(--accent);margin-bottom:3px;">transaction-history-mcp</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">Tool: <span class="mono">get_transaction_detail(txn_id)</span> — merchant name, amount, device fingerprint, IP, location</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid rgba(245,158,11,.2);border-left:4px solid var(--accent);border-radius:10px;padding:12px 16px;">
+        <div style="font-size:.8rem;font-weight:800;color:var(--accent);margin-bottom:3px;">customer-profile-mcp</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">Tool: <span class="mono">get_spend_pattern(card_id)</span> — typical merchants, geographies, spend ranges for this card</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid rgba(245,158,11,.2);border-left:4px solid var(--accent);border-radius:10px;padding:12px 16px;">
+        <div style="font-size:.8rem;font-weight:800;color:var(--accent);margin-bottom:3px;">chargeback-mcp</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">Tool: <span class="mono">initiate_chargeback(txn_id, reason_code, evidence)</span> — files dispute with merchant's acquiring bank</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid rgba(245,158,11,.2);border-left:4px solid var(--accent);border-radius:10px;padding:12px 16px;">
+        <div style="font-size:.8rem;font-weight:800;color:var(--accent);margin-bottom:3px;">notification-mcp</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">Tool: <span class="mono">send_sms(phone, message)</span> / <span class="mono">send_email(email, template_id, vars)</span></div>
+      </div>
+    </div>
+
+    <div style="font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--primary);margin:14px 0 10px;">Agent Execution Flow</div>
+    <div style="display:flex;flex-direction:column;gap:0;background:var(--surface2);border:1px solid var(--border2);border-radius:12px;padding:16px;font-size:.8rem;">
+      <div style="display:flex;gap:12px;padding:8px 0;border-bottom:1px solid var(--border);">
+        <div style="min-width:28px;height:28px;background:rgba(245,158,11,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--accent);font-size:.75rem;">1</div>
+        <div style="color:var(--text-muted);">Calls <span class="mono">get_transaction_detail("TXN-FASH-3JUN")</span> → device: unknown, IP: foreign country, no OTP verified</div>
+      </div>
+      <div style="display:flex;gap:12px;padding:8px 0;border-bottom:1px solid var(--border);">
+        <div style="min-width:28px;height:28px;background:rgba(245,158,11,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--accent);font-size:.75rem;">2</div>
+        <div style="color:var(--text-muted);">Calls <span class="mono">get_spend_pattern("4532")</span> → customer never shops at FashionWorld, never transacts from foreign IPs</div>
+      </div>
+      <div style="display:flex;gap:12px;padding:8px 0;border-bottom:1px solid var(--border);">
+        <div style="min-width:28px;height:28px;background:rgba(52,211,153,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--green);font-size:.75rem;">3</div>
+        <div style="color:var(--text-muted);">Agent reasons: strong evidence supports dispute. Auto-approves without human review.</div>
+      </div>
+      <div style="display:flex;gap:12px;padding:8px 0;border-bottom:1px solid var(--border);">
+        <div style="min-width:28px;height:28px;background:rgba(52,211,153,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--green);font-size:.75rem;">4</div>
+        <div style="color:var(--text-muted);">Calls <span class="mono">initiate_chargeback("TXN-FASH-3JUN", "4853", evidence_bundle)</span> → dispute filed with Visa network</div>
+      </div>
+      <div style="display:flex;gap:12px;padding:8px 0;">
+        <div style="min-width:28px;height:28px;background:rgba(52,211,153,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--green);font-size:.75rem;">5</div>
+        <div style="color:var(--text-muted);">Calls <span class="mono">send_sms()</span> + <span class="mono">send_email()</span> → customer receives: "Dispute raised. Provisional credit of ₹8,500 added to your account within 24 hours."</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Case Study 3 — Smart Limit Management -->
+  <div class="card" id="cs-limit">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(79,142,247,.15);border:1px solid rgba(79,142,247,.25);">📊</div>
+      <div>
+        <div class="card-section-label">Case Study 3 of 4</div>
+        <div class="card-title">Dynamic Credit Limit Management</div>
+      </div>
+    </div>
+
+    <div class="callout callout-purple">
+      <div class="callout-title">📋 Scenario</div>
+      A customer is at checkout for a ₹45,000 purchase but has only ₹38,000 available credit. Instead of a blunt decline, the bank's AI agent analyses the customer's profile in real time and offers a temporary limit increase — approved and applied in under 3 seconds.
+    </div>
+
+    <div style="font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--primary);margin:18px 0 10px;">MCP Servers Involved</div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
+      <div style="background:var(--surface2);border:1px solid rgba(79,142,247,.2);border-left:4px solid var(--primary);border-radius:10px;padding:12px 16px;">
+        <div style="font-size:.8rem;font-weight:800;color:var(--primary);margin-bottom:3px;">credit-bureau-mcp</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">Tool: <span class="mono">get_credit_score(customer_id)</span> + <span class="mono">get_repayment_history(customer_id, months=12)</span></div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid rgba(79,142,247,.2);border-left:4px solid var(--primary);border-radius:10px;padding:12px 16px;">
+        <div style="font-size:.8rem;font-weight:800;color:var(--primary);margin-bottom:3px;">risk-engine-mcp</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">Tool: <span class="mono">calculate_limit_increase_eligibility(customer_id, requested_amount)</span> → returns approved/denied + max increase</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid rgba(79,142,247,.2);border-left:4px solid var(--primary);border-radius:10px;padding:12px 16px;">
+        <div style="font-size:.8rem;font-weight:800;color:var(--primary);margin-bottom:3px;">card-management-mcp</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">Tool: <span class="mono">apply_temporary_limit(card_id, new_limit, expiry_hours)</span> — sets limit increase valid for 24h</div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:0;background:var(--surface2);border:1px solid var(--border2);border-radius:12px;padding:16px;font-size:.8rem;">
+      <div style="display:flex;gap:12px;padding:8px 0;border-bottom:1px solid var(--border);">
+        <div style="min-width:28px;height:28px;background:rgba(79,142,247,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--primary);font-size:.75rem;">1</div>
+        <div style="color:var(--text-muted);">Transaction declined: ₹45,000 requested, ₹38,000 available. Agent intercepts before final decline.</div>
+      </div>
+      <div style="display:flex;gap:12px;padding:8px 0;border-bottom:1px solid var(--border);">
+        <div style="min-width:28px;height:28px;background:rgba(79,142,247,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--primary);font-size:.75rem;">2</div>
+        <div style="color:var(--text-muted);">Calls <span class="mono">get_repayment_history()</span> → 18 months on-time payments, no defaults</div>
+      </div>
+      <div style="display:flex;gap:12px;padding:8px 0;border-bottom:1px solid var(--border);">
+        <div style="min-width:28px;height:28px;background:rgba(79,142,247,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--primary);font-size:.75rem;">3</div>
+        <div style="color:var(--text-muted);">Calls <span class="mono">calculate_limit_increase_eligibility(cust_id, 7000)</span> → approved, max ₹10,000 increase</div>
+      </div>
+      <div style="display:flex;gap:12px;padding:8px 0;">
+        <div style="min-width:28px;height:28px;background:rgba(52,211,153,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--green);font-size:.75rem;">4</div>
+        <div style="color:var(--text-muted);">Calls <span class="mono">apply_temporary_limit("4532", 48000, expiry_hours=24)</span> → transaction approved. Customer SMS: "Temporary limit of ₹48,000 applied for 24 hours."</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Case Study 4 — Smart Spend Insights -->
+  <div class="card" id="cs-insights">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(159,110,245,.15);border:1px solid rgba(159,110,245,.25);">💡</div>
+      <div>
+        <div class="card-section-label">Case Study 4 of 4</div>
+        <div class="card-title">Personalised Spend Insights & Reward Optimisation</div>
+      </div>
+    </div>
+
+    <div class="callout callout-purple">
+      <div class="callout-title">📋 Scenario</div>
+      Every Sunday, the bank's AI agent proactively analyses a customer's past week of transactions and sends a personalised WhatsApp message: category-wise spend breakdown, reward points summary, and top 2 actionable tips to maximise cashback next week.
+    </div>
+
+    <div style="font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--purple);margin:18px 0 10px;">MCP Servers Involved</div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
+      <div style="background:var(--surface2);border:1px solid rgba(159,110,245,.2);border-left:4px solid var(--purple);border-radius:10px;padding:12px 16px;">
+        <div style="font-size:.8rem;font-weight:800;color:var(--purple);margin-bottom:3px;">transaction-history-mcp</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">Tool: <span class="mono">get_transactions_by_period(card_id, from_date, to_date)</span> — returns categorised spend (food, travel, shopping, fuel)</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid rgba(159,110,245,.2);border-left:4px solid var(--purple);border-radius:10px;padding:12px 16px;">
+        <div style="font-size:.8rem;font-weight:800;color:var(--purple);margin-bottom:3px;">rewards-mcp</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">Tool: <span class="mono">get_rewards_balance(card_id)</span> + <span class="mono">get_upcoming_offers(card_id)</span> — active cashback offers by category</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid rgba(159,110,245,.2);border-left:4px solid var(--purple);border-radius:10px;padding:12px 16px;">
+        <div style="font-size:.8rem;font-weight:800;color:var(--purple);margin-bottom:3px;">whatsapp-mcp</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">Tool: <span class="mono">send_whatsapp(phone, message)</span> — sends rich-text message via WhatsApp Business API</div>
+      </div>
+    </div>
+
+    <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:12px;padding:16px;font-size:.82rem;">
+      <div style="font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--text-dim);margin-bottom:12px;">Sample Output Message Sent to Customer</div>
+      <div style="background:var(--surface3);border-radius:10px;padding:14px 16px;color:var(--text-muted);line-height:1.8;border-left:3px solid var(--purple);">
+        <div style="color:var(--text);font-weight:700;margin-bottom:6px;">📊 Your Weekly Spend Summary (Jun 1–7)</div>
+        🍕 Food & Dining: ₹3,200 (32%)<br/>
+        🛍️ Shopping: ₹4,800 (48%)<br/>
+        ⛽ Fuel: ₹1,400 (14%)<br/>
+        ✈️ Travel: ₹600 (6%)<br/><br/>
+        <div style="color:var(--text);font-weight:700;margin-bottom:4px;">🎁 Rewards: 840 pts earned this week · Total: 12,450 pts</div>
+        <div style="color:var(--accent);font-weight:700;margin:8px 0 4px;">💡 Tips to earn more next week:</div>
+        1. Use your card at Swiggy/Zomato for 5x points (offer ends Jun 15)<br/>
+        2. Fuel transactions above ₹2,000 get 2.5% cashback — you're ₹600 short of the threshold
+      </div>
+    </div>
+
+    <div class="callout callout-amber" style="margin-top:16px;">
+      <div class="callout-title">📌 PM Insight</div>
+      This is a <strong>proactive agent</strong> pattern — not waiting for user input. The MCP server selection here is deterministic (only one rewards MCP exists), so the agent runs on a schedule and chains 3 tool calls autonomously. This is the pattern behind most "smart banking" features.
+    </div>
+  </div>
+
+  <!-- ════════════════════════════
+       APPLY TO YOUR PROJECT
+       ════════════════════════════ -->
+  <div class="card" id="apply-to-project" style="border-color:rgba(52,211,153,.25);">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.25);">🛠️</div>
+      <div>
+        <div class="card-section-label">Apply It</div>
+        <div class="card-title">How to Use MCP in Multi Project Tracker</div>
+      </div>
+    </div>
+
+    <p>Your <strong>Multi Project Tracker</strong> already uses n8n agents + Supabase + MongoDB + Snowflake. Each of these can be exposed as an MCP server so Claude can query and update your project data conversationally.</p>
+
+    <div style="font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--green);margin:18px 0 10px;">Proposed MCP Servers for Your Project</div>
+    <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:18px;">
+      <div style="background:var(--surface2);border:1px solid rgba(52,211,153,.2);border-left:4px solid var(--green);border-radius:10px;padding:13px 17px;">
+        <div style="font-size:.8rem;font-weight:800;color:var(--green);margin-bottom:4px;">📋 project-data-mcp <span style="font-size:.7rem;background:rgba(52,211,153,.15);border-radius:5px;padding:1px 8px;margin-left:6px;font-weight:600;">Supabase</span></div>
+        <div style="font-size:.82rem;color:var(--text-muted);margin-bottom:6px;">Wraps your Supabase tables. Claude can query and update project status without opening the dashboard.</div>
+        <div style="font-size:.78rem;color:var(--text-dim);">Tools: <span class="mono">get_all_projects()</span> · <span class="mono">update_project_status(id, status)</span> · <span class="mono">get_overdue_projects()</span> · <span class="mono">add_project(name, owner, deadline)</span></div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid rgba(79,142,247,.2);border-left:4px solid var(--primary);border-radius:10px;padding:13px 17px;">
+        <div style="font-size:.8rem;font-weight:800;color:var(--primary);margin-bottom:4px;">🤖 agent-memory-mcp <span style="font-size:.7rem;background:rgba(79,142,247,.15);border-radius:5px;padding:1px 8px;margin-left:6px;font-weight:600;">MongoDB</span></div>
+        <div style="font-size:.82rem;color:var(--text-muted);margin-bottom:6px;">Exposes your MongoDB collections as resources. Claude can read past agent interactions and boundary guard responses.</div>
+        <div style="font-size:.78rem;color:var(--text-dim);">Tools: <span class="mono">search_memory(query)</span> · <span class="mono">get_agent_logs(agent_name, limit)</span> · <span class="mono">save_context(session_id, data)</span></div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid rgba(159,110,245,.2);border-left:4px solid var(--purple);border-radius:10px;padding:13px 17px;">
+        <div style="font-size:.8rem;font-weight:800;color:var(--purple);margin-bottom:4px;">📊 risk-analytics-mcp <span style="font-size:.7rem;background:rgba(159,110,245,.15);border-radius:5px;padding:1px 8px;margin-left:6px;font-weight:600;">Snowflake</span></div>
+        <div style="font-size:.82rem;color:var(--text-muted);margin-bottom:6px;">Query your Snowflake analytics warehouse. Ask Claude "which projects are at risk this month?" and get a real answer from your data.</div>
+        <div style="font-size:.78rem;color:var(--text-dim);">Tools: <span class="mono">get_risk_summary(period)</span> · <span class="mono">get_projects_by_status(status)</span> · <span class="mono">get_team_workload(team)</span></div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid rgba(245,158,11,.2);border-left:4px solid var(--accent);border-radius:10px;padding:13px 17px;">
+        <div style="font-size:.8rem;font-weight:800;color:var(--accent);margin-bottom:4px;">🔔 notification-mcp <span style="font-size:.7rem;background:rgba(245,158,11,.15);border-radius:5px;padding:1px 8px;margin-left:6px;font-weight:600;">n8n webhook</span></div>
+        <div style="font-size:.82rem;color:var(--text-muted);margin-bottom:6px;">Trigger n8n workflows via MCP tools. Claude can send Slack alerts, email status reports, or kick off approval workflows on demand.</div>
+        <div style="font-size:.78rem;color:var(--text-dim);">Tools: <span class="mono">send_status_report(project_id, channel)</span> · <span class="mono">trigger_approval_workflow(project_id)</span> · <span class="mono">send_deadline_alert(project_id)</span></div>
+      </div>
+    </div>
+
+    <div style="font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--primary);margin:14px 0 10px;">Example Conversation with Claude (Once MCPs Are Wired Up)</div>
+    <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:12px;padding:16px;font-size:.82rem;display:flex;flex-direction:column;gap:10px;">
+      <div style="display:flex;gap:10px;align-items:flex-start;">
+        <div style="background:rgba(79,142,247,.2);border-radius:6px;padding:3px 8px;font-size:.72rem;font-weight:700;color:var(--primary);white-space:nowrap;">You</div>
+        <div style="color:var(--text-muted);">Which projects are overdue and at high risk this week?</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:flex-start;">
+        <div style="background:rgba(52,211,153,.2);border-radius:6px;padding:3px 8px;font-size:.72rem;font-weight:700;color:var(--green);white-space:nowrap;">Claude</div>
+        <div style="color:var(--text-muted);">Calls <span class="mono">get_overdue_projects()</span> → 3 projects · Calls <span class="mono">get_risk_summary("this_week")</span> → BIN Procurement is High risk · <strong style="color:var(--text);">Returns summary with names, owners, and days overdue.</strong></div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:flex-start;">
+        <div style="background:rgba(79,142,247,.2);border-radius:6px;padding:3px 8px;font-size:.72rem;font-weight:700;color:var(--primary);white-space:nowrap;">You</div>
+        <div style="color:var(--text-muted);">Send a deadline alert to the BIN Procurement team and mark it as at-risk in Supabase.</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:flex-start;">
+        <div style="background:rgba(52,211,153,.2);border-radius:6px;padding:3px 8px;font-size:.72rem;font-weight:700;color:var(--green);white-space:nowrap;">Claude</div>
+        <div style="color:var(--text-muted);">Calls <span class="mono">send_deadline_alert("BIN-001")</span> + <span class="mono">update_project_status("BIN-001", "at-risk")</span> → <strong style="color:var(--text);">Done. Alert sent. Status updated.</strong></div>
+      </div>
+    </div>
+
+    <div class="callout callout-green" style="margin-top:16px;">
+      <div class="callout-title">🚀 Next Step</div>
+      Start with <strong>project-data-mcp</strong> (Supabase). It's the quickest win — expose 4–5 tools, connect to Claude Desktop or Claude.ai, and you can manage your entire project tracker by chatting with Claude instead of clicking through the dashboard.
+    </div>
+  </div>
+
+  <!-- ════════════════════════════
        KEY TAKEAWAYS
        ════════════════════════════ -->
   <div class="phase-divider" style="margin-top:56px;">
@@ -1098,6 +1578,18 @@ paths:
       <div class="takeaway-item">
         <div class="takeaway-num">10</div>
         <div class="takeaway-text"><strong>OAS is how models call APIs reliably.</strong> It's the interface layer between LLM reasoning and typed APIs — parsed into tool schemas, injected into context, so the model picks the right endpoint and builds a valid call instead of guessing.</div>
+      </div>
+      <div class="takeaway-item">
+        <div class="takeaway-num">11</div>
+        <div class="takeaway-text"><strong>MCP is the runtime protocol for AI ↔ tool communication.</strong> Introduced by Anthropic in 2024, it defines how AI models discover and invoke tools, resources, and prompts natively — no spec-reading or prompt engineering required.</div>
+      </div>
+      <div class="takeaway-item">
+        <div class="takeaway-num">12</div>
+        <div class="takeaway-text"><strong>MCP and OAS operate at different layers.</strong> OAS solves "what can this API do?" at build time. MCP solves "how does an AI invoke it?" at runtime. The Connector sits between them — it internalises the spec so the LLM never has to read it.</div>
+      </div>
+      <div class="takeaway-item">
+        <div class="takeaway-num">13</div>
+        <div class="takeaway-text"><strong>Claude treats MCP tool selection like a search problem.</strong> Tool descriptions are the ranking signal, explicit service mentions are hard overrides, and true ties are surfaced to the user. Write specific tool descriptions — vague ones lose in multi-MCP environments.</div>
       </div>
     </div>
   </div>
