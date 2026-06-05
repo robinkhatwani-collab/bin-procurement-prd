@@ -1,0 +1,292 @@
+{
+  "name": "MCP — Multi Project Tracker Server",
+  "nodes": [
+
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 1,
+      "position": [-400, -80],
+      "id": "a1b2c3d4-e5f6-7890-abcd-111111111111",
+      "name": "MCP Server Trigger",
+      "webhookId": "mcp-project-tracker-001"
+    },
+
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [-400, 160],
+      "id": "b2c3d4e5-f6a7-8901-bcde-222222222222",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "ZuAjxHRUEeclEzLk",
+          "name": "OpenAI account"
+        }
+      }
+    },
+
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "=projects",
+        "returnAll": true,
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "name",
+              "condition": "ilike",
+              "keyValue": "={{ $fromAI('project_name', 'The name or partial name of the project to search for', 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.supabaseTool",
+      "typeVersion": 1,
+      "position": [-160, 160],
+      "id": "c3d4e5f6-a7b8-9012-cdef-333333333333",
+      "name": "Get Project Status",
+      "description": "Get the current status, owner, deadline and details of a project by its name from the Multi Project Tracker database. Use this when the user asks about a specific project or wants to know its status.",
+      "credentials": {
+        "supabaseApi": {
+          "id": "HFVbFmtCWinK1k1K",
+          "name": "Supabase account"
+        }
+      }
+    },
+
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "=projects",
+        "returnAll": true,
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "status",
+              "condition": "eq",
+              "keyValue": "at-risk"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.supabaseTool",
+      "typeVersion": 1,
+      "position": [80, 160],
+      "id": "d4e5f6a7-b8c9-0123-defa-444444444444",
+      "name": "Get At Risk Projects",
+      "description": "Get all projects currently marked as at-risk or overdue from the tracker. Use this when the user asks which projects are in trouble, overdue, behind schedule, or need attention.",
+      "credentials": {
+        "supabaseApi": {
+          "id": "HFVbFmtCWinK1k1K",
+          "name": "Supabase account"
+        }
+      }
+    },
+
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "=projects",
+        "returnAll": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.supabaseTool",
+      "typeVersion": 1,
+      "position": [320, 160],
+      "id": "e5f6a7b8-c9d0-1234-efab-555555555555",
+      "name": "Get All Projects",
+      "description": "Get a full list of all projects in the Multi Project Tracker with their status, owner, and deadlines. Use this when the user asks for a summary, overview, or list of all projects.",
+      "credentials": {
+        "supabaseApi": {
+          "id": "HFVbFmtCWinK1k1K",
+          "name": "Supabase account"
+        }
+      }
+    },
+
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "=projects",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $fromAI('project_id', 'The unique ID of the project to update', 'string') }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "status",
+              "fieldValue": "={{ $fromAI('new_status', 'The new status value. Must be one of: active, at-risk, completed, on-hold', 'string') }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabaseTool",
+      "typeVersion": 1,
+      "position": [560, 160],
+      "id": "f6a7b8c9-d0e1-2345-fabc-666666666666",
+      "name": "Update Project Status",
+      "description": "Update the status of a project in the tracker by project ID. Valid status values are: active, at-risk, completed, on-hold. Use this when the user wants to change or update the status of a project.",
+      "credentials": {
+        "supabaseApi": {
+          "id": "HFVbFmtCWinK1k1K",
+          "name": "Supabase account"
+        }
+      }
+    },
+
+    {
+      "parameters": {
+        "collection": "projects",
+        "query": "={{ JSON.stringify($fromAI('query', 'MongoDB query filter to find relevant project memory or agent logs', 'string')) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mongoDbTool",
+      "typeVersion": 1.3,
+      "position": [800, 160],
+      "id": "a7b8c9d0-e1f2-3456-abcd-777777777777",
+      "name": "Search Project Memory",
+      "description": "Search MongoDB for past agent interactions, project history, notes, or any previously stored context about projects. Use this when the user references past conversations or historical project data.",
+      "credentials": {
+        "mongoDb": {
+          "id": "uWLztfLLdP7tbZmk",
+          "name": "MongoDB account 2"
+        }
+      }
+    },
+
+    {
+      "parameters": {
+        "contextWindowLength": 20
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [-160, -240],
+      "id": "b8c9d0e1-f2a3-4567-bcde-888888888888",
+      "name": "Session Memory"
+    }
+
+  ],
+
+  "connections": {
+
+    "MCP Server Trigger": {
+      "main": [
+        []
+      ]
+    },
+
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+
+    "Get Project Status": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+
+    "Get At Risk Projects": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+
+    "Get All Projects": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+
+    "Update Project Status": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+
+    "Search Project Memory": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+
+    "Session Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+
+  },
+
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "instanceId": "52bea2eb2b4cb18f5f3c12df61f4feb704325f3bdb7cda0a6f4d0a3f3de17258"
+  },
+  "pinData": {},
+  "nodeGroups": [],
+  "tags": []
+}
