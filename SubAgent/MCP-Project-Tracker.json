@@ -3,17 +3,28 @@
   "nodes": [
 
     {
-      "parameters": {
-        "options": {
-          "systemMessage": "You are a helpful assistant for the Multi Project Tracker dashboard.\n\nYOU CAN ONLY ANSWER FROM THE FOLLOWING PAGES:\n- Project status, red zone, overdue, at-risk, project health → use Read Project Status Tracker tool\n- All projects list or summary → use Read Page with projects.html\n- Week 1 topics → Read Page → Week1_Learning_Summary.html\n- Week 2 topics → Read Page → Week2_Learning_Summary.html\n- Week 3 topics → Read Page → Week3_Learning_Summary.html\n- Week 4 topics, MCP, OpenAPI, multi-agent → Read Page → Week4_Learning_Summary.html\n- Architecture or system design → Read Page → architecture-diagram.html\n- Dashboard overview → Read Page → default.html\n\nSTRICT RULES:\n1. Always call a tool FIRST before answering. Never answer from memory.\n2. Only answer from the content returned by the tool.\n3. If the question is NOT related to any of the above pages, respond: I don't have this information. Sorry!\n4. If the page is fetched but the answer is not found in the content, respond: I don't have this information. Sorry!\n5. Never answer from your own knowledge — only from the HTML pages.\n6. Never make up project names, statuses, or data."
-        }
-      },
+      "parameters": {},
       "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
       "typeVersion": 1,
-      "position": [-160, -80],
+      "position": [-400, -80],
       "id": "a1b2c3d4-e5f6-7890-abcd-111111111111",
       "name": "MCP Server Trigger",
       "webhookId": "mcp-project-tracker-001"
+    },
+
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.query }}",
+        "options": {
+          "systemMessage": "You are a helpful assistant for the Multi Project Tracker dashboard.\n\nYOU CAN ONLY ANSWER FROM THE FOLLOWING PAGES:\n- Project status, red zone, overdue, at-risk, project health → use Read Project Status Tracker tool\n- All projects list or summary → use Read Page with projects.html\n- Week 1 topics → Read Page → Week1_Learning_Summary.html\n- Week 2 topics → Read Page → Week2_Learning_Summary.html\n- Week 3 topics → Read Page → Week3_Learning_Summary.html\n- Week 4 topics, MCP, OpenAPI, multi-agent → Read Page → Week4_Learning_Summary.html\n- Architecture or system design → Read Page → architecture-diagram.html\n- Dashboard overview → Read Page → default.html\n\nSTRICT RULES:\n1. Always call a tool FIRST before answering. Never answer from memory.\n2. Only answer from the content returned by the tool.\n3. If the question is NOT related to any of the above pages, respond: I don't have this information. Sorry!\n4. If the page is fetched but answer not found in content, respond: I don't have this information. Sorry!\n5. Never answer from your own knowledge — only from the HTML pages.\n6. Never make up project names, statuses, or data."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [-160, -80],
+      "id": "b2c3d4e5-f6a7-8901-bcde-222222222222",
+      "name": "Project Tracker Agent"
     },
 
     {
@@ -28,7 +39,7 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [-400, 160],
-      "id": "b2c3d4e5-f6a7-8901-bcde-222222222222",
+      "id": "c3d4e5f6-a7b8-9012-cdef-333333333333",
       "name": "OpenAI Chat Model",
       "credentials": {
         "openAiApi": {
@@ -40,14 +51,14 @@
 
     {
       "parameters": {
-        "toolDescription": "Read a specific HTML page from the Multi Project Tracker local server on localhost:8080. Use this to fetch any page content before answering. Available pages: default.html, projects.html, ai-learning.html, Week1_Learning_Summary.html, Week2_Learning_Summary.html, Week3_Learning_Summary.html, Week4_Learning_Summary.html, architecture-diagram.html",
+        "toolDescription": "Read a specific HTML page from the Multi Project Tracker running on localhost:8080. Use this to fetch any page content before answering. Available pages: default.html, projects.html, ai-learning.html, Week1_Learning_Summary.html, Week2_Learning_Summary.html, Week3_Learning_Summary.html, Week4_Learning_Summary.html, architecture-diagram.html",
         "url": "=http://localhost:8080/{{ $fromAI('page_name', 'The HTML filename to read e.g. projects.html or Week4_Learning_Summary.html', 'string') }}",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [-160, 160],
-      "id": "c3d4e5f6-a7b8-9012-cdef-333333333333",
+      "id": "d4e5f6a7-b8c9-0123-defa-444444444444",
       "name": "Read Page"
     },
 
@@ -60,19 +71,19 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [80, 160],
-      "id": "d4e5f6a7-b8c9-0123-defa-444444444444",
+      "id": "e5f6a7b8-c9d0-1234-efab-555555555555",
       "name": "Read Project Status Tracker"
     },
 
     {
       "parameters": {
-        "toolDescription": "Returns the list of all available HTML pages in the Multi Project Tracker with a short description of what each page contains. Use this when the user asks what pages exist, what topics are covered, or which week to look at.",
-        "jsCode": "return [\n  { page: 'default.html', description: 'Landing dashboard' },\n  { page: 'projects.html', description: 'All projects summary' },\n  { page: 'ai-learning.html', description: 'AI Learning hub — 6 week cards' },\n  { page: 'Week1_Learning_Summary.html', description: 'Week 1 — Prompt Engineering and LLM Basics' },\n  { page: 'Week2_Learning_Summary.html', description: 'Week 2 — RAG and Vector Databases' },\n  { page: 'Week3_Learning_Summary.html', description: 'Week 3 — AI Agents and Tool Use' },\n  { page: 'Week4_Learning_Summary.html', description: 'Week 4 — Multi-Agent Systems, OpenAPI, MCP' },\n  { page: 'architecture-diagram.html', description: 'System architecture diagram' },\n  { page: 'Project_StatusTracker.html', description: 'Live project status tracker with red zone and overdue data' }\n]"
+        "toolDescription": "Returns the list of all available HTML pages in the Multi Project Tracker with a short description of each. Use this when the user asks what pages exist, what topics are covered, or which week to look at.",
+        "jsCode": "return [{ json: { pages: [\n  { page: 'default.html', description: 'Landing dashboard' },\n  { page: 'projects.html', description: 'All projects summary' },\n  { page: 'ai-learning.html', description: 'AI Learning hub — 6 week cards' },\n  { page: 'Week1_Learning_Summary.html', description: 'Week 1 — Prompt Engineering and LLM Basics' },\n  { page: 'Week2_Learning_Summary.html', description: 'Week 2 — RAG and Vector Databases' },\n  { page: 'Week3_Learning_Summary.html', description: 'Week 3 — AI Agents and Tool Use' },\n  { page: 'Week4_Learning_Summary.html', description: 'Week 4 — Multi-Agent Systems, OpenAPI, MCP' },\n  { page: 'architecture-diagram.html', description: 'System architecture diagram' },\n  { page: 'Project_StatusTracker.html', description: 'Live project status with red zone and overdue data' }\n]}}]"
       },
       "type": "n8n-nodes-base.codeTool",
       "typeVersion": 1,
       "position": [320, 160],
-      "id": "e5f6a7b8-c9d0-1234-efab-555555555555",
+      "id": "f6a7b8c9-d0e1-2345-fabc-666666666666",
       "name": "List Pages"
     },
 
@@ -83,7 +94,7 @@
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.4,
       "position": [-160, -280],
-      "id": "f6a7b8c9-d0e1-2345-fabc-666666666666",
+      "id": "a7b8c9d0-e1f2-3456-abcd-777777777777",
       "name": "Session Memory"
     }
 
@@ -91,11 +102,23 @@
 
   "connections": {
 
+    "MCP Server Trigger": {
+      "main": [
+        [
+          {
+            "node": "Project Tracker Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+
     "OpenAI Chat Model": {
       "ai_languageModel": [
         [
           {
-            "node": "MCP Server Trigger",
+            "node": "Project Tracker Agent",
             "type": "ai_languageModel",
             "index": 0
           }
@@ -107,7 +130,7 @@
       "ai_tool": [
         [
           {
-            "node": "MCP Server Trigger",
+            "node": "Project Tracker Agent",
             "type": "ai_tool",
             "index": 0
           }
@@ -119,7 +142,7 @@
       "ai_tool": [
         [
           {
-            "node": "MCP Server Trigger",
+            "node": "Project Tracker Agent",
             "type": "ai_tool",
             "index": 0
           }
@@ -131,7 +154,7 @@
       "ai_tool": [
         [
           {
-            "node": "MCP Server Trigger",
+            "node": "Project Tracker Agent",
             "type": "ai_tool",
             "index": 0
           }
@@ -143,7 +166,7 @@
       "ai_memory": [
         [
           {
-            "node": "MCP Server Trigger",
+            "node": "Project Tracker Agent",
             "type": "ai_memory",
             "index": 0
           }
