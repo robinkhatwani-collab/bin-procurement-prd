@@ -1522,6 +1522,207 @@ paths:
   </div>
 
   <!-- ════════════════════════════
+       MCP TRIGGER — HOW IT'S CODED
+       ════════════════════════════ -->
+  <div class="card" id="mcp-trigger-code">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(79,142,247,.15);border:1px solid rgba(79,142,247,.25);">⚙️</div>
+      <div>
+        <div class="card-section-label">Reference Card</div>
+        <div class="card-title">How MCP Triggers Are Coded — Webhook vs MCP</div>
+      </div>
+    </div>
+
+    <p>When you add an <strong>MCP Server Trigger</strong> in n8n, here's exactly what happens under the hood — from Claude sending a message to your workflow firing and returning a result.</p>
+
+    <!-- Flow -->
+    <div style="font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--primary);margin:18px 0 10px;">End-to-End Flow</div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:0;background:var(--surface2);border:1px solid var(--border2);border-radius:12px;padding:18px 16px;">
+      <div style="background:rgba(79,142,247,.12);border:1px solid rgba(79,142,247,.3);border-radius:8px;padding:8px 18px;font-size:.8rem;font-weight:700;color:var(--primary);">🤖 Claude sends JSON-RPC tool call</div>
+      <div style="color:var(--text-dim);font-size:1rem;margin:3px 0;">↓</div>
+      <div style="background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);border-radius:8px;padding:8px 18px;font-size:.8rem;font-weight:700;color:var(--accent);">n8n MCP Server (SSE listener) receives it</div>
+      <div style="color:var(--text-dim);font-size:1rem;margin:3px 0;">↓</div>
+      <div style="background:var(--surface3);border:1px solid var(--border2);border-radius:8px;padding:8px 18px;font-size:.8rem;color:var(--text-muted);">Deserialises → finds tool name → fires workflow</div>
+      <div style="color:var(--text-dim);font-size:1rem;margin:3px 0;">↓</div>
+      <div style="background:var(--surface3);border:1px solid var(--border2);border-radius:8px;padding:8px 18px;font-size:.8rem;color:var(--text-muted);">Workflow runs (Supabase / MongoDB / Snowflake)</div>
+      <div style="color:var(--text-dim);font-size:1rem;margin:3px 0;">↓</div>
+      <div style="background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.3);border-radius:8px;padding:8px 18px;font-size:.8rem;font-weight:700;color:var(--green);">n8n wraps result → JSON-RPC response → Claude</div>
+    </div>
+
+    <!-- Tool call message -->
+    <div style="font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--accent);margin:20px 0 10px;">Raw MCP Message Format (JSON-RPC)</div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+      <div style="flex:1;min-width:260px;">
+        <div style="font-size:.72rem;font-weight:700;color:var(--primary);margin-bottom:6px;">▶ Claude → n8n (tool call)</div>
+        <div class="code-block" style="font-size:.76rem;">{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "get_project_status",
+    "arguments": {
+      "project_name": "BIN Procurement"
+    }
+  }
+}</div>
+      </div>
+      <div style="flex:1;min-width:260px;">
+        <div style="font-size:.72rem;font-weight:700;color:var(--green);margin-bottom:6px;">◀ n8n → Claude (response)</div>
+        <div class="code-block" style="font-size:.76rem;">{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "BIN Procurement — Status:
+At Risk, Owner: Robin,
+Deadline: Jun 15"
+      }
+    ]
+  }
+}</div>
+      </div>
+    </div>
+
+    <!-- Tool discovery -->
+    <div style="font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--purple);margin:20px 0 10px;">Tool Discovery — What Claude Reads on First Connect</div>
+    <p style="font-size:.83rem;margin-bottom:10px;">When Claude connects, n8n auto-sends the full tool list — Claude reads this to know what tools exist. <strong>No hardcoded URLs or specs needed.</strong></p>
+    <div class="code-block" style="font-size:.76rem;">{
+  "method": "tools/list",
+  "result": {
+    "tools": [
+      {
+        "name": "get_project_status",
+        "description": "Get status of a project by name",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "project_name": { "type": "string" }
+          },
+          "required": ["project_name"]
+        }
+      },
+      {
+        "name": "send_alert",
+        "description": "Send a deadline alert for a project",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "project_id": { "type": "string" }
+          },
+          "required": ["project_id"]
+        }
+      }
+    ]
+  }
+}</div>
+
+    <!-- n8n internal code -->
+    <div style="font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--green);margin:20px 0 10px;">What n8n Does Internally (Simplified)</div>
+    <div class="code-block" style="font-size:.76rem;">class McpServerTrigger {
+
+  // 1. Opens persistent SSE connection
+  async startListening(url) {
+    app.get(url, (req, res) => {
+      res.setHeader('Content-Type', 'text/event-stream')
+      res.setHeader('Cache-Control', 'no-cache')
+      // keeps connection open — stateful!
+    })
+  }
+
+  // 2. Handles incoming JSON-RPC calls
+  async handleMessage(message) {
+    if (message.method === 'tools/list')
+      return this.listTools()        // returns tool definitions
+
+    if (message.method === 'tools/call')
+      return this.executeTool(       // fires your workflow
+        message.params.name,
+        message.params.arguments
+      )
+  }
+
+  // 3. Maps tool name → workflow execution
+  async executeTool(toolName, args) {
+    const result = await this.runWorkflow({
+      tool: toolName,
+      input: args
+    })
+    return {
+      content: [{ type: 'text', text: result }]
+    }
+  }
+}</div>
+    <div class="callout callout-blue" style="margin-top:12px;">
+      <div class="callout-title">💡 Key Point</div>
+      You <strong>never write this code</strong> — n8n generates the full JSON-RPC layer from the UI. Your workflow logic (Supabase queries, agents, Snowflake) stays exactly the same. Only the trigger node changes.
+    </div>
+
+    <!-- How workflow receives data -->
+    <div style="font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--rose);margin:20px 0 10px;">How Your Workflow Receives the Data</div>
+    <p style="font-size:.83rem;margin-bottom:10px;">After the MCP trigger fires, tool input is available in every downstream node:</p>
+    <div class="code-block" style="font-size:.76rem;">// Available in any node after MCP trigger:
+$json.tool              // → "get_project_status"
+$json.input             // → { "project_name": "BIN Procurement" }
+
+// Use in Supabase / Switch nodes like:
+$json.input.project_name   // → "BIN Procurement"
+$json.input.project_id     // → "BIN-001"</div>
+
+    <!-- Comparison table -->
+    <div style="font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--text-dim);margin:20px 0 10px;">Webhook Trigger vs MCP Server Trigger</div>
+    <div style="overflow-x:auto;">
+      <table style="width:100%;border-collapse:collapse;font-size:.8rem;">
+        <thead>
+          <tr style="background:var(--surface2);">
+            <th style="padding:9px 14px;text-align:left;border:1px solid var(--border2);color:var(--text-muted);font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.7px;">Aspect</th>
+            <th style="padding:9px 14px;text-align:left;border:1px solid var(--border2);color:var(--primary);font-weight:700;">Webhook Trigger</th>
+            <th style="padding:9px 14px;text-align:left;border:1px solid var(--border2);color:var(--accent);font-weight:700;">MCP Server Trigger</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="background:var(--surface);">
+            <td style="padding:8px 14px;border:1px solid var(--border);color:var(--text-muted);">Protocol</td>
+            <td style="padding:8px 14px;border:1px solid var(--border);color:var(--text-muted);">HTTP POST</td>
+            <td style="padding:8px 14px;border:1px solid var(--border);color:var(--text-muted);">JSON-RPC over SSE</td>
+          </tr>
+          <tr style="background:var(--surface2);">
+            <td style="padding:8px 14px;border:1px solid var(--border);color:var(--text-muted);">Input access</td>
+            <td style="padding:8px 14px;border:1px solid var(--border);color:var(--text-muted);"><span class="mono">$json.body.message</span></td>
+            <td style="padding:8px 14px;border:1px solid var(--border);color:var(--text-muted);"><span class="mono">$json.input.{param}</span></td>
+          </tr>
+          <tr style="background:var(--surface);">
+            <td style="padding:8px 14px;border:1px solid var(--border);color:var(--text-muted);">Connection</td>
+            <td style="padding:8px 14px;border:1px solid var(--border);color:var(--text-muted);">New request each time</td>
+            <td style="padding:8px 14px;border:1px solid var(--border);color:var(--text-muted);">Persistent SSE session</td>
+          </tr>
+          <tr style="background:var(--surface2);">
+            <td style="padding:8px 14px;border:1px solid var(--border);color:var(--text-muted);">Tool schema</td>
+            <td style="padding:8px 14px;border:1px solid var(--border);color:var(--text-muted);">Write manually / hardcoded URL</td>
+            <td style="padding:8px 14px;border:1px solid var(--border);color:var(--text-muted);">n8n generates from UI</td>
+          </tr>
+          <tr style="background:var(--surface);">
+            <td style="padding:8px 14px;border:1px solid var(--border);color:var(--text-muted);">Discovery</td>
+            <td style="padding:8px 14px;border:1px solid var(--border);color:var(--text-muted);">None</td>
+            <td style="padding:8px 14px;border:1px solid var(--border);color:var(--text-muted);">Auto on connection</td>
+          </tr>
+          <tr style="background:var(--surface2);">
+            <td style="padding:8px 14px;border:1px solid var(--border);color:var(--text-muted);">Claude aware?</td>
+            <td style="padding:8px 14px;border:1px solid var(--border);color:var(--red);">❌ No — hardcoded only</td>
+            <td style="padding:8px 14px;border:1px solid var(--border);color:var(--green);">✅ Yes — sees tools natively</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout-amber" style="margin-top:16px;">
+      <div class="callout-title">📌 Your Migration Path</div>
+      Your existing <strong>agent2-chatbot.json</strong> uses a Webhook trigger at <span class="mono">/webhook/chat</span>. To convert to MCP: replace the webhook trigger with MCP Server Trigger, keep all downstream nodes identical, update Claude Desktop config with the new SSE URL. The Supabase, MongoDB, and Snowflake nodes don't change at all.
+    </div>
+  </div>
+
+  <!-- ════════════════════════════
        KEY TAKEAWAYS
        ════════════════════════════ -->
   <div class="phase-divider" style="margin-top:56px;">
