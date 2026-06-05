@@ -20,7 +20,7 @@
           "value": "gpt-4o-mini"
         },
         "options": {
-          "systemMessage": "You are a helpful assistant for the Multi Project Tracker. You can read pages from the project dashboard and answer questions based on their content. Available pages: default.html, projects.html, ai-learning.html, Week1_Learning_Summary.html, Week2_Learning_Summary.html, Week3_Learning_Summary.html, Week4_Learning_Summary.html, architecture-diagram.html, Project_StatusTracker.html. Always fetch the relevant page first before answering."
+          "systemMessage": "You are a helpful assistant for the Multi Project Tracker dashboard.\n\nYOU CAN ONLY ANSWER FROM THE FOLLOWING PAGES:\n- Project status, red zone, overdue, at-risk, project health → read Project_StatusTracker.html\n- All projects list or summary → read projects.html\n- AI learning topics, weekly summaries → read ai-learning.html or the relevant WeekN_Learning_Summary.html\n- Week 1 topics → read Week1_Learning_Summary.html\n- Week 2 topics → read Week2_Learning_Summary.html\n- Week 3 topics → read Week3_Learning_Summary.html\n- Week 4 topics, MCP, OpenAPI, multi-agent → read Week4_Learning_Summary.html\n- Architecture or system design → read architecture-diagram.html\n- Dashboard overview → read default.html\n\nSTRICT RULES:\n1. Always call Read Page or List Pages tool FIRST before answering.\n2. Only answer from the content returned by the tool.\n3. If the question is NOT related to any of the above pages or topics, respond with exactly: I don't have this information. Sorry!\n4. If the page is fetched but the answer is not found in the content, respond with exactly: I don't have this information. Sorry!\n5. Never answer from your own knowledge — only from the HTML pages.\n6. Never make up project names, statuses, or data.\n\nQUESTION ROUTING:\n- What is the status of [project]? → Project_StatusTracker.html\n- Which projects are in red zone / at risk / overdue? → Project_StatusTracker.html\n- How many projects are completed? → Project_StatusTracker.html\n- What is Week 4 about? → Week4_Learning_Summary.html\n- What is MCP? → Week4_Learning_Summary.html\n- General questions not about projects or learning → I don't have this information. Sorry!"
         }
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
@@ -63,6 +63,19 @@
 
     {
       "parameters": {
+        "toolDescription": "Read the Project Status Tracker page which contains live status of all projects including red zone, at-risk, overdue, completed, and active projects. Use this for ANY question about project status, health, red zone, overdue projects, project progress, or which projects need attention.",
+        "url": "http://localhost:8080/Project_StatusTracker.html",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [320, 160],
+      "id": "f6a7b8c9-d0e1-2345-fabc-666666666666",
+      "name": "Read Project Status Tracker"
+    },
+
+    {
+      "parameters": {
         "contextWindowLength": 20
       },
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
@@ -101,6 +114,18 @@
     },
 
     "List Pages": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+
+    "Read Project Status Tracker": {
       "ai_tool": [
         [
           {
