@@ -198,7 +198,8 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
   <a href="#pricing">10. Pricing</a>
   <a href="#poc-tech">11. POC Scope</a>
   <a href="#n8n-spec">12. n8n Spec</a>
-  <a href="#build-log">13. Build Log</a>
+  <a href="#architecture">13. Architecture</a>
+  <a href="#build-log">14. Build Log</a>
   <a href="#flow">BIN Flow</a>
 </nav>
 
@@ -1306,10 +1307,91 @@ async function sendMessage(userMessage, history) {
 </div>
 
 <!-- ════════════════════════════════════════
-     SECTION 13 — BUILD LOG
+     SECTION 13 — SYSTEM ARCHITECTURE
+     ════════════════════════════════════════ -->
+<div class="section" id="architecture">
+  <div class="section-num">13</div>
+  <h2>System Architecture</h2>
+  <p class="subtitle">Full stack design — all interfaces, agents, workflows, and data sources as of June 2026</p>
+
+  <a href="architecture-diagram.html" style="display:inline-flex;align-items:center;gap:8px;background:rgba(45,212,191,.1);border:1px solid rgba(45,212,191,.25);color:var(--secondary);font-size:.78rem;font-weight:700;padding:8px 16px;border-radius:8px;text-decoration:none;margin-bottom:24px;">🔗 View Full Interactive Diagram →</a>
+
+  <!-- Layer stack — compact version -->
+  <div style="display:flex;flex-direction:column;gap:3px;">
+
+    <!-- L1 -->
+    <div style="border-radius:10px;overflow:hidden;border:1px solid rgba(79,142,247,.2);">
+      <div style="background:rgba(79,142,247,.1);padding:7px 16px;display:flex;align-items:center;gap:10px;">
+        <span style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--primary);">Layer 1 — User Interfaces</span>
+      </div>
+      <div style="background:var(--surface);padding:12px 16px;display:flex;flex-wrap:wrap;gap:8px;">
+        <span style="background:rgba(79,142,247,.1);border:1px solid rgba(79,142,247,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--primary);">🌐 Browser Dashboard</span>
+        <span style="background:rgba(79,142,247,.1);border:1px solid rgba(79,142,247,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--primary);">💬 Chatboard</span>
+        <span style="background:rgba(79,142,247,.1);border:1px solid rgba(79,142,247,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--primary);">📊 Project Status Pages</span>
+        <span style="background:rgba(45,212,191,.1);border:1px solid rgba(45,212,191,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--secondary);">🤖 Claude Desktop (MCP)</span>
+        <span style="background:rgba(159,110,245,.1);border:1px solid rgba(159,110,245,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--purple);">📁 Excel Upload</span>
+      </div>
+    </div>
+
+    <div style="text-align:center;font-size:.75rem;color:var(--text-dim);padding:2px 0;">↓↓↓</div>
+
+    <!-- L2 -->
+    <div style="border-radius:10px;overflow:hidden;border:1px solid rgba(245,158,11,.2);">
+      <div style="background:rgba(245,158,11,.1);padding:7px 16px;">
+        <span style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--accent);">Layer 2 — Server & Entry Points (n8n + Python)</span>
+      </div>
+      <div style="background:var(--surface);padding:12px 16px;display:flex;flex-wrap:wrap;gap:8px;">
+        <span style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--accent);">🐍 Python server.py :8080</span>
+        <span style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--accent);">🔗 Webhook /webhook/chat</span>
+        <span style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--accent);">⚡ MCP Server Trigger (SSE)</span>
+        <span style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--accent);">📨 Chat Trigger (Multi Agent)</span>
+      </div>
+    </div>
+
+    <div style="text-align:center;font-size:.75rem;color:var(--text-dim);padding:2px 0;">↓↓↓</div>
+
+    <!-- L3 -->
+    <div style="border-radius:10px;overflow:hidden;border:1px solid rgba(159,110,245,.2);">
+      <div style="background:rgba(159,110,245,.1);padding:7px 16px;">
+        <span style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--purple);">Layer 3 — AI Agents</span>
+      </div>
+      <div style="background:var(--surface);padding:12px 16px;display:flex;flex-wrap:wrap;gap:8px;">
+        <span style="background:rgba(79,142,247,.1);border:1px solid rgba(79,142,247,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--primary);">⚙️ Agent 1 — Generator</span>
+        <span style="background:rgba(159,110,245,.1);border:1px solid rgba(159,110,245,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--purple);">🧠 Agent 2 — Project Q&amp;A</span>
+        <span style="background:rgba(45,212,191,.1);border:1px solid rgba(45,212,191,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--secondary);">🔌 MCP Workflow</span>
+        <span style="background:rgba(244,114,182,.1);border:1px solid rgba(244,114,182,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--rose);">🤝 Orchestration Agent</span>
+        <span style="background:rgba(244,114,182,.1);border:1px solid rgba(244,114,182,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--rose);">📋 Playbook Agent</span>
+        <span style="background:rgba(244,114,182,.1);border:1px solid rgba(244,114,182,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--rose);">⚠️ Risk Agent</span>
+        <span style="background:rgba(244,114,182,.1);border:1px solid rgba(244,114,182,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--rose);">🛡️ Boundary Guard</span>
+      </div>
+    </div>
+
+    <div style="text-align:center;font-size:.75rem;color:var(--text-dim);padding:2px 0;">↓↓↓</div>
+
+    <!-- L4 -->
+    <div style="border-radius:10px;overflow:hidden;border:1px solid rgba(52,211,153,.2);">
+      <div style="background:rgba(52,211,153,.1);padding:7px 16px;">
+        <span style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--green);">Layer 4 — Data Sources & APIs</span>
+      </div>
+      <div style="background:var(--surface);padding:12px 16px;display:flex;flex-wrap:wrap;gap:8px;">
+        <span style="background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--green);">📄 Local HTML Pages</span>
+        <span style="background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--green);">📋 registry.json</span>
+        <span style="background:rgba(45,212,191,.1);border:1px solid rgba(45,212,191,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--secondary);">🗄️ Supabase</span>
+        <span style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--accent);">🍃 MongoDB</span>
+        <span style="background:rgba(79,142,247,.1);border:1px solid rgba(79,142,247,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--primary);">❄️ Snowflake</span>
+        <span style="background:rgba(159,110,245,.1);border:1px solid rgba(159,110,245,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--purple);">🤖 Anthropic Claude API</span>
+        <span style="background:rgba(255,255,255,.05);border:1px solid var(--border2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--text-muted);">🧠 OpenAI GPT-4o-mini</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     SECTION 14 — BUILD LOG
      ════════════════════════════════════════ -->
 <div class="section" id="build-log">
-  <div class="section-num">13</div>
+  <div class="section-num">14</div>
   <h2>Build Log</h2>
   <p class="subtitle">What was shipped, fixed, and learned — session by session</p>
 
