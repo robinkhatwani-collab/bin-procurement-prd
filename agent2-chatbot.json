@@ -1,6 +1,7 @@
 {
   "name": "Agent 2 — Project Intelligence Chatbot",
   "nodes": [
+
     {
       "id": "node-1",
       "name": "Chat Receiver",
@@ -11,11 +12,10 @@
         "httpMethod": "POST",
         "path": "chat",
         "responseMode": "responseNode",
-        "options": {
-          "allowedOrigins": "*"
-        }
+        "options": { "allowedOrigins": "*" }
       }
     },
+
     {
       "id": "node-2",
       "name": "Extract Fields",
@@ -23,9 +23,10 @@
       "typeVersion": 2,
       "position": [460, 300],
       "parameters": {
-        "jsCode": "// Handle both $json.body.x and $json.x depending on n8n webhook version\nconst src = $json.body && $json.body.message !== undefined ? $json.body : $json;\n\nconst user_message     = (src.message     || '').trim();\nconst conversation_id  =  src.conversation_id || 'default';\nconst history          = Array.isArray(src.history) ? src.history : [];\n\nreturn [{ json: { user_message, conversation_id, history } }];"
+        "jsCode": "const src = $json.body && $json.body.message !== undefined ? $json.body : $json;\nconst user_message    = (src.message    || '').trim();\nconst conversation_id =  src.conversation_id || 'default';\nconst history         = Array.isArray(src.history) ? src.history : [];\nreturn [{ json: { user_message, conversation_id, history } }];"
       }
     },
+
     {
       "id": "node-3",
       "name": "Scope Guard",
@@ -34,24 +35,20 @@
       "position": [680, 300],
       "parameters": {
         "conditions": {
-          "options": {
-            "caseSensitive": false
-          },
+          "options": { "caseSensitive": false },
           "conditions": [
             {
               "id": "c1",
               "leftValue": "={{ $json.user_message }}",
-              "rightValue": "project|step|status|overdue|dri|milestone|blocked|tracker|risk|deadline|phase|assignee|owner|complete|progress|launch|dependent|dependency",
-              "operator": {
-                "type": "string",
-                "operation": "regex"
-              }
+              "rightValue": "project|step|status|overdue|dri|milestone|blocked|tracker|risk|deadline|phase|assignee|owner|complete|progress|launch|dependent|dependency|bin|reward|migration|trace|aws|all project|summary|which project|list project",
+              "operator": { "type": "string", "operation": "regex" }
             }
           ],
           "combinator": "and"
         }
       }
     },
+
     {
       "id": "node-4a",
       "name": "Out-of-Scope Reply",
@@ -61,55 +58,116 @@
       "parameters": {
         "respondWith": "json",
         "responseBody": "={{ JSON.stringify({ reply: \"I can only answer questions about project status, steps, DRI assignments, deadlines, and milestones. Please ask something related to your tracked projects.\", sources: [], timestamp: new Date().toISOString() }) }}",
-        "options": {
-          "responseCode": 200
-        }
+        "options": { "responseCode": 200 }
       }
     },
+
     {
       "id": "node-4b",
-      "name": "Fetch Tracker HTML",
+      "name": "Fetch Registry",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4,
       "position": [900, 140],
       "parameters": {
         "method": "GET",
-        "url": "http://127.0.0.1:8080/bin-tracker",
+        "url": "http://localhost:8080/projects/registry.json",
         "options": {
           "response": {
-            "response": {
-              "responseFormat": "text"
-            }
+            "response": { "responseFormat": "text" }
           }
         }
       }
     },
+
     {
-      "id": "node-5",
-      "name": "Parse Tracker HTML",
+      "id": "node-4c",
+      "name": "Identify Project",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [1120, 140],
       "parameters": {
-        "jsCode": "// Pull inputs from upstream nodes\nconst html = $input.first().json.data || '';\nconst upstream = $('Extract Fields').first().json;\n\n// ── RAG status ──────────────────────────────────────────────\nconst ragMatch = html.match(/overall[\\s\\S]{0,80}?(green|amber|red)/i)\n               || html.match(/rag[^>]*>[\\s\\S]{0,20}?(green|amber|red)/i);\nconst ragStatus = ragMatch ? ragMatch[1].toUpperCase() : 'Unknown';\n\n// ── Overdue count ────────────────────────────────────────────\nconst overdueMatch = html.match(/(\\d+)\\s*(?:steps?\\s*)?overdue/i);\nconst overdueCount = overdueMatch ? parseInt(overdueMatch[1]) : 0;\n\n// ── Project name ─────────────────────────────────────────────\nconst titleMatch = html.match(/<h1[^>]*>([^<]+)<\\/h1>/i)\n                || html.match(/<title>([^<]+)<\\/title>/i);\nconst projectName = titleMatch\n  ? titleMatch[1].replace(/PRD|—|\\|/g, '').trim()\n  : 'BIN Procurement';\n\n// ── Step rows ────────────────────────────────────────────────\n// Strips HTML tags from a cell string\nconst stripTags = s => s.replace(/<[^>]+>/g, '').trim();\n\nconst steps = [];\nconst rowRe = /<tr[^>]*>([\\s\\S]*?)<\\/tr>/gi;\nlet m;\nwhile ((m = rowRe.exec(html)) !== null) {\n  const cells = [...m[1].matchAll(/<td[^>]*>([\\s\\S]*?)<\\/td>/gi)]\n                  .map(c => stripTags(c[1]));\n  if (cells.length >= 3 && /^\\d+$/.test(cells[0])) {\n    steps.push({\n      step:        cells[0],\n      description: cells[1] || '',\n      dri:         cells[2] || '',\n      status:      cells[3] || '',\n      est_end:     cells[4] || '',\n      actual:      cells[5] || ''\n    });\n  }\n}\n\nreturn [{\n  json: {\n    user_message:    upstream.user_message,\n    history:         upstream.history,\n    conversation_id: upstream.conversation_id,\n    project_context: JSON.stringify({\n      project_name:  projectName,\n      rag_status:    ragStatus,\n      overdue_count: overdueCount,\n      total_steps:   steps.length,\n      steps\n    }, null, 2)\n  }\n}];"
+        "jsCode": "// Parse registry\nconst registryRaw = $input.first().json.data || '[]';\nlet registry = [];\ntry { registry = JSON.parse(registryRaw); } catch(e) { registry = []; }\n\n// Get user message from Extract Fields\nconst upstream = $('Extract Fields').first().json;\nconst msg = (upstream.user_message || '').toLowerCase();\n\n// Try to match user message to a project\nlet matched = null;\nfor (const p of registry) {\n  const slugWords = p.slug.replace(/-/g, ' ');\n  const titleWords = (p.title || '').toLowerCase();\n  // Check if any significant word from slug/title appears in message\n  const keywords = slugWords.split(' ').concat(titleWords.split(' '))\n    .filter(w => w.length > 3);\n  if (keywords.some(k => msg.includes(k))) {\n    matched = p;\n    break;\n  }\n}\n\n// Check if user is asking for all/summary\nconst wantsAll = !matched && /all|summary|list|every|overview|which/.test(msg);\n\nreturn [{\n  json: {\n    user_message:    upstream.user_message,\n    history:         upstream.history,\n    conversation_id: upstream.conversation_id,\n    registry,\n    matched_slug:    matched ? matched.slug : null,\n    matched_title:   matched ? matched.title : null,\n    wants_all:       wantsAll || !matched\n  }\n}];"
       }
     },
+
+    {
+      "id": "node-4d",
+      "name": "Specific Project?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1340, 140],
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": false },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.matched_slug }}",
+              "rightValue": "",
+              "operator": { "type": "string", "operation": "isNotEmpty" }
+            }
+          ],
+          "combinator": "and"
+        }
+      }
+    },
+
+    {
+      "id": "node-4e",
+      "name": "Fetch Project HTML",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1560, 60],
+      "parameters": {
+        "method": "GET",
+        "url": "=http://localhost:8080/projects/{{ $json.matched_slug }}/status-tracker.html",
+        "options": {
+          "response": {
+            "response": { "responseFormat": "text" }
+          }
+        }
+      }
+    },
+
+    {
+      "id": "node-5a",
+      "name": "Parse Project HTML",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1780, 60],
+      "parameters": {
+        "jsCode": "const html = $input.first().json.data || '';\nconst upstream = $('Identify Project').first().json;\n\n// RAG status\nconst ragMatch = html.match(/overall[\\s\\S]{0,80}?(green|amber|red)/i)\n               || html.match(/rag[^>]*>[\\s\\S]{0,20}?(green|amber|red)/i);\nconst ragStatus = ragMatch ? ragMatch[1].toUpperCase() : 'Unknown';\n\n// Overdue count\nconst overdueMatch = html.match(/(\\d+)\\s*(?:steps?\\s*)?overdue/i);\nconst overdueCount = overdueMatch ? parseInt(overdueMatch[1]) : 0;\n\n// Strip HTML tags\nconst stripTags = s => s.replace(/<[^>]+>/g, '').trim();\n\n// Parse step rows\nconst steps = [];\nconst rowRe = /<tr[^>]*>([\\s\\S]*?)<\\/tr>/gi;\nlet m;\nwhile ((m = rowRe.exec(html)) !== null) {\n  const cells = [...m[1].matchAll(/<td[^>]*>([\\s\\S]*?)<\\/td>/gi)]\n                  .map(c => stripTags(c[1]));\n  if (cells.length >= 3 && /^\\d+$/.test(cells[0])) {\n    steps.push({\n      step:        cells[0],\n      description: cells[1] || '',\n      dri:         cells[2] || '',\n      status:      cells[3] || '',\n      est_end:     cells[4] || '',\n      actual:      cells[5] || ''\n    });\n  }\n}\n\nreturn [{\n  json: {\n    user_message:    upstream.user_message,\n    history:         upstream.history,\n    conversation_id: upstream.conversation_id,\n    context_type:    'specific',\n    project_context: JSON.stringify({\n      project_name:  upstream.matched_title,\n      slug:          upstream.matched_slug,\n      rag_status:    ragStatus,\n      overdue_count: overdueCount,\n      total_steps:   steps.length,\n      steps\n    }, null, 2)\n  }\n}];"
+      }
+    },
+
+    {
+      "id": "node-5b",
+      "name": "Build All Projects Summary",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1560, 240],
+      "parameters": {
+        "jsCode": "const upstream = $('Identify Project').first().json;\nconst registry = upstream.registry || [];\n\nconst summary = registry.map(p => ({\n  project:   p.title,\n  slug:      p.slug,\n  progress:  p.progress + '%',\n  done:      p.done + ' / ' + p.total + ' steps',\n  objective: p.objective\n}));\n\nreturn [{\n  json: {\n    user_message:    upstream.user_message,\n    history:         upstream.history,\n    conversation_id: upstream.conversation_id,\n    context_type:    'all',\n    project_context: JSON.stringify({\n      total_projects: registry.length,\n      projects: summary\n    }, null, 2)\n  }\n}];"
+      }
+    },
+
     {
       "id": "node-6",
       "name": "Build Prompt Context",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1340, 140],
+      "position": [2000, 140],
       "parameters": {
-        "jsCode": "const item = $input.first().json;\nconst history = Array.isArray(item.history) ? item.history : [];\n\n// System prompt — grounded, scoped, ≤3 sentences\nconst systemPrompt =\n  `You are a project assistant for the AI PM Tool. ` +\n  `Answer ONLY based on the project data provided below. ` +\n  `If information is not in the data, say \"I don't have that information in the current tracker.\" ` +\n  `Never guess or fabricate step data or dates. ` +\n  `Keep answers under 3 sentences unless the user explicitly asks for a list. ` +\n  `Politely decline any question outside project status, steps, DRI assignments, deadlines, milestones, or dependencies.\\n\\n` +\n  `Project Data (today: ${new Date().toISOString().split('T')[0]}):\\n` +\n  item.project_context;\n\n// Messages array for Claude API — history + current user turn\nconst userMsg = (item.user_message || '').trim() || 'Hello';\nconst messages = [\n  ...history,\n  { role: 'user', content: userMsg }\n];\n\n// Return as object (not stringified) so HTTP Request node can send it as JSON\nreturn [{\n  json: {\n    conversation_id: item.conversation_id,\n    project_context: item.project_context,\n    request_body: {\n      model: 'claude-sonnet-4-6',\n      max_tokens: 300,\n      system: systemPrompt,\n      messages\n    }\n  }\n}];"
+        "jsCode": "const item = $input.first().json;\nconst history = Array.isArray(item.history) ? item.history : [];\nconst isAll = item.context_type === 'all';\n\nconst registry = $('Identify Project').first().json.registry || [];\nconst projectList = registry.map(p => '- ' + p.title + ' (slug: ' + p.slug + ')').join('\\n');\n\nconst systemPrompt =\n  `You are a project assistant for the AI PM Tool Multi Project Tracker.\\n` +\n  `Answer ONLY based on the project data provided below.\\n` +\n  `If information is not in the data, say \"I don't have that information in the current tracker.\"\\n` +\n  `Never guess or fabricate step data or dates.\\n` +\n  `Keep answers concise unless the user asks for a full list.\\n\\n` +\n  `Available projects:\\n${projectList}\\n\\n` +\n  `Project Data (today: ${new Date().toISOString().split('T')[0]}):\\n` +\n  item.project_context;\n\nconst messages = [\n  ...history,\n  { role: 'user', content: (item.user_message || '').trim() || 'Hello' }\n];\n\nreturn [{\n  json: {\n    conversation_id: item.conversation_id,\n    project_context: item.project_context,\n    request_body: {\n      model:      'claude-sonnet-4-6',\n      max_tokens: 400,\n      system:     systemPrompt,\n      messages\n    }\n  }\n}];"
       }
     },
+
     {
       "id": "node-7",
       "name": "Claude API Call",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4,
-      "position": [1560, 140],
+      "position": [2220, 140],
       "parameters": {
         "method": "POST",
         "url": "https://api.anthropic.com/v1/messages",
@@ -118,14 +176,8 @@
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            {
-              "name": "anthropic-version",
-              "value": "2023-06-01"
-            },
-            {
-              "name": "content-type",
-              "value": "application/json"
-            }
+            { "name": "anthropic-version", "value": "2023-06-01" },
+            { "name": "content-type",      "value": "application/json" }
           ]
         },
         "sendBody": true,
@@ -140,78 +192,80 @@
         }
       }
     },
+
     {
       "id": "node-8",
       "name": "Format Response",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1780, 140],
+      "position": [2440, 140],
       "parameters": {
-        "jsCode": "const api = $input.first().json;\n\n// Extract reply text from Anthropic response envelope\nconst reply =\n  api.content && api.content[0] && api.content[0].text\n    ? api.content[0].text\n    : 'Sorry, I could not generate a response. Please try again.';\n\nreturn [{\n  json: {\n    reply,\n    sources:   ['tracker.html'],\n    model:     api.model || 'claude-sonnet-4-6',\n    timestamp: new Date().toISOString()\n  }\n}];"
+        "jsCode": "const api = $input.first().json;\nconst reply =\n  api.content && api.content[0] && api.content[0].text\n    ? api.content[0].text\n    : 'Sorry, I could not generate a response. Please try again.';\nreturn [{\n  json: {\n    reply,\n    sources:   ['projects/registry.json'],\n    model:     api.model || 'claude-sonnet-4-6',\n    timestamp: new Date().toISOString()\n  }\n}];"
       }
     },
+
     {
       "id": "node-9",
       "name": "Return Answer",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
-      "position": [2000, 140],
+      "position": [2660, 140],
       "parameters": {
         "respondWith": "json",
         "responseBody": "={{ JSON.stringify($json) }}",
-        "options": {
-          "responseCode": 200
-        }
+        "options": { "responseCode": 200 }
       }
     }
+
   ],
+
   "connections": {
     "Chat Receiver": {
-      "main": [
-        [{ "node": "Extract Fields", "type": "main", "index": 0 }]
-      ]
+      "main": [[{ "node": "Extract Fields", "type": "main", "index": 0 }]]
     },
     "Extract Fields": {
-      "main": [
-        [{ "node": "Scope Guard", "type": "main", "index": 0 }]
-      ]
+      "main": [[{ "node": "Scope Guard", "type": "main", "index": 0 }]]
     },
     "Scope Guard": {
       "main": [
-        [{ "node": "Fetch Tracker HTML", "type": "main", "index": 0 }],
-        [{ "node": "Out-of-Scope Reply",  "type": "main", "index": 0 }]
+        [{ "node": "Fetch Registry",    "type": "main", "index": 0 }],
+        [{ "node": "Out-of-Scope Reply", "type": "main", "index": 0 }]
       ]
     },
-    "Fetch Tracker HTML": {
+    "Fetch Registry": {
+      "main": [[{ "node": "Identify Project", "type": "main", "index": 0 }]]
+    },
+    "Identify Project": {
+      "main": [[{ "node": "Specific Project?", "type": "main", "index": 0 }]]
+    },
+    "Specific Project?": {
       "main": [
-        [{ "node": "Parse Tracker HTML", "type": "main", "index": 0 }]
+        [{ "node": "Fetch Project HTML",       "type": "main", "index": 0 }],
+        [{ "node": "Build All Projects Summary","type": "main", "index": 0 }]
       ]
     },
-    "Parse Tracker HTML": {
-      "main": [
-        [{ "node": "Build Prompt Context", "type": "main", "index": 0 }]
-      ]
+    "Fetch Project HTML": {
+      "main": [[{ "node": "Parse Project HTML", "type": "main", "index": 0 }]]
+    },
+    "Parse Project HTML": {
+      "main": [[{ "node": "Build Prompt Context", "type": "main", "index": 0 }]]
+    },
+    "Build All Projects Summary": {
+      "main": [[{ "node": "Build Prompt Context", "type": "main", "index": 0 }]]
     },
     "Build Prompt Context": {
-      "main": [
-        [{ "node": "Claude API Call", "type": "main", "index": 0 }]
-      ]
+      "main": [[{ "node": "Claude API Call", "type": "main", "index": 0 }]]
     },
     "Claude API Call": {
-      "main": [
-        [{ "node": "Format Response", "type": "main", "index": 0 }]
-      ]
+      "main": [[{ "node": "Format Response", "type": "main", "index": 0 }]]
     },
     "Format Response": {
-      "main": [
-        [{ "node": "Return Answer", "type": "main", "index": 0 }]
-      ]
+      "main": [[{ "node": "Return Answer", "type": "main", "index": 0 }]]
     }
   },
+
   "active": false,
-  "settings": {
-    "executionOrder": "v1"
-  },
+  "settings": { "executionOrder": "v1" },
   "meta": {
     "templateCredsSetupCompleted": false,
     "instanceId": "ai-pm-tool-agent2"
