@@ -19,7 +19,9 @@
           "mode": "list",
           "value": "gpt-4o-mini"
         },
-        "options": {}
+        "options": {
+          "systemMessage": "You are a helpful assistant for the Multi Project Tracker. You can read pages from the project dashboard and answer questions based on their content. Available pages: default.html, projects.html, ai-learning.html, Week1_Learning_Summary.html, Week2_Learning_Summary.html, Week3_Learning_Summary.html, Week4_Learning_Summary.html, architecture-diagram.html, Project_StatusTracker.html. Always fetch the relevant page first before answering."
+        }
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
@@ -36,139 +38,27 @@
 
     {
       "parameters": {
-        "operation": "getAll",
-        "tableId": "=projects",
-        "returnAll": true,
-        "filters": {
-          "conditions": [
-            {
-              "keyName": "name",
-              "condition": "ilike",
-              "keyValue": "={{ $fromAI('project_name', 'The name or partial name of the project to search for', 'string') }}"
-            }
-          ]
-        },
+        "toolDescription": "Read a specific HTML page from the Multi Project Tracker local server. Use this to fetch the content of any page before answering the user's question. Available pages: default.html, projects.html, ai-learning.html, Week1_Learning_Summary.html, Week2_Learning_Summary.html, Week3_Learning_Summary.html, Week4_Learning_Summary.html, architecture-diagram.html, Project_StatusTracker.html",
+        "url": "=http://localhost:8080/{{ $fromAI('page_name', 'The HTML filename to read, e.g. projects.html or Week4_Learning_Summary.html', 'string') }}",
         "options": {}
       },
-      "type": "n8n-nodes-base.supabaseTool",
-      "typeVersion": 1,
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
       "position": [-160, 160],
       "id": "c3d4e5f6-a7b8-9012-cdef-333333333333",
-      "name": "Get Project Status",
-      "description": "Get the current status, owner, deadline and details of a project by its name from the Multi Project Tracker database. Use this when the user asks about a specific project or wants to know its status.",
-      "credentials": {
-        "supabaseApi": {
-          "id": "HFVbFmtCWinK1k1K",
-          "name": "Supabase account"
-        }
-      }
+      "name": "Read Page"
     },
 
     {
       "parameters": {
-        "operation": "getAll",
-        "tableId": "=projects",
-        "returnAll": true,
-        "filters": {
-          "conditions": [
-            {
-              "keyName": "status",
-              "condition": "eq",
-              "keyValue": "at-risk"
-            }
-          ]
-        },
-        "options": {}
+        "toolDescription": "Returns a list of all available HTML pages in the Multi Project Tracker with a short description of what each page contains. Use this when the user asks what pages exist, what topics are covered, or which week to look at.",
+        "jsCode": "return [\n  { page: 'default.html', description: 'Landing dashboard — links to all sections' },\n  { page: 'projects.html', description: 'All projects summary with status' },\n  { page: 'ai-learning.html', description: 'AI Learning hub — 6 week cards' },\n  { page: 'Week1_Learning_Summary.html', description: 'Week 1 — Prompt Engineering & LLM Basics' },\n  { page: 'Week2_Learning_Summary.html', description: 'Week 2 — RAG & Vector Databases' },\n  { page: 'Week3_Learning_Summary.html', description: 'Week 3 — AI Agents & Tool Use' },\n  { page: 'Week4_Learning_Summary.html', description: 'Week 4 — Multi-Agent Systems, OpenAPI, MCP' },\n  { page: 'architecture-diagram.html', description: 'System architecture diagram' },\n  { page: 'Project_StatusTracker.html', description: 'Project status tracker with live data' }\n]"
       },
-      "type": "n8n-nodes-base.supabaseTool",
+      "type": "n8n-nodes-base.codeTool",
       "typeVersion": 1,
       "position": [80, 160],
       "id": "d4e5f6a7-b8c9-0123-defa-444444444444",
-      "name": "Get At Risk Projects",
-      "description": "Get all projects currently marked as at-risk or overdue from the tracker. Use this when the user asks which projects are in trouble, overdue, behind schedule, or need attention.",
-      "credentials": {
-        "supabaseApi": {
-          "id": "HFVbFmtCWinK1k1K",
-          "name": "Supabase account"
-        }
-      }
-    },
-
-    {
-      "parameters": {
-        "operation": "getAll",
-        "tableId": "=projects",
-        "returnAll": true,
-        "options": {}
-      },
-      "type": "n8n-nodes-base.supabaseTool",
-      "typeVersion": 1,
-      "position": [320, 160],
-      "id": "e5f6a7b8-c9d0-1234-efab-555555555555",
-      "name": "Get All Projects",
-      "description": "Get a full list of all projects in the Multi Project Tracker with their status, owner, and deadlines. Use this when the user asks for a summary, overview, or list of all projects.",
-      "credentials": {
-        "supabaseApi": {
-          "id": "HFVbFmtCWinK1k1K",
-          "name": "Supabase account"
-        }
-      }
-    },
-
-    {
-      "parameters": {
-        "operation": "update",
-        "tableId": "=projects",
-        "filters": {
-          "conditions": [
-            {
-              "keyName": "id",
-              "condition": "eq",
-              "keyValue": "={{ $fromAI('project_id', 'The unique ID of the project to update', 'string') }}"
-            }
-          ]
-        },
-        "fieldsUi": {
-          "fieldValues": [
-            {
-              "fieldId": "status",
-              "fieldValue": "={{ $fromAI('new_status', 'The new status value. Must be one of: active, at-risk, completed, on-hold', 'string') }}"
-            }
-          ]
-        }
-      },
-      "type": "n8n-nodes-base.supabaseTool",
-      "typeVersion": 1,
-      "position": [560, 160],
-      "id": "f6a7b8c9-d0e1-2345-fabc-666666666666",
-      "name": "Update Project Status",
-      "description": "Update the status of a project in the tracker by project ID. Valid status values are: active, at-risk, completed, on-hold. Use this when the user wants to change or update the status of a project.",
-      "credentials": {
-        "supabaseApi": {
-          "id": "HFVbFmtCWinK1k1K",
-          "name": "Supabase account"
-        }
-      }
-    },
-
-    {
-      "parameters": {
-        "collection": "projects",
-        "query": "={{ JSON.stringify($fromAI('query', 'MongoDB query filter to find relevant project memory or agent logs', 'string')) }}",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.mongoDbTool",
-      "typeVersion": 1.3,
-      "position": [800, 160],
-      "id": "a7b8c9d0-e1f2-3456-abcd-777777777777",
-      "name": "Search Project Memory",
-      "description": "Search MongoDB for past agent interactions, project history, notes, or any previously stored context about projects. Use this when the user references past conversations or historical project data.",
-      "credentials": {
-        "mongoDb": {
-          "id": "uWLztfLLdP7tbZmk",
-          "name": "MongoDB account 2"
-        }
-      }
+      "name": "List Pages"
     },
 
     {
@@ -178,19 +68,13 @@
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.4,
       "position": [-160, -240],
-      "id": "b8c9d0e1-f2a3-4567-bcde-888888888888",
+      "id": "e5f6a7b8-c9d0-1234-efab-555555555555",
       "name": "Session Memory"
     }
 
   ],
 
   "connections": {
-
-    "MCP Server Trigger": {
-      "main": [
-        []
-      ]
-    },
 
     "OpenAI Chat Model": {
       "ai_languageModel": [
@@ -204,7 +88,7 @@
       ]
     },
 
-    "Get Project Status": {
+    "Read Page": {
       "ai_tool": [
         [
           {
@@ -216,43 +100,7 @@
       ]
     },
 
-    "Get At Risk Projects": {
-      "ai_tool": [
-        [
-          {
-            "node": "MCP Server Trigger",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    },
-
-    "Get All Projects": {
-      "ai_tool": [
-        [
-          {
-            "node": "MCP Server Trigger",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    },
-
-    "Update Project Status": {
-      "ai_tool": [
-        [
-          {
-            "node": "MCP Server Trigger",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    },
-
-    "Search Project Memory": {
+    "List Pages": {
       "ai_tool": [
         [
           {
