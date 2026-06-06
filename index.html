@@ -1428,16 +1428,25 @@ function showArchTab(tab) {
 <div class="section" id="build-log">
   <div class="section-num">14</div>
   <h2>Build Log</h2>
-  <p class="subtitle">Session-by-session record of what was built for the product and what was learned</p>
+  <p class="subtitle">Session-by-session record of learning, exploration, and hands-on builds applied during AI PM learning</p>
 
   <!-- Tab toggle -->
   <div style="display:flex;gap:8px;margin-bottom:24px;">
-    <button onclick="showTab('project')" id="tab-project" style="padding:7px 18px;border-radius:8px;border:1px solid rgba(52,211,153,.4);background:rgba(52,211,153,.12);color:var(--green);font-size:.78rem;font-weight:800;cursor:pointer;">🏗️ Project Builds</button>
-    <button onclick="showTab('learning')" id="tab-learning" style="padding:7px 18px;border-radius:8px;border:1px solid var(--border2);background:transparent;color:var(--text-muted);font-size:.78rem;font-weight:700;cursor:pointer;">📚 Learning Log</button>
+    <button onclick="showTab('project')" id="tab-project" style="padding:7px 18px;border-radius:8px;border:1px solid var(--border2);background:transparent;color:var(--text-muted);font-size:.78rem;font-weight:700;cursor:pointer;">🏗️ Project Builds</button>
+    <button onclick="showTab('learning')" id="tab-learning" style="padding:7px 18px;border-radius:8px;border:1px solid rgba(45,212,191,.4);background:rgba(45,212,191,.12);color:var(--secondary);font-size:.78rem;font-weight:800;cursor:pointer;">📚 Learning Log</button>
   </div>
 
   <!-- PROJECT BUILDS TAB -->
-  <div id="tab-project-content">
+  <div id="tab-project-content" style="display:none;">
+    <div style="background:var(--surface2);border:1px solid var(--border);border-left:4px solid var(--text-dim);border-radius:10px;padding:24px 20px;text-align:center;">
+      <div style="font-size:1.5rem;margin-bottom:10px;">🏗️</div>
+      <div style="font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:6px;">No project deliveries logged yet</div>
+      <div style="font-size:.8rem;color:var(--text-muted);">Current sessions are learning & exploration. Project builds will be logged here once POC Phase 1 milestones are delivered (Agent 3, Agent 4). See <a href="#roadmap" style="color:var(--secondary);">Section 6 Roadmap</a> for the delivery plan.</div>
+    </div>
+  </div>
+
+  <!-- LEARNING LOG TAB -->
+  <div id="tab-learning-content">
 
     <!-- Jun 5 2026 -->
     <div style="margin-bottom:28px;">
@@ -1450,72 +1459,27 @@ function showArchTab(tab) {
 
         <div style="background:var(--surface2);border:1px solid var(--border);border-left:4px solid var(--green);border-radius:10px;padding:14px 18px;">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-            <span style="font-size:.72rem;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:.7px;">✅ Shipped</span>
-            <span style="font-size:.82rem;font-weight:700;color:var(--text);">Agent 2 — Dynamic Multi-Project Support</span>
+            <span style="font-size:.72rem;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:.7px;">🛠️ Built</span>
+            <span style="font-size:.82rem;font-weight:700;color:var(--text);">Agent 2 — Dynamic Multi-Project Routing</span>
           </div>
-          <p style="font-size:.82rem;color:var(--text-muted);margin:0;">Replaced hardcoded single-project URL (<code style="font-size:.78rem;background:var(--surface3);padding:1px 6px;border-radius:4px;">bin-tracker</code>) with dynamic routing via <code style="font-size:.78rem;background:var(--surface3);padding:1px 6px;border-radius:4px;">registry.json</code>. Agent now discovers all projects automatically. New flow: Fetch Registry → Identify Project (keyword match) → IF specific/all → Fetch HTML → Claude API. Adding a new project only requires updating registry.json — no workflow changes.</p>
+          <p style="font-size:.82rem;color:var(--text-muted);margin:0;">Applied learning: replaced hardcoded URL with dynamic routing via <code style="font-size:.78rem;background:var(--surface3);padding:1px 6px;border-radius:4px;">registry.json</code>. Agent now discovers all projects automatically — keyword match → fetch HTML → Claude API. New project = update registry only, no workflow changes.</p>
         </div>
 
         <div style="background:var(--surface2);border:1px solid var(--border);border-left:4px solid var(--green);border-radius:10px;padding:14px 18px;">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-            <span style="font-size:.72rem;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:.7px;">✅ Shipped</span>
-            <span style="font-size:.82rem;font-weight:700;color:var(--text);">MCP Server — Project Tracker (n8n)</span>
+            <span style="font-size:.72rem;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:.7px;">🛠️ Built</span>
+            <span style="font-size:.82rem;font-weight:700;color:var(--text);">MCP Server — Project Tracker Workflow</span>
           </div>
-          <p style="font-size:.82rem;color:var(--text-muted);margin:0;">Built <code style="font-size:.78rem;background:var(--surface3);padding:1px 6px;border-radius:4px;">MCP-Project-Tracker.json</code> — n8n workflow exposing 3 MCP tools: Read Page, Read Project Status Tracker, List Pages. Connects to Claude Desktop via SSE. Claude does all reasoning; n8n fetches and returns raw HTML.</p>
+          <p style="font-size:.82rem;color:var(--text-muted);margin:0;">Applied MCP learning: built <code style="font-size:.78rem;background:var(--surface3);padding:1px 6px;border-radius:4px;">MCP-Project-Tracker.json</code> exposing 3 tools to Claude Desktop. Learned that n8n MCP trigger ≠ agent — Claude Desktop is the brain, n8n fetches data only. Webhook vs MCP protocol difference understood in practice.</p>
         </div>
 
         <div style="background:var(--surface2);border:1px solid var(--border);border-left:4px solid var(--green);border-radius:10px;padding:14px 18px;">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
             <span style="font-size:.72rem;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:.7px;">🔧 Fixed</span>
-            <span style="font-size:.82rem;font-weight:700;color:var(--text);">Multi Agent Workflow — MongoDB $fromAI Bug</span>
+            <span style="font-size:.82rem;font-weight:700;color:var(--text);">Multi Agent Workflow — MongoDB $fromAI Bug + Session Memory</span>
           </div>
-          <p style="font-size:.82rem;color:var(--text-muted);margin:0;">Fixed <code style="font-size:.78rem;background:var(--surface3);padding:1px 6px;border-radius:4px;">$fromAI</code> type bug (<code style="font-size:.78rem;background:var(--surface3);padding:1px 6px;border-radius:4px;">'json'→'string'</code>) causing "[object Object] is not valid JSON". Added IF node to skip PDF re-extraction on follow-up messages — contract context persists in session memory.</p>
+          <p style="font-size:.82rem;color:var(--text-muted);margin:0;">Fixed <code style="font-size:.78rem;background:var(--surface3);padding:1px 6px;border-radius:4px;">$fromAI</code> type bug (<code style="font-size:.78rem;background:var(--surface3);padding:1px 6px;border-radius:4px;">'json'→'string'</code>). Added IF node to skip PDF re-extraction on follow-up messages — applied session memory pattern from Week 4 multi-agent learning.</p>
         </div>
-
-        <div style="background:var(--surface2);border:1px solid var(--border);border-left:4px solid var(--green);border-radius:10px;padding:14px 18px;">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-            <span style="font-size:.72rem;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:.7px;">✅ Shipped</span>
-            <span style="font-size:.82rem;font-weight:700;color:var(--text);">PRD — System Architecture Section + Diagram Redesign</span>
-          </div>
-          <p style="font-size:.82rem;color:var(--text-muted);margin:0;">Added Section 13 (System Architecture) to PRD with 4-layer compact diagram. Redesigned <code style="font-size:.78rem;background:var(--surface3);padding:1px 6px;border-radius:4px;">architecture-diagram.html</code> to cover all current components — browser, n8n workflows, agents, data sources. Removed learning references from PRD. Synced public GitHub Pages.</p>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- Jun 3–4 2026 -->
-    <div style="margin-bottom:28px;">
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
-        <div style="background:rgba(159,110,245,.12);border:1px solid rgba(159,110,245,.3);border-radius:8px;padding:5px 14px;font-size:.78rem;font-weight:700;color:var(--purple);white-space:nowrap;">Jun 3–4 2026</div>
-        <div style="flex:1;height:1px;background:var(--border2);"></div>
-        <div style="font-size:.72rem;color:var(--text-dim);white-space:nowrap;">Session 3</div>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:10px;">
-
-        <div style="background:var(--surface2);border:1px solid var(--border);border-left:4px solid var(--green);border-radius:10px;padding:14px 18px;">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-            <span style="font-size:.72rem;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:.7px;">✅ Shipped</span>
-            <span style="font-size:.82rem;font-weight:700;color:var(--text);">Multi Agent Contract Workflow</span>
-          </div>
-          <p style="font-size:.82rem;color:var(--text-muted);margin:0;">Built <code style="font-size:.78rem;background:var(--surface3);padding:1px 6px;border-radius:4px;">Multi Agent.json</code> — n8n multi-agent contract analysis system. Orchestration Agent routes to 3 specialist agents (Playbook → Supabase, Risk → Snowflake, Boundary Guard → MongoDB). Session memory prevents re-uploading PDF per question.</p>
-        </div>
-
-      </div>
-    </div>
-
-  </div>
-
-  <!-- LEARNING LOG TAB -->
-  <div id="tab-learning-content" style="display:none;">
-
-    <!-- Jun 5 2026 -->
-    <div style="margin-bottom:28px;">
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
-        <div style="background:rgba(79,142,247,.12);border:1px solid rgba(79,142,247,.3);border-radius:8px;padding:5px 14px;font-size:.78rem;font-weight:700;color:var(--primary);white-space:nowrap;">Jun 5–6 2026</div>
-        <div style="flex:1;height:1px;background:var(--border2);"></div>
-        <div style="font-size:.72rem;color:var(--text-dim);white-space:nowrap;">Session 4</div>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:10px;">
 
         <div style="background:var(--surface2);border:1px solid var(--border);border-left:4px solid var(--secondary);border-radius:10px;padding:14px 18px;">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
@@ -1547,7 +1511,15 @@ function showArchTab(tab) {
 
         <div style="background:var(--surface2);border:1px solid var(--border);border-left:4px solid var(--green);border-radius:10px;padding:14px 18px;">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-            <span style="font-size:.72rem;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:.7px;">📚 Learned</span>
+            <span style="font-size:.72rem;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:.7px;">🛠️ Built</span>
+            <span style="font-size:.82rem;font-weight:700;color:var(--text);">Multi Agent Contract Workflow</span>
+          </div>
+          <p style="font-size:.82rem;color:var(--text-muted);margin:0;">Applied Week 4 multi-agent learning: Orchestration Agent routing to 3 specialist sub-agents (Playbook → Supabase, Risk → Snowflake, Boundary Guard → MongoDB). Orchestrator-Worker pattern applied in practice with real databases.</p>
+        </div>
+
+        <div style="background:var(--surface2);border:1px solid var(--border);border-left:4px solid var(--secondary);border-radius:10px;padding:14px 18px;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+            <span style="font-size:.72rem;font-weight:800;color:var(--secondary);text-transform:uppercase;letter-spacing:.7px;">📚 Learned</span>
             <span style="font-size:.82rem;font-weight:700;color:var(--text);">Week 4 — Multi-Agent, OpenAPI & MCP</span>
           </div>
           <p style="font-size:.82rem;color:var(--text-muted);margin:0;">Published Week 4 covering Multi-Agent Systems, OpenAPI Specification, MCP Protocol, and MCP case studies. 13 topics across 5 phases with interactive OAS demo, architecture diagrams, comparison tables, and credit card domain examples. Full detail at <a href="ai-learning.html" style="color:var(--secondary);">ai-learning.html</a>.</p>
