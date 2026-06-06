@@ -1,0 +1,207 @@
+{
+  "name": "Excel Validation — Upload Gate",
+  "nodes": [
+
+    {
+      "id": "node-1",
+      "name": "Receive Upload",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "validate-excel",
+        "responseMode": "responseNode",
+        "options": { "allowedOrigins": "*" }
+      }
+    },
+
+    {
+      "id": "node-2",
+      "name": "Extract Spreadsheet",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [460, 300],
+      "parameters": {
+        "operation": "spreadsheet",
+        "binaryPropertyName": "data",
+        "options": { "headerRow": true, "includeEmpty": true }
+      }
+    },
+
+    {
+      "id": "node-3",
+      "name": "Run Validation",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 300],
+      "parameters": {
+        "jsCode": "// ── Collect all rows from spreadsheet extraction ──────────────────\nconst rows = $input.all().map(i => i.json);\n\nconst criticalErrors = [];\nconst warnings = [];\n\n// ── No data check ─────────────────────────────────────────────────\nif (!rows || rows.length === 0) {\n  return [{ json: {\n    passed: false,\n    critical_errors: ['Excel file appears empty — no data rows found.'],\n    warnings: [],\n    stats: { total_rows: 0, missing_cells: 0, invalid_dates: 0, invalid_statuses: 0 }\n  }}];\n}\n\n// ── Required column names (flexible match) ────────────────────────\nconst REQUIRED_COLS = [\n  { key: 'step',        patterns: ['step number', 'step no', 'step#', 'step num', '#'] },\n  { key: 'description', patterns: ['step description', 'description', 'task', 'activity'] },\n  { key: 'dri_name',    patterns: ['dri name', 'responsible party', 'dri', 'owner', 'assignee'] },\n  { key: 'dri_email',   patterns: ['dri email', 'email', 'dri email address', 'email address'] },\n  { key: 'est_start',   patterns: ['estimated start', 'est start', 'start date', 'est start date'] },\n  { key: 'est_end',     patterns: ['estimated end', 'est end', 'end date', 'est end date', 'due date'] },\n  { key: 'status',      patterns: ['status'] }\n];\n\nconst OPTIONAL_COLS = [\n  { key: 'actual',      patterns: ['actual completion', 'actual date', 'completed date'] },\n  { key: 'depends_on',  patterns: ['depends on', 'dependency', 'depends', 'prerequisites'] },\n  { key: 'security',    patterns: ['security flag', 'security', 'secure'] },\n  { key: 'notes',       patterns: ['notes', 'comments', 'remarks'] }\n];\n\n// ── Map actual headers to required column keys ────────────────────\nconst actualHeaders = Object.keys(rows[0]).map(h => h.toLowerCase().trim());\nconst VALID_STATUSES = ['to do', 'in progress', 'done', 'blocked', 'todo', 'complete', 'completed', 'not started'];\n\nconst colMap = {};\nfor (const col of REQUIRED_COLS) {\n  const found = Object.keys(rows[0]).find(h =>\n    col.patterns.some(p => h.toLowerCase().trim().includes(p))\n  );\n  if (found) {\n    colMap[col.key] = found;\n  } else {\n    criticalErrors.push(`Required column missing: \"${col.patterns[0]}\" (Column for ${col.key}) not found in headers. Found headers: ${Object.keys(rows[0]).join(', ')}`);\n  }\n}\n\n// ── Optional columns ─────────────────────────────────────────────\nconst optMap = {};\nfor (const col of OPTIONAL_COLS) {\n  const found = Object.keys(rows[0]).find(h =>\n    col.patterns.some(p => h.toLowerCase().trim().includes(p))\n  );\n  if (found) optMap[col.key] = found;\n}\n\n// ── Minimum rows ─────────────────────────────────────────────────\nif (rows.length < 3) {\n  criticalErrors.push(`Too few rows: only ${rows.length} data row(s) found. Minimum 3 required for a valid project.`);\n}\n\n// ── Row-level checks (only if critical column mapping succeeded) ──\nlet missingCells = 0;\nlet invalidDates = 0;\nlet invalidStatuses = 0;\nlet invalidEmails = 0;\nlet stepNumbers = [];\n\nconst emailRe = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;\nconst dateRe  = /^\\d{1,2}[\\/\\-\\.]\\d{1,2}[\\/\\-\\.]\\d{2,4}$/;\n\nrows.forEach((row, idx) => {\n  const rowNum = idx + 2;\n\n  // Check required cells not empty\n  for (const [key, col] of Object.entries(colMap)) {\n    const val = (row[col] || '').toString().trim();\n    if (!val) {\n      missingCells++;\n      if (missingCells <= 5) {\n        criticalErrors.push(`Row ${rowNum}: Column \"${col}\" is empty — this field is required.`);\n      }\n    }\n  }\n\n  // Step number — should be numeric\n  if (colMap.step) {\n    const stepVal = (row[colMap.step] || '').toString().trim();\n    if (stepVal && isNaN(parseInt(stepVal))) {\n      warnings.push(`Row ${rowNum}: Step number \"${stepVal}\" is not a number.`);\n    } else if (stepVal) {\n      stepNumbers.push(parseInt(stepVal));\n    }\n  }\n\n  // Date format check\n  for (const dateCol of ['est_start', 'est_end']) {\n    if (colMap[dateCol]) {\n      const dateVal = (row[colMap[dateCol]] || '').toString().trim();\n      if (dateVal && !dateRe.test(dateVal) && isNaN(Date.parse(dateVal))) {\n        invalidDates++;\n        if (invalidDates <= 3) {\n          criticalErrors.push(`Row ${rowNum}: Invalid date format in \"${colMap[dateCol]}\": \"${dateVal}\". Use DD/MM/YYYY format.`);\n        }\n      }\n    }\n  }\n\n  // Status check\n  if (colMap.status) {\n    const statusVal = (row[colMap.status] || '').toString().trim().toLowerCase();\n    if (statusVal && !VALID_STATUSES.includes(statusVal)) {\n      invalidStatuses++;\n      if (invalidStatuses <= 3) {\n        criticalErrors.push(`Row ${rowNum}: Invalid status \"${row[colMap.status]}\". Must be one of: To Do, In Progress, Done, Blocked.`);\n      }\n    }\n  }\n\n  // Email format check\n  if (colMap.dri_email) {\n    const emailVal = (row[colMap.dri_email] || '').toString().trim();\n    if (emailVal && !emailRe.test(emailVal)) {\n      invalidEmails++;\n      if (invalidEmails <= 3) {\n        warnings.push(`Row ${rowNum}: Invalid email format \"${emailVal}\" in DRI Email column.`);\n      }\n    }\n  }\n\n  // Security flag check\n  if (optMap.security) {\n    const secVal = (row[optMap.security] || '').toString().trim().toUpperCase();\n    if (secVal && secVal !== 'Y' && secVal !== 'N') {\n      warnings.push(`Row ${rowNum}: Security flag \"${row[optMap.security]}\" is invalid. Must be Y or N.`);\n    }\n  }\n\n  // Dependency check\n  if (optMap.depends_on) {\n    const depVal = (row[optMap.depends_on] || '').toString().trim();\n    if (depVal) {\n      const depNums = depVal.split(',').map(d => parseInt(d.trim())).filter(d => !isNaN(d));\n      depNums.forEach(d => {\n        if (d >= parseInt((row[colMap.step] || '0'))) {\n          warnings.push(`Row ${rowNum}: Dependency step ${d} is equal to or after current step — circular or forward dependency.`);\n        }\n      });\n    }\n  }\n});\n\n// ── Step sequence check ───────────────────────────────────────────\nif (stepNumbers.length > 1) {\n  const sorted = [...stepNumbers].sort((a, b) => a - b);\n  for (let i = 1; i < sorted.length; i++) {\n    if (sorted[i] - sorted[i-1] > 1) {\n      warnings.push(`Step sequence gap detected: step ${sorted[i-1]} jumps to ${sorted[i]}. Check for missing steps.`);\n    }\n  }\n}\n\n// Cap total errors shown\nif (missingCells > 5) criticalErrors.push(`... and ${missingCells - 5} more missing required cells across other rows.`);\nif (invalidDates  > 3) criticalErrors.push(`... and ${invalidDates - 3} more invalid date formats.`);\nif (invalidStatuses > 3) criticalErrors.push(`... and ${invalidStatuses - 3} more invalid status values.`);\nif (invalidEmails > 3) warnings.push(`... and ${invalidEmails - 3} more invalid email formats.`);\n\nconst passed = criticalErrors.length === 0;\n\nreturn [{ json: {\n  passed,\n  critical_errors: criticalErrors,\n  warnings,\n  stats: {\n    total_rows:        rows.length,\n    missing_cells:     missingCells,\n    invalid_dates:     invalidDates,\n    invalid_statuses:  invalidStatuses,\n    invalid_emails:    invalidEmails,\n    optional_cols_found: Object.keys(optMap),\n    headers_detected:  Object.keys(rows[0])\n  }\n}}];"
+      }
+    },
+
+    {
+      "id": "node-4",
+      "name": "Valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [900, 300],
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": false },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.passed }}",
+              "rightValue": true,
+              "operator": { "type": "boolean", "operation": "equals" }
+            }
+          ],
+          "combinator": "and"
+        }
+      }
+    },
+
+    {
+      "id": "node-5a",
+      "name": "Build Success Summary",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 160],
+      "parameters": {
+        "jsCode": "const v = $input.first().json;\nconst warnings = v.warnings || [];\nconst stats = v.stats || {};\n\nconst summary = [\n  `✅ Validation passed — your Excel file is ready to process.`,\n  ``,\n  `📊 Summary:`,\n  `   • ${stats.total_rows} data rows detected`,\n  `   • ${stats.headers_detected ? stats.headers_detected.length : '?'} columns found`,\n  stats.optional_cols_found && stats.optional_cols_found.length > 0\n    ? `   • Optional columns detected: ${stats.optional_cols_found.join(', ')}`\n    : `   • No optional columns (Dependencies, Security Flag, Notes) — that is fine`,\n  ``,\n  warnings.length > 0\n    ? `⚠️ Warnings (non-blocking):\\n${warnings.map(w => `   • ${w}`).join('\\n')}`\n    : `✅ No warnings.`,\n  ``,\n  `▶ Proceeding to generate your project tracker...`\n].join('\\n');\n\nreturn [{ json: {\n  status: 'success',\n  reply: summary,\n  passed: true,\n  warnings: v.warnings,\n  stats: v.stats\n}}];"
+      }
+    },
+
+    {
+      "id": "node-5b",
+      "name": "Build Error Context",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 440],
+      "parameters": {
+        "jsCode": "const v = $input.first().json;\nconst errors = v.critical_errors || [];\nconst warnings = v.warnings || [];\nconst stats = v.stats || {};\n\n// Build prompt for Claude to generate a friendly message\nconst errorList = errors.map((e, i) => `${i+1}. ${e}`).join('\\n');\nconst warnList  = warnings.length > 0 ? warnings.map((w, i) => `${i+1}. ${w}`).join('\\n') : 'None';\n\nconst prompt = `An Excel file was uploaded to the Multi Project Tracker. It failed validation with the following issues:\n\nCRITICAL ERRORS (must fix before upload):\n${errorList}\n\nWARNINGS (recommended to fix):\n${warnList}\n\nFILE STATS:\n- Total rows detected: ${stats.total_rows}\n- Missing required cells: ${stats.missing_cells}\n- Invalid dates: ${stats.invalid_dates}\n- Invalid status values: ${stats.invalid_statuses}\n\nWrite a clear, friendly message to the user telling them exactly what to fix and how. Use bullet points. Be specific about row numbers and column names. End with encouragement to re-upload once fixed. Keep under 250 words.`;\n\nreturn [{ json: {\n  prompt,\n  passed: false,\n  critical_errors: errors,\n  warnings,\n  stats\n}}];"
+      }
+    },
+
+    {
+      "id": "node-6",
+      "name": "Claude — Friendly Error Message",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1340, 440],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "anthropic-version", "value": "2023-06-01" },
+            { "name": "content-type",      "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { model: 'claude-sonnet-4-6', max_tokens: 400, system: 'You are a helpful data validation assistant for the Multi Project Tracker. When an Excel upload fails validation, you explain the errors clearly and tell the user exactly how to fix them. Be friendly, specific, and concise.', messages: [{ role: 'user', content: $json.prompt }] } }}",
+        "options": {}
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "anthropic-api-key",
+          "name": "Anthropic API Key"
+        }
+      }
+    },
+
+    {
+      "id": "node-7a",
+      "name": "Format Success Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1340, 160],
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nreturn [{ json: {\n  status:   'success',\n  passed:   true,\n  reply:    item.reply,\n  warnings: item.warnings || [],\n  stats:    item.stats || {},\n  next_step: 'proceed_to_generation',\n  timestamp: new Date().toISOString()\n}}];"
+      }
+    },
+
+    {
+      "id": "node-7b",
+      "name": "Format Error Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1560, 440],
+      "parameters": {
+        "jsCode": "const apiResp = $input.first().json;\nconst valData = $('Build Error Context').first().json;\n\nconst friendlyMsg =\n  apiResp.content && apiResp.content[0] && apiResp.content[0].text\n    ? apiResp.content[0].text\n    : `❌ Validation failed with ${valData.critical_errors.length} critical error(s).\\n\\n` +\n      valData.critical_errors.map(e => `• ${e}`).join('\\n') +\n      (valData.warnings.length > 0 ? '\\n\\nWarnings:\\n' + valData.warnings.map(w => `• ${w}`).join('\\n') : '');\n\nreturn [{ json: {\n  status:          'error',\n  passed:          false,\n  reply:           friendlyMsg,\n  critical_errors: valData.critical_errors,\n  warnings:        valData.warnings,\n  stats:           valData.stats,\n  next_step:       'fix_and_reupload',\n  timestamp:       new Date().toISOString()\n}}];"
+      }
+    },
+
+    {
+      "id": "node-8a",
+      "name": "Return Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1560, 160],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": { "responseCode": 200 }
+      }
+    },
+
+    {
+      "id": "node-8b",
+      "name": "Return Error",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1780, 440],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": { "responseCode": 422 }
+      }
+    }
+
+  ],
+
+  "connections": {
+    "Receive Upload": {
+      "main": [[{ "node": "Extract Spreadsheet", "type": "main", "index": 0 }]]
+    },
+    "Extract Spreadsheet": {
+      "main": [[{ "node": "Run Validation", "type": "main", "index": 0 }]]
+    },
+    "Run Validation": {
+      "main": [[{ "node": "Valid?", "type": "main", "index": 0 }]]
+    },
+    "Valid?": {
+      "main": [
+        [{ "node": "Build Success Summary",  "type": "main", "index": 0 }],
+        [{ "node": "Build Error Context",    "type": "main", "index": 0 }]
+      ]
+    },
+    "Build Success Summary": {
+      "main": [[{ "node": "Format Success Response", "type": "main", "index": 0 }]]
+    },
+    "Build Error Context": {
+      "main": [[{ "node": "Claude — Friendly Error Message", "type": "main", "index": 0 }]]
+    },
+    "Claude — Friendly Error Message": {
+      "main": [[{ "node": "Format Error Response", "type": "main", "index": 0 }]]
+    },
+    "Format Success Response": {
+      "main": [[{ "node": "Return Success", "type": "main", "index": 0 }]]
+    },
+    "Format Error Response": {
+      "main": [[{ "node": "Return Error", "type": "main", "index": 0 }]]
+    }
+  },
+
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "instanceId": "ai-pm-tool-excel-validation"
+  }
+}
