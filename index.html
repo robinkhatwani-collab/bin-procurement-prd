@@ -264,13 +264,6 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
   <h2>Solution Definition</h2>
   <p class="subtitle">A multi-agent web application — four specialised AI agents collaborating over a shared project data layer</p>
 
-  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
-    <span class="learn-badge lb-w1">RAG Architecture</span>
-    <span class="learn-badge lb-w2">Agentic RAG</span>
-    <span class="learn-badge lb-w3">Knowledge Graph → Agent 4</span>
-    <span class="learn-badge lb-w3">Prompt Caching</span>
-  </div>
-
   <h3>Product Vision</h3>
   <p style="color:var(--text-muted);margin-bottom:16px">An <strong style="color:var(--text)">AI-Powered Multi-Project Tracker</strong> built as a web application. Users upload an Excel sheet and Agent 1 instantly generates a live HTML Status Tracker page. Three additional agents — a chatbot (Agent 2), a deadline monitor (Agent 3), and a dependency evaluator (Agent 4) — run continuously over all tracked projects.</p>
 
@@ -382,33 +375,33 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
       </tr>
     </thead>
     <tbody>
-      <tr><td><span class="learn-badge lb-found">Foundations</span></td><td><strong>Tokens & Context Windows</strong></td><td>Project snapshots compressed to JSON; context budget explicitly designed per agent</td><td>Agent 2 · §8 Prompts</td></tr>
-      <tr><td><span class="learn-badge lb-found">Foundations</span></td><td><strong>RAG Architecture</strong></td><td>Agent 2 retrieves from project HTML pages before answering; never answers from weights</td><td>Agent 2 · §8 Prompts</td></tr>
-      <tr><td><span class="learn-badge lb-found">Foundations</span></td><td><strong>Grounding</strong></td><td>All system prompts include strict "only use provided data" constraint + fallback response</td><td>All Agents · §8 Prompts</td></tr>
-      <tr><td><span class="learn-badge lb-found">Foundations</span></td><td><strong>Encoder/Decoder</strong></td><td>Encoder embeddings for semantic search; decoder (Claude) for generation. Separate roles.</td><td>Agent 2 architecture</td></tr>
-      <tr><td><span class="learn-badge lb-ctx">Context</span></td><td><strong>Agentic RAG</strong></td><td>Agent 2 decomposes query → plans tool calls → retrieves → evaluates quality → loops</td><td>Agent 2 · §2 Solution</td></tr>
-      <tr><td><span class="learn-badge lb-ctx">Context</span></td><td><strong>Context Management — Good Design</strong></td><td>Structured JSON project state vs raw HTML. State persists across multi-turn conversations.</td><td>Agent 2 · §8 Prompts</td></tr>
-      <tr><td><span class="learn-badge lb-ctx">Context</span></td><td><strong>Context Types (4 types)</strong></td><td>Short-term (chat), structured (project JSON), unstructured (HTML) — each retrieved differently</td><td>Agent 2 design</td></tr>
-      <tr><td><span class="learn-badge lb-ctx">Context</span></td><td><strong>In-Context Learning (few-shot)</strong></td><td>Agent 3 email prompt includes example of good/bad tone to steer output without fine-tuning</td><td>Agent 3 · §8 Prompts</td></tr>
-      <tr><td><span class="learn-badge lb-multi">Multi-Agent</span></td><td><strong>Multi-Agent Architecture</strong></td><td>Four specialised agents over a shared data layer — an Orchestrator-Worker × Blackboard design</td><td>§ Multi-Agent Architecture</td></tr>
-      <tr><td><span class="learn-badge lb-multi">Multi-Agent</span></td><td><strong>Agent Specialisation</strong></td><td>Each agent owns one domain (generation, Q&amp;A, monitoring, dependency analysis) — separation of concerns</td><td>§3 Agents</td></tr>
-      <tr><td><span class="learn-badge lb-multi">Multi-Agent</span></td><td><strong>Shared vs Private Memory</strong></td><td>Each agent keeps a lean private context; the shared project data layer is the common store all agents read/write</td><td>§ Multi-Agent Architecture</td></tr>
-      <tr><td><span class="learn-badge lb-multi">Multi-Agent</span></td><td><strong>Parallelism</strong></td><td>Agents 2, 3 and 4 run concurrently over all projects rather than as a serial pipeline</td><td>§2 Architecture</td></tr>
-      <tr><td><span class="learn-badge lb-multi">Multi-Agent</span></td><td><strong>Tool Use via Typed Schemas (OAS)</strong></td><td>Agent tool calls (Smartsheet API, email) described as typed OpenAPI schemas so the model calls them reliably</td><td>§2 Architecture · §8 Prompts</td></tr>
-      <tr><td><span class="learn-badge lb-agentic">Agentic AI</span></td><td><strong>Knowledge Graph</strong></td><td>Steps = nodes, dependencies = edges. Agent 4 traverses to find critical path & cascade risk.</td><td>Agent 4 · §2 Solution</td></tr>
-      <tr><td><span class="learn-badge lb-agentic">Agentic AI</span></td><td><strong>Agentic Skills — Perceive→Plan→Act</strong></td><td>Agent 3 loop: observe deadlines → reason about urgency → act (send DRI email)</td><td>Agent 3 spec</td></tr>
-      <tr><td><span class="learn-badge lb-agentic">Agentic AI</span></td><td><strong>Agentic Skills — Tool Use & Planning</strong></td><td>Agent 4 multi-step plan: read graph → traverse chain → compute critical path → output JSON</td><td>Agent 4 spec</td></tr>
-      <tr><td><span class="learn-badge lb-agentic">Agentic AI</span></td><td><strong>SMART Goals</strong></td><td>Agent 4 milestone recommendations follow SMART criteria: specific step, measurable date, achievable sequence</td><td>Agent 4 spec</td></tr>
-      <tr><td><span class="learn-badge lb-agentic">Agentic AI</span></td><td><strong>Claude Ecosystem</strong></td><td>Claude Sonnet as LLM backbone for all agents. Constitutional AI alignment matches our HHH requirements.</td><td>All Agents · §8 Prompts</td></tr>
-      <tr><td><span class="learn-badge lb-found">Foundations</span></td><td><strong>Model Optimization — Prompt Caching</strong></td><td>Repeated project context cached across Agent 2 queries. Target: 70%+ cost reduction.</td><td>§2 Architecture · §10 Pricing</td></tr>
-      <tr><td><span class="learn-badge lb-eval">Evaluation</span></td><td><strong>Agent Metrics (3 layers)</strong></td><td>KPIs mapped to: Task Performance (accuracy), Process Quality (latency), Operational Health (uptime)</td><td>§4 Metrics</td></tr>
-      <tr><td><span class="learn-badge lb-eval">Evaluation</span></td><td><strong>Agent Evaluation — Precision & Recall</strong></td><td>Agent 4: P≥0.80, R≥0.75. Recall prioritised — missing a cascade risk costs more than a false flag.</td><td>§7 Evaluation</td></tr>
-      <tr><td><span class="learn-badge lb-eval">Evaluation</span></td><td><strong>LLM as Judge</strong></td><td>Agent 3 email quality evaluated by LLM-as-Judge rubric (tone, relevance, urgency accuracy)</td><td>§7 Evaluation</td></tr>
-      <tr><td><span class="learn-badge lb-resp">Responsible AI</span></td><td><strong>HHH Framework</strong></td><td>Agent 3: Helpful (timely), Honest (data-only), Harmless (no blame, PM approval for sensitive steps)</td><td>Agent 3 · §9 Responsible AI</td></tr>
-      <tr><td><span class="learn-badge lb-resp">Responsible AI</span></td><td><strong>AI Risks — Hallucination</strong></td><td>Agent 2: RAG-grounded + "I don't know" fallback. Never answers financial/step data from weights.</td><td>§9 Responsible AI</td></tr>
-      <tr><td><span class="learn-badge lb-resp">Responsible AI</span></td><td><strong>AI Risks — Over-reliance / Automation Bias</strong></td><td>Agent 4: confidence threshold gate. PM cannot act on milestone rec without explicit acceptance.</td><td>§9 Responsible AI</td></tr>
-      <tr><td><span class="learn-badge lb-resp">Responsible AI</span></td><td><strong>AI Risks — Prompt Injection</strong></td><td>Agent 2 input sanitised before LLM call. User cannot override system prompt via chat input.</td><td>§9 Responsible AI</td></tr>
-      <tr><td><span class="learn-badge lb-resp">Responsible AI</span></td><td><strong>Risk Mitigation — Defence in Depth</strong></td><td>5-layer mitigation stack: training → system prompt → output filter → human-in-loop → monitoring</td><td>§9 Responsible AI</td></tr>
+      <tr><td>Foundations</td><td><strong>Tokens & Context Windows</strong></td><td>Project snapshots compressed to JSON; context budget explicitly designed per agent</td><td>Agent 2 · §8 Prompts</td></tr>
+      <tr><td>Foundations</td><td><strong>RAG Architecture</strong></td><td>Agent 2 retrieves from project HTML pages before answering; never answers from weights</td><td>Agent 2 · §8 Prompts</td></tr>
+      <tr><td>Foundations</td><td><strong>Grounding</strong></td><td>All system prompts include strict "only use provided data" constraint + fallback response</td><td>All Agents · §8 Prompts</td></tr>
+      <tr><td>Foundations</td><td><strong>Encoder/Decoder</strong></td><td>Encoder embeddings for semantic search; decoder (Claude) for generation. Separate roles.</td><td>Agent 2 architecture</td></tr>
+      <tr><td>Context</td><td><strong>Agentic RAG</strong></td><td>Agent 2 decomposes query → plans tool calls → retrieves → evaluates quality → loops</td><td>Agent 2 · §2 Solution</td></tr>
+      <tr><td>Context</td><td><strong>Context Management — Good Design</strong></td><td>Structured JSON project state vs raw HTML. State persists across multi-turn conversations.</td><td>Agent 2 · §8 Prompts</td></tr>
+      <tr><td>Context</td><td><strong>Context Types (4 types)</strong></td><td>Short-term (chat), structured (project JSON), unstructured (HTML) — each retrieved differently</td><td>Agent 2 design</td></tr>
+      <tr><td>Context</td><td><strong>In-Context Learning (few-shot)</strong></td><td>Agent 3 email prompt includes example of good/bad tone to steer output without fine-tuning</td><td>Agent 3 · §8 Prompts</td></tr>
+      <tr><td>Multi-Agent</td><td><strong>Multi-Agent Architecture</strong></td><td>Four specialised agents over a shared data layer — an Orchestrator-Worker × Blackboard design</td><td>§ Multi-Agent Architecture</td></tr>
+      <tr><td>Multi-Agent</td><td><strong>Agent Specialisation</strong></td><td>Each agent owns one domain (generation, Q&amp;A, monitoring, dependency analysis) — separation of concerns</td><td>§3 Agents</td></tr>
+      <tr><td>Multi-Agent</td><td><strong>Shared vs Private Memory</strong></td><td>Each agent keeps a lean private context; the shared project data layer is the common store all agents read/write</td><td>§ Multi-Agent Architecture</td></tr>
+      <tr><td>Multi-Agent</td><td><strong>Parallelism</strong></td><td>Agents 2, 3 and 4 run concurrently over all projects rather than as a serial pipeline</td><td>§2 Architecture</td></tr>
+      <tr><td>Multi-Agent</td><td><strong>Tool Use via Typed Schemas (OAS)</strong></td><td>Agent tool calls (Smartsheet API, email) described as typed OpenAPI schemas so the model calls them reliably</td><td>§2 Architecture · §8 Prompts</td></tr>
+      <tr><td>Agentic AI</td><td><strong>Knowledge Graph</strong></td><td>Steps = nodes, dependencies = edges. Agent 4 traverses to find critical path & cascade risk.</td><td>Agent 4 · §2 Solution</td></tr>
+      <tr><td>Agentic AI</td><td><strong>Agentic Skills — Perceive→Plan→Act</strong></td><td>Agent 3 loop: observe deadlines → reason about urgency → act (send DRI email)</td><td>Agent 3 spec</td></tr>
+      <tr><td>Agentic AI</td><td><strong>Agentic Skills — Tool Use & Planning</strong></td><td>Agent 4 multi-step plan: read graph → traverse chain → compute critical path → output JSON</td><td>Agent 4 spec</td></tr>
+      <tr><td>Agentic AI</td><td><strong>SMART Goals</strong></td><td>Agent 4 milestone recommendations follow SMART criteria: specific step, measurable date, achievable sequence</td><td>Agent 4 spec</td></tr>
+      <tr><td>Agentic AI</td><td><strong>Claude Ecosystem</strong></td><td>Claude Sonnet as LLM backbone for all agents. Constitutional AI alignment matches our HHH requirements.</td><td>All Agents · §8 Prompts</td></tr>
+      <tr><td>Foundations</td><td><strong>Model Optimization — Prompt Caching</strong></td><td>Repeated project context cached across Agent 2 queries. Target: 70%+ cost reduction.</td><td>§2 Architecture · §10 Pricing</td></tr>
+      <tr><td>Evaluation</td><td><strong>Agent Metrics (3 layers)</strong></td><td>KPIs mapped to: Task Performance (accuracy), Process Quality (latency), Operational Health (uptime)</td><td>§4 Metrics</td></tr>
+      <tr><td>Evaluation</td><td><strong>Agent Evaluation — Precision & Recall</strong></td><td>Agent 4: P≥0.80, R≥0.75. Recall prioritised — missing a cascade risk costs more than a false flag.</td><td>§7 Evaluation</td></tr>
+      <tr><td>Evaluation</td><td><strong>LLM as Judge</strong></td><td>Agent 3 email quality evaluated by LLM-as-Judge rubric (tone, relevance, urgency accuracy)</td><td>§7 Evaluation</td></tr>
+      <tr><td>Responsible AI</td><td><strong>HHH Framework</strong></td><td>Agent 3: Helpful (timely), Honest (data-only), Harmless (no blame, PM approval for sensitive steps)</td><td>Agent 3 · §9 Responsible AI</td></tr>
+      <tr><td>Responsible AI</td><td><strong>AI Risks — Hallucination</strong></td><td>Agent 2: RAG-grounded + "I don't know" fallback. Never answers financial/step data from weights.</td><td>§9 Responsible AI</td></tr>
+      <tr><td>Responsible AI</td><td><strong>AI Risks — Over-reliance / Automation Bias</strong></td><td>Agent 4: confidence threshold gate. PM cannot act on milestone rec without explicit acceptance.</td><td>§9 Responsible AI</td></tr>
+      <tr><td>Responsible AI</td><td><strong>AI Risks — Prompt Injection</strong></td><td>Agent 2 input sanitised before LLM call. User cannot override system prompt via chat input.</td><td>§9 Responsible AI</td></tr>
+      <tr><td>Responsible AI</td><td><strong>Risk Mitigation — Defence in Depth</strong></td><td>5-layer mitigation stack: training → system prompt → output filter → human-in-loop → monitoring</td><td>§9 Responsible AI</td></tr>
     </tbody>
   </table>
 
@@ -464,10 +457,10 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
   <table>
     <thead><tr><th>Agent</th><th>Specialist Role</th><th>Worker Type / Pattern</th></tr></thead>
     <tbody>
-      <tr><td><span class="learn-badge lb-found">Agent 1</span></td><td>Source Configurator & Tracker Generator</td><td>Generator — Excel → validated JSON → HTML (mini pipeline)</td></tr>
-      <tr><td><span class="learn-badge lb-ctx">Agent 2</span></td><td>Project Intelligence Chatbot</td><td>Retrieval worker — Agentic RAG over the shared data layer</td></tr>
-      <tr><td><span class="learn-badge lb-agentic">Agent 3</span></td><td>Deadline Monitor & DRI Notifier</td><td>Event-driven worker — Perceive → Plan → Act loop</td></tr>
-      <tr><td><span class="learn-badge lb-multi">Agent 4</span></td><td>Dependency & Risk Evaluator</td><td>Analyst worker — knowledge-graph traversal</td></tr>
+      <tr><td>Agent 1</td><td>Source Configurator & Tracker Generator</td><td>Generator — Excel → validated JSON → HTML (mini pipeline)</td></tr>
+      <tr><td>Agent 2</td><td>Project Intelligence Chatbot</td><td>Retrieval worker — Agentic RAG over the shared data layer</td></tr>
+      <tr><td>Agent 3</td><td>Deadline Monitor & DRI Notifier</td><td>Event-driven worker — Perceive → Plan → Act loop</td></tr>
+      <tr><td>Agent 4</td><td>Dependency & Risk Evaluator</td><td>Analyst worker — knowledge-graph traversal</td></tr>
     </tbody>
   </table>
 
@@ -491,8 +484,8 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
       </div>
       <div class="agent-body">
         <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
-          <span class="learn-badge lb-w1">Tokens</span>
-          <span class="learn-badge lb-w1">Grounding</span>
+          Tokens
+          Grounding
         </div>
         <p><strong>Trigger:</strong> User uploads Excel file via web UI.</p>
         <ul>
@@ -514,12 +507,12 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
       </div>
       <div class="agent-body">
         <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
-          <span class="learn-badge lb-w1">RAG</span>
-          <span class="learn-badge lb-w1">Grounding</span>
-          <span class="learn-badge lb-w2">Agentic RAG</span>
-          <span class="learn-badge lb-w2">Context Management</span>
-          <span class="learn-badge lb-w3">Prompt Caching</span>
-          <span class="learn-badge lb-multi">n8n Orchestration</span>
+          RAG
+          Grounding
+          Agentic RAG
+          Context Management
+          Prompt Caching
+          n8n Orchestration
         </div>
         <p><strong>Trigger:</strong> User types a natural language question in the chat panel.</p>
         <ul>
@@ -538,13 +531,13 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
 
     <div class="agent-card a3">
       <div class="agent-header">
-        <span class="num">3</span>Progress Monitor &amp; Email Notifier
+        <span class="num">3</span>Progress Monitor &amp; Email Notifier <span style="background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);color:var(--accent);font-size:.65rem;font-weight:800;padding:2px 8px;border-radius:5px;vertical-align:middle;margin-left:6px;">PLANNED</span>
       </div>
       <div class="agent-body">
         <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
-          <span class="learn-badge lb-w2">In-Context Learning</span>
-          <span class="learn-badge lb-w3">Perceive→Plan→Act</span>
-          <span class="learn-badge lb-w3">HHH Framework</span>
+          In-Context Learning
+          Perceive→Plan→Act
+          HHH Framework
         </div>
         <p><strong>Trigger:</strong> Scheduled run (nightly) or on-demand by PM.</p>
         <ul>
@@ -560,14 +553,14 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
 
     <div class="agent-card a4">
       <div class="agent-header">
-        <span class="num">4</span>Dependency Evaluator &amp; Milestone Planner
+        <span class="num">4</span>Dependency Evaluator &amp; Milestone Planner <span style="background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);color:var(--accent);font-size:.65rem;font-weight:800;padding:2px 8px;border-radius:5px;vertical-align:middle;margin-left:6px;">PLANNED</span>
       </div>
       <div class="agent-body">
         <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
-          <span class="learn-badge lb-w3">Knowledge Graph</span>
-          <span class="learn-badge lb-w3">SMART Goals</span>
-          <span class="learn-badge lb-w3">Precision & Recall</span>
-          <span class="learn-badge lb-w3">Agent Metrics</span>
+          Knowledge Graph
+          SMART Goals
+          Precision & Recall
+          Agent Metrics
         </div>
         <p><strong>Trigger:</strong> On project load and after each status update.</p>
         <ul>
@@ -599,12 +592,6 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
   <div class="section-num">4</div>
   <h2>Core Metrics</h2>
   <p class="subtitle">Metrics framework — a 3-layer Agent Metrics model applied to all agents</p>
-
-  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
-    <span class="learn-badge lb-w3">Agent Metrics (3 layers)</span>
-    <span class="learn-badge lb-w3">Precision & Recall</span>
-    <span class="learn-badge lb-w3">Agent Evaluation</span>
-  </div>
 
   <div class="callout callout-teal">
     <div class="callout-title">3-Layer Agent Metrics Framework</div>
@@ -753,13 +740,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
 <div class="section" id="evaluation">
   <div class="section-num">7</div>
   <h2>Evaluation Plan</h2>
-  <p class="subtitle">Evaluation framework — Precision/Recall, LLM-as-Judge, and human review layers</p>
-
-  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
-    <span class="learn-badge lb-w3">Agent Evaluation (4 dimensions)</span>
-    <span class="learn-badge lb-w3">Precision & Recall</span>
-    <span class="learn-badge lb-w3">LLM as Judge</span>
-  </div>
+  <p class="subtitle">Evaluation framework — Precision/Recall, LLM-as-Judge, and human review layers &nbsp;<span style="background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);color:var(--accent);font-size:.68rem;font-weight:800;padding:2px 10px;border-radius:5px;">PLANNED — NOT YET EXECUTED</span></p>
 
   <div class="callout callout-teal">
     <div class="callout-title">Evaluation Strategy</div>
@@ -769,12 +750,12 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
   <table>
     <thead><tr><th>Test Type</th><th>Scope</th><th>Method</th><th>Exit Criteria</th></tr></thead>
     <tbody>
-      <tr><td><strong>Agent 1 — Schema Tests</strong></td><td>Upload 10 Excel files: valid, missing columns, wrong types, security flags</td><td>Automated</td><td>100% correct parse on valid; clear error on invalid; &lt;10s</td></tr>
-      <tr><td><strong>Agent 2 — Chatbot Accuracy</strong></td><td>100-question benchmark across 3 simulated projects vs ground truth</td><td>Human review + LLM-as-Judge</td><td>≥90% accuracy; no hallucinated step data</td></tr>
-      <tr><td><strong>Agent 3 — Email Coverage</strong></td><td>Simulate 31-step BIN project with 5 overdue steps</td><td>Automated + LLM-as-Judge rubric</td><td>5/5 correct DRI emails; 0 blame-language flags; avg rating ≥4.0/5</td></tr>
-      <tr><td><strong>Agent 4 — Dependency Precision</strong></td><td>Test on 20 historical project datasets with known cascade delays</td><td>Automated P/R measurement</td><td><strong>P ≥ 0.80 · R ≥ 0.75</strong> on cascade risk detection</td></tr>
-      <tr><td><strong>UAT</strong></td><td>2 pilot PMs run BIN Procurement live alongside existing Excel process</td><td>Human review + SUS survey</td><td>Task success ≥90%; PM reports ≥30% time saving; SUS ≥70</td></tr>
-      <tr><td><strong>Security Test</strong></td><td>Verify AI disabled for Column J = Y; verify emails never sent without PM override</td><td>Automated penetration test</td><td>0 AI outputs on security-flagged steps</td></tr>
+      <tr><td><strong>Agent 1 — Schema Tests</strong> <span style="background:rgba(245,158,11,.12);color:var(--accent);font-size:.62rem;font-weight:700;padding:1px 6px;border-radius:4px;">Planned</span></td><td>Upload 10 Excel files: valid, missing columns, wrong types, security flags</td><td>Automated</td><td>100% correct parse on valid; clear error on invalid; &lt;10s</td></tr>
+      <tr><td><strong>Agent 2 — Chatbot Accuracy</strong> <span style="background:rgba(245,158,11,.12);color:var(--accent);font-size:.62rem;font-weight:700;padding:1px 6px;border-radius:4px;">Planned</span></td><td>100-question benchmark across 3 simulated projects vs ground truth</td><td>Human review + LLM-as-Judge</td><td>≥90% accuracy; no hallucinated step data</td></tr>
+      <tr><td><strong>Agent 3 — Email Coverage</strong> <span style="background:rgba(245,158,11,.12);color:var(--accent);font-size:.62rem;font-weight:700;padding:1px 6px;border-radius:4px;">Planned</span></td><td>Simulate 31-step BIN project with 5 overdue steps</td><td>Automated + LLM-as-Judge rubric</td><td>5/5 correct DRI emails; 0 blame-language flags; avg rating ≥4.0/5</td></tr>
+      <tr><td><strong>Agent 4 — Dependency Precision</strong> <span style="background:rgba(245,158,11,.12);color:var(--accent);font-size:.62rem;font-weight:700;padding:1px 6px;border-radius:4px;">Planned</span></td><td>Test on 20 historical project datasets with known cascade delays</td><td>Automated P/R measurement</td><td><strong>P ≥ 0.80 · R ≥ 0.75</strong> on cascade risk detection</td></tr>
+      <tr><td><strong>UAT</strong> <span style="background:rgba(245,158,11,.12);color:var(--accent);font-size:.62rem;font-weight:700;padding:1px 6px;border-radius:4px;">Planned</span></td><td>2 pilot PMs run BIN Procurement live alongside existing Excel process</td><td>Human review + SUS survey</td><td>Task success ≥90%; PM reports ≥30% time saving; SUS ≥70</td></tr>
+      <tr><td><strong>Security Test</strong> <span style="background:rgba(245,158,11,.12);color:var(--accent);font-size:.62rem;font-weight:700;padding:1px 6px;border-radius:4px;">Planned</span></td><td>Verify AI disabled for Column J = Y; verify emails never sent without PM override</td><td>Automated penetration test</td><td>0 AI outputs on security-flagged steps</td></tr>
     </tbody>
   </table>
 
@@ -790,17 +771,10 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
   <h2>Prompt Strategy</h2>
   <p class="subtitle">Structured, auditable prompts — built on Grounding, Context Management, and the HHH Framework</p>
 
-  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
-    <span class="learn-badge lb-w1">Grounding</span>
-    <span class="learn-badge lb-w2">Context Management</span>
-    <span class="learn-badge lb-w2">In-Context Learning</span>
-    <span class="learn-badge lb-w3">HHH Framework</span>
-  </div>
-
   <h3>Design Principles</h3>
   <p style="color:var(--text-muted);margin-bottom:16px"><strong style="color:var(--w1)">Grounded</strong> — always use real project data, never hallucinate. <strong style="color:var(--w2)">Scoped</strong> — structured context objects, not raw document dumps. <strong style="color:var(--w3)">HHH-Aligned</strong> — every prompt enforces Helpful, Honest, Harmless. <strong style="color:var(--text)">Auditable</strong> — every AI output logged with its input context.</p>
 
-  <h3>Agent 2 — Project Chatbot <span class="learn-badge lb-w1">RAG</span><span class="learn-badge lb-w2">Agentic RAG</span></h3>
+  <h3>Agent 2 — Project Chatbot RAGAgentic RAG</h3>
   <div class="prompt-block">
 <span class="role">SYSTEM:</span> You are a helpful project assistant with read access to all projects tracked on the Multi-Project Tracker platform. You will be given live project data as JSON context. Answer only based on the provided data. If information is not in the data, say "I don't have that information." Never guess or extrapolate. Keep answers under 3 sentences unless the user asks for a list. You may query multiple projects to answer a question — plan your tool calls before responding.
 
@@ -808,7 +782,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
 User question: <span class="var">{{user_question}}</span>
   </div>
 
-  <h3>Agent 3 — DRI Deadline Alert Email <span class="learn-badge lb-w3">HHH — Helpful, Honest, Harmless</span></h3>
+  <h3>Agent 3 — DRI Deadline Alert Email HHH — Helpful, Honest, Harmless</h3>
   <div class="prompt-block">
 <span class="role">SYSTEM:</span> You are a professional project coordinator. Write a brief, friendly, and professional reminder email to a stakeholder about an overdue or upcoming project step. Keep it under 100 words. Do not use blame language (Harmless). Be specific about the step, deadline, and the downstream impact of the delay (Helpful + Honest). Sign off with the PM's name.
 
@@ -822,7 +796,7 @@ PM Name: <span class="var">{{pm_name}}</span>
 Write the email body only. No subject line.
   </div>
 
-  <h3>Agent 4 — Dependency Risk &amp; Milestone Planner <span class="learn-badge lb-w3">Knowledge Graph</span><span class="learn-badge lb-w3">SMART Goals</span></h3>
+  <h3>Agent 4 — Dependency Risk &amp; Milestone Planner Knowledge GraphSMART Goals</h3>
   <div class="prompt-block">
 <span class="role">SYSTEM:</span> You are a senior project risk analyst specialising in dependency management. Analyse the provided project dependency graph and current step statuses. Identify all blocked steps, cascade risks, and the critical path. Then recommend the next 3–5 milestones the team should prioritise — each milestone must be SMART: Specific, Measurable, Achievable, Relevant, Time-bound. Be concise, data-driven, and actionable. Output as JSON.
 
@@ -837,11 +811,11 @@ Provide: (1) blocked_steps, (2) cascade_risks with impact, (3) critical_path, (4
   <table>
     <thead><tr><th>Guardrail</th><th>Learning Source</th><th>Implementation</th></tr></thead>
     <tbody>
-      <tr><td>No PII beyond DRI name/email</td><td><span class="learn-badge lb-w3">AI Risks</span></td><td>Data sanitised before injection; security-flagged rows excluded entirely</td></tr>
-      <tr><td>Output length enforcement</td><td><span class="learn-badge lb-w1">Tokens</span></td><td>Max token limits set per prompt; truncation fallback to prevent context overflow</td></tr>
-      <tr><td>Human override on all AI outputs</td><td><span class="learn-badge lb-w3">HHH Harmless</span></td><td>PM can edit any AI email before send; all outputs labelled "AI Suggested"</td></tr>
-      <tr><td>Confidence threshold</td><td><span class="learn-badge lb-w3">Agent Evaluation</span></td><td>Agent 4 risk score only surfaced if model confidence &gt;0.75</td></tr>
-      <tr><td>Full audit trail</td><td><span class="learn-badge lb-w3">AI Risks</span></td><td>Every AI prompt + output logged with timestamp, project ID, and model version</td></tr>
+      <tr><td>No PII beyond DRI name/email</td><td>AI Risks</td><td>Data sanitised before injection; security-flagged rows excluded entirely</td></tr>
+      <tr><td>Output length enforcement</td><td>Tokens</td><td>Max token limits set per prompt; truncation fallback to prevent context overflow</td></tr>
+      <tr><td>Human override on all AI outputs</td><td>HHH Harmless</td><td>PM can edit any AI email before send; all outputs labelled "AI Suggested"</td></tr>
+      <tr><td>Confidence threshold</td><td>Agent Evaluation</td><td>Agent 4 risk score only surfaced if model confidence &gt;0.75</td></tr>
+      <tr><td>Full audit trail</td><td>AI Risks</td><td>Every AI prompt + output logged with timestamp, project ID, and model version</td></tr>
     </tbody>
   </table>
 </div>
@@ -852,14 +826,6 @@ Provide: (1) blocked_steps, (2) cascade_risks with impact, (3) critical_path, (4
   <h2>Responsible AI Risk &amp; Mitigation</h2>
   <p class="subtitle">Ethical, security, and compliance considerations — built on the AI Risks &amp; HHH Framework</p>
 
-  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
-    <span class="learn-badge lb-w3">HHH Framework</span>
-    <span class="learn-badge lb-w3">AI Risks — Hallucination</span>
-    <span class="learn-badge lb-w3">AI Risks — Prompt Injection</span>
-    <span class="learn-badge lb-w3">AI Risks — Over-reliance</span>
-    <span class="learn-badge lb-w3">Defence in Depth</span>
-  </div>
-
   <div class="callout callout-teal">
     <div class="callout-title">Defence in Depth</div>
     We apply a defence-in-depth mitigation stack: Model Training → System Prompt → Output Filter → Human-in-Loop → Monitoring. Every risk row below maps to one or more layers of this stack. Risk without an owner is a liability — each row has a named layer and a measurable mitigation signal.
@@ -868,13 +834,13 @@ Provide: (1) blocked_steps, (2) cascade_risks with impact, (3) critical_path, (4
   <table>
     <thead><tr><th>Risk</th><th>Agent</th><th>Severity</th><th>Risk Category</th><th>Mitigation</th></tr></thead>
     <tbody>
-      <tr class="risk-high"><td><strong>AI hallucination in chatbot responses</strong> — Agent 2 fabricates step data</td><td><span class="badge badge-purple">A2</span></td><td><span class="badge badge-red">High</span></td><td><span class="learn-badge lb-w3">Hallucination</span></td><td>Strictly grounded prompting; "I don't have that information" fallback; RAG-only (never training weights)</td></tr>
-      <tr class="risk-high"><td><strong>Security-flagged steps included in AI prompts</strong> — card key data sent to LLM</td><td><span class="badge badge-blue">A1</span> <span class="badge badge-green">A3</span></td><td><span class="badge badge-red">Critical</span></td><td><span class="learn-badge lb-w3">Data Privacy</span></td><td>Column J = Y rows hard-excluded from all AI prompts; key values never passed; dual PM authorisation</td></tr>
-      <tr class="risk-high"><td><strong>Prompt injection via chat input</strong> — user overrides system prompt to extract data or execute actions</td><td><span class="badge badge-purple">A2</span></td><td><span class="badge badge-red">High</span></td><td><span class="learn-badge lb-w3">Prompt Injection</span></td><td>Input pre-processed through injection classifier; AI can inform but never directly mutate project state</td></tr>
-      <tr class="risk-med"><td><strong>Blame-language in DRI emails</strong> — Agent 3 generates accusatory tone</td><td><span class="badge badge-green">A3</span></td><td><span class="badge badge-amber">Medium</span></td><td><span class="learn-badge lb-w3">HHH — Harmless</span></td><td>Explicit no-blame guardrail in system prompt; PM review of first 50 emails; LLM-as-Judge tone scoring</td></tr>
-      <tr class="risk-med"><td><strong>Over-reliance on AI risk scores</strong> — PM stops exercising independent judgment</td><td><span class="badge badge-amber">A4</span></td><td><span class="badge badge-amber">Medium</span></td><td><span class="learn-badge lb-w3">Automation Bias</span></td><td>Confidence threshold ≥0.75; PM acceptance required before actioning milestones; all labelled "AI Recommended"</td></tr>
-      <tr class="risk-med"><td><strong>Incorrect milestone recommendations</strong> — Agent 4 suggests wrong sequence</td><td><span class="badge badge-amber">A4</span></td><td><span class="badge badge-amber">Medium</span></td><td><span class="learn-badge lb-w3">Model Risk</span></td><td>SMART criteria validation in prompt; PM panel review in UAT; acceptance rate monitored continuously</td></tr>
-      <tr class="risk-low"><td><strong>LLM provider unavailability</strong> — AI features go dark</td><td>All</td><td><span class="badge badge-green">Low</span></td><td><span class="learn-badge lb-w3">Operational Risk</span></td><td>Graceful degradation: rule-based reminders replace AI outputs; multi-provider fallback strategy</td></tr>
+      <tr class="risk-high"><td><strong>AI hallucination in chatbot responses</strong> — Agent 2 fabricates step data</td><td><span class="badge badge-purple">A2</span></td><td><span class="badge badge-red">High</span></td><td>Hallucination</td><td>Strictly grounded prompting; "I don't have that information" fallback; RAG-only (never training weights)</td></tr>
+      <tr class="risk-high"><td><strong>Security-flagged steps included in AI prompts</strong> — card key data sent to LLM</td><td><span class="badge badge-blue">A1</span> <span class="badge badge-green">A3</span></td><td><span class="badge badge-red">Critical</span></td><td>Data Privacy</td><td>Column J = Y rows hard-excluded from all AI prompts; key values never passed; dual PM authorisation</td></tr>
+      <tr class="risk-high"><td><strong>Prompt injection via chat input</strong> — user overrides system prompt to extract data or execute actions</td><td><span class="badge badge-purple">A2</span></td><td><span class="badge badge-red">High</span></td><td>Prompt Injection</td><td>Input pre-processed through injection classifier; AI can inform but never directly mutate project state</td></tr>
+      <tr class="risk-med"><td><strong>Blame-language in DRI emails</strong> — Agent 3 generates accusatory tone</td><td><span class="badge badge-green">A3</span></td><td><span class="badge badge-amber">Medium</span></td><td>HHH — Harmless</td><td>Explicit no-blame guardrail in system prompt; PM review of first 50 emails; LLM-as-Judge tone scoring</td></tr>
+      <tr class="risk-med"><td><strong>Over-reliance on AI risk scores</strong> — PM stops exercising independent judgment</td><td><span class="badge badge-amber">A4</span></td><td><span class="badge badge-amber">Medium</span></td><td>Automation Bias</td><td>Confidence threshold ≥0.75; PM acceptance required before actioning milestones; all labelled "AI Recommended"</td></tr>
+      <tr class="risk-med"><td><strong>Incorrect milestone recommendations</strong> — Agent 4 suggests wrong sequence</td><td><span class="badge badge-amber">A4</span></td><td><span class="badge badge-amber">Medium</span></td><td>Model Risk</td><td>SMART criteria validation in prompt; PM panel review in UAT; acceptance rate monitored continuously</td></tr>
+      <tr class="risk-low"><td><strong>LLM provider unavailability</strong> — AI features go dark</td><td>All</td><td><span class="badge badge-green">Low</span></td><td>Operational Risk</td><td>Graceful degradation: rule-based reminders replace AI outputs; multi-provider fallback strategy</td></tr>
     </tbody>
   </table>
 
@@ -941,6 +907,7 @@ Provide: (1) blocked_steps, (2) cascade_risks with impact, (3) critical_path, (4
       <tr><td>Payback period (CAC)</td><td>&lt;12 months</td></tr>
       <tr><td>Break-even ARR</td><td>~$800K (~25 Professional customers)</td></tr>
       <tr><td>LLM cost reduction via prompt caching</td><td>Target 70%+ on repeated project context queries</td></tr>
+      <tr><td>LLM Model (current)</td><td>Claude Sonnet 4.6 (Agent 1, Agent 2) · GPT-4o-mini (Multi Agent contract workflow)</td></tr>
     </tbody>
   </table>
 </div>
@@ -961,11 +928,11 @@ Provide: (1) blocked_steps, (2) cascade_risks with impact, (3) critical_path, (4
     <thead><tr><th>Deliverable</th><th>Learning Concepts Applied</th><th>Description</th></tr></thead>
     <tbody>
       <tr><td><strong>Web Upload UI</strong></td><td>—</td><td>Single-page web form for Excel upload; schema validation with inline error feedback</td></tr>
-      <tr><td><strong>Agent 1 — Tracker Generator</strong></td><td><span class="learn-badge lb-w1">Tokens</span></td><td>Python script; parses .xlsx, generates project-{slug}.html with RAG, progress bar, steps table</td></tr>
+      <tr><td><strong>Agent 1 — Tracker Generator</strong></td><td>Tokens</td><td>Python script; parses .xlsx, generates project-{slug}.html with RAG, progress bar, steps table</td></tr>
       <tr><td><strong>Dashboard (index.html)</strong></td><td>—</td><td>Central hub showing all generated project cards; each card links to its tracker HTML page</td></tr>
-      <tr><td><strong>Agent 3 — Email Monitor</strong></td><td><span class="learn-badge lb-w3">Perceive→Plan→Act</span><span class="learn-badge lb-w3">HHH</span></td><td>Python script (cron); reads project Excel; sends SMTP emails; logs to email-log.json</td></tr>
-      <tr><td><strong>Agent 4 — Dependency Evaluator</strong></td><td><span class="learn-badge lb-w3">Knowledge Graph</span><span class="learn-badge lb-w3">SMART Goals</span></td><td>Python script; parses Column I dependency graph; outputs blocked steps + milestone JSON</td></tr>
-      <tr><td><strong>Agent 2 — Chatbot UI + n8n Workflow</strong></td><td><span class="learn-badge lb-w1">RAG</span><span class="learn-badge lb-w2">Agentic RAG</span><span class="learn-badge lb-multi">n8n</span></td><td>Chat panel POSTs to n8n Webhook; n8n fetches live tracker HTML, runs Scope Guard, calls Claude Sonnet via Anthropic API, returns answer. Workflow exported as <code>agent2-chatbot.json</code>. See <a href="#n8n-spec" style="color:var(--secondary)">Section 12</a>.</td></tr>
+      <tr><td><strong>Agent 3 — Email Monitor</strong></td><td>Perceive→Plan→ActHHH</td><td>Python script (cron); reads project Excel; sends SMTP emails; logs to email-log.json</td></tr>
+      <tr><td><strong>Agent 4 — Dependency Evaluator</strong></td><td>Knowledge GraphSMART Goals</td><td>Python script; parses Column I dependency graph; outputs blocked steps + milestone JSON</td></tr>
+      <tr><td><strong>Agent 2 — Chatbot UI + n8n Workflow</strong></td><td>RAGAgentic RAGn8n</td><td>Chat panel POSTs to n8n Webhook; n8n fetches live tracker HTML, runs Scope Guard, calls Claude Sonnet via Anthropic API, returns answer. Workflow exported as <code>agent2-chatbot.json</code>. See <a href="#n8n-spec" style="color:var(--secondary)">Section 12</a>.</td></tr>
     </tbody>
   </table>
 
