@@ -198,7 +198,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
   <a href="#poc-tech">11. POC Scope</a>
   <a href="#n8n-spec">12. n8n Spec</a>
   <a href="#architecture">13. Architecture</a>
-  <a href="#build-log">14. Build Log</a>
+  <a href="#build-log">14. Learning Log</a>
   <a href="#flow">BIN Flow</a>
 </nav>
 
@@ -1427,26 +1427,15 @@ function showArchTab(tab) {
      ════════════════════════════════════════ -->
 <div class="section" id="build-log">
   <div class="section-num">14</div>
-  <h2>Build Log</h2>
+  <h2>Learning Log</h2>
   <p class="subtitle">Session-by-session record of learning, exploration, and hands-on builds applied during AI PM learning</p>
 
-  <!-- Tab toggle -->
-  <div style="display:flex;gap:8px;margin-bottom:24px;">
-    <button onclick="showTab('project')" id="tab-project" style="padding:7px 18px;border-radius:8px;border:1px solid var(--border2);background:transparent;color:var(--text-muted);font-size:.78rem;font-weight:700;cursor:pointer;">🏗️ Project Builds</button>
-    <button onclick="showTab('learning')" id="tab-learning" style="padding:7px 18px;border-radius:8px;border:1px solid rgba(45,212,191,.4);background:rgba(45,212,191,.12);color:var(--secondary);font-size:.78rem;font-weight:800;cursor:pointer;">📚 Learning Log</button>
-  </div>
-
-  <!-- PROJECT BUILDS TAB -->
-  <div id="tab-project-content" style="display:none;">
-    <div style="background:var(--surface2);border:1px solid var(--border);border-left:4px solid var(--text-dim);border-radius:10px;padding:24px 20px;text-align:center;">
-      <div style="font-size:1.5rem;margin-bottom:10px;">🏗️</div>
       <div style="font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:6px;">No project deliveries logged yet</div>
       <div style="font-size:.8rem;color:var(--text-muted);">Current sessions are learning & exploration. Project builds will be logged here once POC Phase 1 milestones are delivered (Agent 3, Agent 4). See <a href="#roadmap" style="color:var(--secondary);">Section 6 Roadmap</a> for the delivery plan.</div>
     </div>
   </div>
 
-  <!-- LEARNING LOG TAB -->
-  <div id="tab-learning-content">
+  <div>
 
     <!-- Jun 5 2026 -->
     <div style="margin-bottom:28px;">
@@ -1531,19 +1520,6 @@ function showArchTab(tab) {
   </div>
 
 </div>
-
-<script>
-function showTab(tab) {
-  document.getElementById('tab-project-content').style.display = tab === 'project' ? 'block' : 'none';
-  document.getElementById('tab-learning-content').style.display = tab === 'learning' ? 'block' : 'none';
-  document.getElementById('tab-project').style.background = tab === 'project' ? 'rgba(52,211,153,.12)' : 'transparent';
-  document.getElementById('tab-project').style.color = tab === 'project' ? 'var(--green)' : 'var(--text-muted)';
-  document.getElementById('tab-project').style.borderColor = tab === 'project' ? 'rgba(52,211,153,.4)' : 'var(--border2)';
-  document.getElementById('tab-learning').style.background = tab === 'learning' ? 'rgba(45,212,191,.12)' : 'transparent';
-  document.getElementById('tab-learning').style.color = tab === 'learning' ? 'var(--secondary)' : 'var(--text-muted)';
-  document.getElementById('tab-learning').style.borderColor = tab === 'learning' ? 'rgba(45,212,191,.4)' : 'var(--border2)';
-}
-</script>
 
 <footer>
   <p>AI-Powered Multi-Project Tracker · PRD v2.1 · Jun 2026 · Author: Robin Khatwani</p>
