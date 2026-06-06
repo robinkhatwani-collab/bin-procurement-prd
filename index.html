@@ -1280,79 +1280,147 @@ async function sendMessage(userMessage, history) {
 <div class="section" id="architecture">
   <div class="section-num">13</div>
   <h2>System Architecture</h2>
-  <p class="subtitle">Full stack design — all interfaces, agents, workflows, and data sources as of June 2026</p>
+  <p class="subtitle">What is built today and what is planned for future phases</p>
 
-
-  <!-- Layer stack — compact version -->
-  <div style="display:flex;flex-direction:column;gap:3px;">
-
-    <!-- L1 -->
-    <div style="border-radius:10px;overflow:hidden;border:1px solid rgba(79,142,247,.2);">
-      <div style="background:rgba(79,142,247,.1);padding:7px 16px;display:flex;align-items:center;gap:10px;">
-        <span style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--primary);">Layer 1 — User Interfaces</span>
-      </div>
-      <div style="background:var(--surface);padding:12px 16px;display:flex;flex-wrap:wrap;gap:8px;">
-        <span style="background:rgba(79,142,247,.1);border:1px solid rgba(79,142,247,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--primary);">🌐 Browser Dashboard</span>
-        <span style="background:rgba(79,142,247,.1);border:1px solid rgba(79,142,247,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--primary);">💬 Chatboard</span>
-        <span style="background:rgba(79,142,247,.1);border:1px solid rgba(79,142,247,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--primary);">📊 Project Status Pages</span>
-        <span style="background:rgba(45,212,191,.1);border:1px solid rgba(45,212,191,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--secondary);">🤖 Claude Desktop (MCP)</span>
-        <span style="background:rgba(159,110,245,.1);border:1px solid rgba(159,110,245,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--purple);">📁 Excel Upload</span>
-      </div>
-    </div>
-
-    <div style="text-align:center;font-size:.75rem;color:var(--text-dim);padding:2px 0;">↓↓↓</div>
-
-    <!-- L2 -->
-    <div style="border-radius:10px;overflow:hidden;border:1px solid rgba(245,158,11,.2);">
-      <div style="background:rgba(245,158,11,.1);padding:7px 16px;">
-        <span style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--accent);">Layer 2 — Server & Entry Points (n8n + Python)</span>
-      </div>
-      <div style="background:var(--surface);padding:12px 16px;display:flex;flex-wrap:wrap;gap:8px;">
-        <span style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--accent);">🐍 Python server.py :8080</span>
-        <span style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--accent);">🔗 Webhook /webhook/chat</span>
-        <span style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--accent);">⚡ MCP Server Trigger (SSE)</span>
-        <span style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--accent);">📨 Chat Trigger (Multi Agent)</span>
-      </div>
-    </div>
-
-    <div style="text-align:center;font-size:.75rem;color:var(--text-dim);padding:2px 0;">↓↓↓</div>
-
-    <!-- L3 -->
-    <div style="border-radius:10px;overflow:hidden;border:1px solid rgba(159,110,245,.2);">
-      <div style="background:rgba(159,110,245,.1);padding:7px 16px;">
-        <span style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--purple);">Layer 3 — AI Agents</span>
-      </div>
-      <div style="background:var(--surface);padding:12px 16px;display:flex;flex-wrap:wrap;gap:8px;">
-        <span style="background:rgba(79,142,247,.1);border:1px solid rgba(79,142,247,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--primary);">⚙️ Agent 1 — Generator</span>
-        <span style="background:rgba(159,110,245,.1);border:1px solid rgba(159,110,245,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--purple);">🧠 Agent 2 — Project Q&amp;A</span>
-        <span style="background:rgba(45,212,191,.1);border:1px solid rgba(45,212,191,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--secondary);">🔌 MCP Workflow</span>
-        <span style="background:rgba(244,114,182,.1);border:1px solid rgba(244,114,182,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--rose);">🤝 Orchestration Agent</span>
-        <span style="background:rgba(244,114,182,.1);border:1px solid rgba(244,114,182,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--rose);">📋 Playbook Agent</span>
-        <span style="background:rgba(244,114,182,.1);border:1px solid rgba(244,114,182,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--rose);">⚠️ Risk Agent</span>
-        <span style="background:rgba(244,114,182,.1);border:1px solid rgba(244,114,182,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--rose);">🛡️ Boundary Guard</span>
-      </div>
-    </div>
-
-    <div style="text-align:center;font-size:.75rem;color:var(--text-dim);padding:2px 0;">↓↓↓</div>
-
-    <!-- L4 -->
-    <div style="border-radius:10px;overflow:hidden;border:1px solid rgba(52,211,153,.2);">
-      <div style="background:rgba(52,211,153,.1);padding:7px 16px;">
-        <span style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--green);">Layer 4 — Data Sources & APIs</span>
-      </div>
-      <div style="background:var(--surface);padding:12px 16px;display:flex;flex-wrap:wrap;gap:8px;">
-        <span style="background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--green);">📄 Local HTML Pages</span>
-        <span style="background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--green);">📋 registry.json</span>
-        <span style="background:rgba(45,212,191,.1);border:1px solid rgba(45,212,191,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--secondary);">🗄️ Supabase</span>
-        <span style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--accent);">🍃 MongoDB</span>
-        <span style="background:rgba(79,142,247,.1);border:1px solid rgba(79,142,247,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--primary);">❄️ Snowflake</span>
-        <span style="background:rgba(159,110,245,.1);border:1px solid rgba(159,110,245,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--purple);">🤖 Anthropic Claude API</span>
-        <span style="background:rgba(255,255,255,.05);border:1px solid var(--border2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--text-muted);">🧠 OpenAI GPT-4o-mini</span>
-      </div>
-    </div>
-
+  <!-- Tab toggle -->
+  <div style="display:flex;gap:8px;margin-bottom:20px;">
+    <button onclick="showArchTab('built')" id="arch-tab-built" style="padding:7px 18px;border-radius:8px;border:1px solid rgba(52,211,153,.4);background:rgba(52,211,153,.12);color:var(--green);font-size:.78rem;font-weight:800;cursor:pointer;">✅ Built (POC)</button>
+    <button onclick="showArchTab('planned')" id="arch-tab-planned" style="padding:7px 18px;border-radius:8px;border:1px solid var(--border2);background:transparent;color:var(--text-muted);font-size:.78rem;font-weight:700;cursor:pointer;">🗺️ Planned (Future)</button>
   </div>
+
+  <!-- BUILT TAB -->
+  <div id="arch-built-content">
+    <div style="display:flex;flex-direction:column;gap:3px;">
+
+      <div style="border-radius:10px;overflow:hidden;border:1px solid rgba(79,142,247,.2);">
+        <div style="background:rgba(79,142,247,.1);padding:7px 16px;">
+          <span style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--primary);">Layer 1 — User Interfaces</span>
+        </div>
+        <div style="background:var(--surface);padding:12px 16px;display:flex;flex-wrap:wrap;gap:8px;">
+          <span style="background:rgba(79,142,247,.1);border:1px solid rgba(79,142,247,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--primary);">🌐 Browser Dashboard</span>
+          <span style="background:rgba(79,142,247,.1);border:1px solid rgba(79,142,247,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--primary);">💬 Chatboard</span>
+          <span style="background:rgba(79,142,247,.1);border:1px solid rgba(79,142,247,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--primary);">📊 Project Status Pages</span>
+          <span style="background:rgba(45,212,191,.1);border:1px solid rgba(45,212,191,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--secondary);">🤖 Claude Desktop (MCP)</span>
+          <span style="background:rgba(159,110,245,.1);border:1px solid rgba(159,110,245,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--purple);">📁 Excel Upload</span>
+        </div>
+      </div>
+
+      <div style="text-align:center;font-size:.75rem;color:var(--text-dim);padding:2px 0;">↓↓↓</div>
+
+      <div style="border-radius:10px;overflow:hidden;border:1px solid rgba(245,158,11,.2);">
+        <div style="background:rgba(245,158,11,.1);padding:7px 16px;">
+          <span style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--accent);">Layer 2 — Server & Entry Points (n8n + Python)</span>
+        </div>
+        <div style="background:var(--surface);padding:12px 16px;display:flex;flex-wrap:wrap;gap:8px;">
+          <span style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--accent);">🐍 Python server.py :8080</span>
+          <span style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--accent);">🔗 Webhook /webhook/chat</span>
+          <span style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--accent);">⚡ MCP Server Trigger (SSE)</span>
+          <span style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--accent);">📨 Chat Trigger (Multi Agent)</span>
+        </div>
+      </div>
+
+      <div style="text-align:center;font-size:.75rem;color:var(--text-dim);padding:2px 0;">↓↓↓</div>
+
+      <div style="border-radius:10px;overflow:hidden;border:1px solid rgba(159,110,245,.2);">
+        <div style="background:rgba(159,110,245,.1);padding:7px 16px;">
+          <span style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--purple);">Layer 3 — AI Agents (Built)</span>
+        </div>
+        <div style="background:var(--surface);padding:12px 16px;display:flex;flex-wrap:wrap;gap:8px;">
+          <span style="background:rgba(79,142,247,.1);border:1px solid rgba(79,142,247,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--primary);">⚙️ Agent 1 — Generator</span>
+          <span style="background:rgba(159,110,245,.1);border:1px solid rgba(159,110,245,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--purple);">🧠 Agent 2 — Project Q&amp;A</span>
+          <span style="background:rgba(45,212,191,.1);border:1px solid rgba(45,212,191,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--secondary);">🔌 MCP Workflow</span>
+          <span style="background:rgba(244,114,182,.1);border:1px solid rgba(244,114,182,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--rose);">🤝 Orchestration Agent</span>
+          <span style="background:rgba(244,114,182,.1);border:1px solid rgba(244,114,182,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--rose);">📋 Playbook Agent</span>
+          <span style="background:rgba(244,114,182,.1);border:1px solid rgba(244,114,182,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--rose);">⚠️ Risk Agent</span>
+          <span style="background:rgba(244,114,182,.1);border:1px solid rgba(244,114,182,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--rose);">🛡️ Boundary Guard</span>
+        </div>
+      </div>
+
+      <div style="text-align:center;font-size:.75rem;color:var(--text-dim);padding:2px 0;">↓↓↓</div>
+
+      <div style="border-radius:10px;overflow:hidden;border:1px solid rgba(52,211,153,.2);">
+        <div style="background:rgba(52,211,153,.1);padding:7px 16px;">
+          <span style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--green);">Layer 4 — Data Sources & APIs (Active)</span>
+        </div>
+        <div style="background:var(--surface);padding:12px 16px;display:flex;flex-wrap:wrap;gap:8px;">
+          <span style="background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--green);">📄 Local HTML Pages</span>
+          <span style="background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--green);">📋 registry.json</span>
+          <span style="background:rgba(45,212,191,.1);border:1px solid rgba(45,212,191,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--secondary);">🗄️ Supabase</span>
+          <span style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--accent);">🍃 MongoDB</span>
+          <span style="background:rgba(79,142,247,.1);border:1px solid rgba(79,142,247,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--primary);">❄️ Snowflake</span>
+          <span style="background:rgba(159,110,245,.1);border:1px solid rgba(159,110,245,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--purple);">🤖 Anthropic Claude API</span>
+          <span style="background:rgba(255,255,255,.05);border:1px solid var(--border2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--text-muted);">🧠 OpenAI GPT-4o-mini</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PLANNED TAB -->
+  <div id="arch-planned-content" style="display:none;">
+    <div style="display:flex;flex-direction:column;gap:3px;">
+
+      <div style="border-radius:10px;overflow:hidden;border:1px solid rgba(79,142,247,.2);">
+        <div style="background:rgba(79,142,247,.1);padding:7px 16px;">
+          <span style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--primary);">Layer 1 — User Interfaces (Future)</span>
+        </div>
+        <div style="background:var(--surface);padding:12px 16px;display:flex;flex-wrap:wrap;gap:8px;">
+          <span style="background:rgba(79,142,247,.1);border:1px solid rgba(79,142,247,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--primary);">🌐 Web Portal (SSO + RBAC)</span>
+          <span style="background:rgba(79,142,247,.1);border:1px solid rgba(79,142,247,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--primary);">📱 Mobile App</span>
+          <span style="background:rgba(79,142,247,.1);border:1px solid rgba(79,142,247,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--primary);">🔔 Slack / Teams Notifications</span>
+        </div>
+      </div>
+
+      <div style="text-align:center;font-size:.75rem;color:var(--text-dim);padding:2px 0;">↓↓↓</div>
+
+      <div style="border-radius:10px;overflow:hidden;border:1px solid rgba(245,158,11,.2);">
+        <div style="background:rgba(245,158,11,.1);padding:7px 16px;">
+          <span style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--accent);">Layer 2 — Data Sources (Future)</span>
+        </div>
+        <div style="background:var(--surface);padding:12px 16px;display:flex;flex-wrap:wrap;gap:8px;">
+          <span style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--accent);">📊 Smartsheet API (live sync)</span>
+          <span style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--accent);">🗃️ Backend Database (PostgreSQL)</span>
+          <span style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--accent);">🔗 Jira / Confluence Connectors</span>
+          <span style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--accent);">🔐 Auth Layer (SSO)</span>
+        </div>
+      </div>
+
+      <div style="text-align:center;font-size:.75rem;color:var(--text-dim);padding:2px 0;">↓↓↓</div>
+
+      <div style="border-radius:10px;overflow:hidden;border:1px solid rgba(159,110,245,.2);">
+        <div style="background:rgba(159,110,245,.1);padding:7px 16px;">
+          <span style="font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--purple);">Layer 3 — AI Agents (Planned)</span>
+        </div>
+        <div style="background:var(--surface);padding:12px 16px;display:flex;flex-wrap:wrap;gap:8px;">
+          <span style="background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--green);">📧 Agent 3 — Email Notifier</span>
+          <span style="background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--green);">🕸️ Agent 4 — Dependency Evaluator</span>
+          <span style="background:rgba(255,255,255,.05);border:1px solid var(--border2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--text-muted);">💬 Agent 2 — Multi-turn memory</span>
+          <span style="background:rgba(255,255,255,.05);border:1px solid var(--border2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--text-muted);">📊 LLM-as-Judge Evaluation</span>
+          <span style="background:rgba(255,255,255,.05);border:1px solid var(--border2);border-radius:7px;padding:5px 11px;font-size:.75rem;color:var(--text-muted);">⚡ Prompt Caching (70% cost cut)</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="margin-top:14px;padding:12px 16px;background:var(--surface2);border:1px solid rgba(245,158,11,.2);border-radius:10px;font-size:.8rem;color:var(--text-muted);">
+      📅 <strong style="color:var(--accent);">Timeline:</strong> Agent 3 + Agent 4 → POC Phase 2 (Aug–Sep 2026) · Smartsheet + DB → Q4 2026 · Enterprise scale → Q1 2027. See <a href="#roadmap" style="color:var(--secondary);">Section 6 Roadmap</a> for full plan.
+    </div>
+  </div>
+
 </div>
+
+<script>
+function showArchTab(tab) {
+  document.getElementById('arch-built-content').style.display = tab === 'built' ? 'block' : 'none';
+  document.getElementById('arch-planned-content').style.display = tab === 'planned' ? 'block' : 'none';
+  document.getElementById('arch-tab-built').style.background = tab === 'built' ? 'rgba(52,211,153,.12)' : 'transparent';
+  document.getElementById('arch-tab-built').style.color = tab === 'built' ? 'var(--green)' : 'var(--text-muted)';
+  document.getElementById('arch-tab-built').style.borderColor = tab === 'built' ? 'rgba(52,211,153,.4)' : 'var(--border2)';
+  document.getElementById('arch-tab-planned').style.background = tab === 'planned' ? 'rgba(245,158,11,.12)' : 'transparent';
+  document.getElementById('arch-tab-planned').style.color = tab === 'planned' ? 'var(--accent)' : 'var(--text-muted)';
+  document.getElementById('arch-tab-planned').style.borderColor = tab === 'planned' ? 'rgba(245,158,11,.4)' : 'var(--border2)';
+}
+</script>
 
 <!-- ════════════════════════════════════════
      SECTION 14 — BUILD LOG
