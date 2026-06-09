@@ -151,6 +151,16 @@
     .error-box { display: none; background: var(--red-dim); border: 1px solid rgba(248,113,113,.3); border-radius: 12px; padding: 16px 20px; margin-top: 16px; font-size: 13px; color: var(--red); }
     .error-box.visible { display: block; }
 
+    /* N8N VALIDATION BADGE */
+    .n8n-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; letter-spacing: .4px; padding: 4px 11px; border-radius: 99px; margin-top: 12px; }
+    .n8n-badge.online  { background: rgba(52,211,153,.12); color: #34d399; border: 1px solid rgba(52,211,153,.3); }
+    .n8n-badge.offline { background: rgba(245,158,11,.12); color: #f59e0b; border: 1px solid rgba(245,158,11,.3); }
+    .n8n-badge.checking{ background: rgba(255,255,255,.06); color: var(--text-dim); border: 1px solid var(--border); }
+    .n8n-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .n8n-badge.online  .n8n-dot { background: #34d399; box-shadow: 0 0 6px rgba(52,211,153,.6); }
+    .n8n-badge.offline .n8n-dot { background: #f59e0b; }
+    .n8n-badge.checking .n8n-dot { background: var(--text-dim); }
+
     /* FORMAT HINT */
     .format-hint { background: var(--surface2); border: 1px solid var(--border); border-radius: 14px; padding: 22px 26px; margin-bottom: 24px; }
     .format-hint h3 { font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; }
@@ -247,6 +257,14 @@
           </div>
         </div>
 
+        <!-- n8n validation status -->
+        <div style="text-align:center;">
+          <span class="n8n-badge checking" id="n8nBadge">
+            <span class="n8n-dot"></span>
+            <span id="n8nBadgeText">Checking n8n validation…</span>
+          </span>
+        </div>
+
         <!-- Error -->
         <div class="error-box" id="errorBox"></div>
 
@@ -263,8 +281,8 @@
       <div style="font-size:17px;font-weight:700;margin-bottom:6px;">Processing your project…</div>
       <div style="font-size:13px;color:var(--text-muted);">This takes just a few seconds</div>
       <div class="loading-steps">
-        <div class="loading-step" id="step1"><span class="step-dot"></span> Reading Excel sheet</div>
-        <div class="loading-step" id="step2"><span class="step-dot"></span> Extracting project data</div>
+        <div class="loading-step" id="step1"><span class="step-dot"></span> Validating Excel structure via n8n</div>
+        <div class="loading-step" id="step2"><span class="step-dot"></span> Reading &amp; extracting project data</div>
         <div class="loading-step" id="step3"><span class="step-dot"></span> Creating project directory</div>
         <div class="loading-step" id="step4"><span class="step-dot"></span> Generating PRD page</div>
         <div class="loading-step" id="step5"><span class="step-dot"></span> Generating Status Tracker</div>
@@ -298,20 +316,44 @@
 </div>
 
 <script>
-  const dropZone   = document.getElementById('dropZone');
-  const fileInput  = document.getElementById('fileInput');
-  const fileSelected = document.getElementById('fileSelected');
-  const fileName   = document.getElementById('fileName');
-  const fileSize   = document.getElementById('fileSize');
-  const fileClear  = document.getElementById('fileClear');
-  const submitBtn  = document.getElementById('submitBtn');
-  const submitLabel = document.getElementById('submitLabel');
-  const errorBox   = document.getElementById('errorBox');
+  // ── n8n webhook URL — update if your n8n runs on a different port ──
+  const N8N_VALIDATE_URL = 'http://localhost:5678/webhook/validate-excel';
+
+  const dropZone       = document.getElementById('dropZone');
+  const fileInput      = document.getElementById('fileInput');
+  const fileSelected   = document.getElementById('fileSelected');
+  const fileName       = document.getElementById('fileName');
+  const fileSize       = document.getElementById('fileSize');
+  const fileClear      = document.getElementById('fileClear');
+  const submitBtn      = document.getElementById('submitBtn');
+  const submitLabel    = document.getElementById('submitLabel');
+  const errorBox       = document.getElementById('errorBox');
   const uploadSection  = document.getElementById('uploadSection');
   const loadingSection = document.getElementById('loadingSection');
   const successSection = document.getElementById('successSection');
+  const n8nBadge       = document.getElementById('n8nBadge');
+  const n8nBadgeText   = document.getElementById('n8nBadgeText');
 
-  let selectedFile = null;
+  let selectedFile  = null;
+  let n8nOnline     = false;
+
+  // ── Check n8n reachability on page load ──
+  async function checkN8n() {
+    try {
+      // Lightweight OPTIONS preflight to see if n8n is up
+      const ctrl = new AbortController();
+      setTimeout(() => ctrl.abort(), 3000);
+      await fetch(N8N_VALIDATE_URL, { method: 'OPTIONS', signal: ctrl.signal });
+      n8nOnline = true;
+    } catch {
+      n8nOnline = false;
+    }
+    n8nBadge.className = `n8n-badge ${n8nOnline ? 'online' : 'offline'}`;
+    n8nBadgeText.textContent = n8nOnline
+      ? 'n8n validation active'
+      : 'n8n offline — validation will be skipped';
+  }
+  checkN8n();
 
   function formatBytes(bytes) {
     if (bytes < 1024) return bytes + ' B';
@@ -370,6 +412,18 @@
     });
   }
 
+  // ── Step helpers ──
+  function stepActive(id) {
+    const el = document.getElementById(id);
+    el.classList.remove('done');
+    el.classList.add('active');
+  }
+  function stepDone(id) {
+    const el = document.getElementById(id);
+    el.classList.remove('active');
+    el.classList.add('done');
+  }
+
   submitBtn.addEventListener('click', async () => {
     if (!selectedFile) return;
     hideError();
@@ -382,21 +436,56 @@
       return;
     }
 
-    // Switch to loading state
+    // Show loading overlay
     uploadSection.style.display = 'none';
     loadingSection.classList.add('visible');
 
-    // Animate steps
+    // ── Step 1: n8n Excel Validation ──
+    stepActive('step1');
+
+    if (n8nOnline) {
+      try {
+        const valForm = new FormData();
+        valForm.append('data', selectedFile);
+
+        const ctrl = new AbortController();
+        setTimeout(() => ctrl.abort(), 15000);
+        const valRes  = await fetch(N8N_VALIDATE_URL, { method: 'POST', body: valForm, signal: ctrl.signal });
+        const valData = await valRes.json();
+
+        if (!valRes.ok || !valData.passed) {
+          // Validation failed — show Claude's friendly error and go back
+          loadingSection.classList.remove('visible');
+          uploadSection.style.display = 'block';
+          showError(valData.reply || '❌ Excel validation failed. Please check your file matches the expected format.');
+          return;
+        }
+        // Validation passed
+        stepDone('step1');
+        if (valData.warnings && valData.warnings.length) {
+          // Show warnings non-blocking after success
+          console.warn('Validation warnings:', valData.warnings);
+        }
+      } catch (err) {
+        // Timeout or network error — skip validation, proceed anyway
+        stepDone('step1');
+      }
+    } else {
+      // n8n offline — skip with a brief pause so the step is visible
+      await new Promise(r => setTimeout(r, 500));
+      stepDone('step1');
+    }
+
+    // ── Steps 2–6: animate remaining steps ──
     animateSteps([
-      { id: 'step1', delay: 200,  duration: 800 },
-      { id: 'step2', delay: 900,  duration: 700 },
-      { id: 'step3', delay: 1500, duration: 600 },
-      { id: 'step4', delay: 2000, duration: 1000 },
-      { id: 'step5', delay: 2900, duration: 1000 },
-      { id: 'step6', delay: 3800, duration: 700 },
+      { id: 'step2', delay: 100,  duration: 700 },
+      { id: 'step3', delay: 700,  duration: 600 },
+      { id: 'step4', delay: 1200, duration: 1000 },
+      { id: 'step5', delay: 2100, duration: 1000 },
+      { id: 'step6', delay: 3000, duration: 700 },
     ]);
 
-    // Build form data
+    // ── Upload to server ──
     const formData = new FormData();
     formData.append('file', selectedFile);
     formData.append('genPrd', genPrd);
@@ -404,13 +493,13 @@
     formData.append('overwrite', document.getElementById('optOverwrite').checked);
 
     try {
-      const res = await fetch('/upload-project', { method: 'POST', body: formData });
+      const res  = await fetch('/upload-project', { method: 'POST', body: formData });
       const data = await res.json();
 
       if (!res.ok || data.error) throw new Error(data.error || 'Server error');
 
-      // Wait for animations to finish
-      await new Promise(r => setTimeout(r, 4600));
+      // Wait for step animations to finish
+      await new Promise(r => setTimeout(r, 3800));
 
       loadingSection.classList.remove('visible');
       successSection.classList.add('visible');
@@ -418,7 +507,7 @@
       document.getElementById('successTitle').textContent = `"${data.projectName}" Created!`;
       document.getElementById('successDesc').textContent =
         `${data.stepsCount} milestones · ${data.dris?.length || 0} DRIs · stored in projects/${data.slug}/`;
-      document.getElementById('prdLink').href = data.prdUrl;
+      document.getElementById('prdLink').href     = data.prdUrl;
       document.getElementById('trackerLink').href = data.trackerUrl;
 
     } catch (err) {
