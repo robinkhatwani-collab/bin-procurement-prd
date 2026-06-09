@@ -143,7 +143,8 @@
           "id": "anthropic-api-key",
           "name": "Anthropic API Key"
         }
-      }
+      },
+      "onError": "continueRegularOutput"
     },
     {
       "id": "node-7a",
@@ -168,7 +169,7 @@
         440
       ],
       "parameters": {
-        "jsCode": "const apiResp = $input.first().json;\nconst valData = $('Build Error Context').first().json;\n\nconst friendlyMsg =\n  apiResp.content && apiResp.content[0] && apiResp.content[0].text\n    ? apiResp.content[0].text\n    : `❌ Validation failed with ${valData.critical_errors.length} critical error(s).\\n\\n` +\n      valData.critical_errors.map(e => `• ${e}`).join('\\n') +\n      (valData.warnings.length > 0 ? '\\n\\nWarnings:\\n' + valData.warnings.map(w => `• ${w}`).join('\\n') : '');\n\nreturn [{ json: {\n  status:          'error',\n  passed:          false,\n  reply:           friendlyMsg,\n  critical_errors: valData.critical_errors,\n  warnings:        valData.warnings,\n  stats:           valData.stats,\n  next_step:       'fix_and_reupload',\n  timestamp:       new Date().toISOString()\n}}];"
+        "jsCode": "const apiResp  = $input.first().json;\nconst valData  = $('Build Error Context').first().json;\n\n// Claude may have failed — fall back to raw error list\nlet friendlyMsg;\nif (apiResp.content && apiResp.content[0] && apiResp.content[0].text) {\n  friendlyMsg = apiResp.content[0].text;\n} else {\n  // Build a clear fallback message without Claude\n  const errors = valData.critical_errors || [];\n  const type   = valData.guardrail_type;\n  if (type === 'domain') {\n    friendlyMsg = '❌ Domain rejected: This project does not belong to the Credit Card Processing domain.\\n\\n' +\n      'This tool only accepts card issuance, acquiring, fraud, dispute, payment, BIN, or reward projects.\\n\\n' +\n      'Please verify your project content and re-upload.';\n  } else if (type === 'content') {\n    friendlyMsg = '❌ Content rejected: Your spreadsheet contains inappropriate or offensive language.\\n\\n' +\n      'All content must be professional and workplace-appropriate.\\n\\n' +\n      'Please review every cell, remove flagged language, and re-upload.';\n  } else if (type === 'format') {\n    friendlyMsg = '❌ File error: Could not read your Excel file.\\n\\n' +\n      'Please ensure the file is a valid .xlsx or .xls format and try again.';\n  } else {\n    friendlyMsg = '❌ Validation failed with ' + errors.length + ' issue(s):\\n\\n' +\n      errors.map(e => '• ' + e).join('\\n') +\n      (valData.warnings && valData.warnings.length\n        ? '\\n\\nWarnings:\\n' + valData.warnings.map(w => '• ' + w).join('\\n')\n        : '');\n  }\n}\n\nreturn [{ json: {\n  status:          'error',\n  passed:          false,\n  reply:           friendlyMsg,\n  guardrail_type:  valData.guardrail_type,\n  critical_errors: valData.critical_errors,\n  warnings:        valData.warnings || [],\n  stats:           valData.stats    || {},\n  next_step:       'fix_and_reupload',\n  timestamp:       new Date().toISOString()\n}}];"
       }
     },
     {
