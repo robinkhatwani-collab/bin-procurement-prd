@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Week 6 – AI Learning Summary</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0b0f1a; --surface: #111827; --surface2: #161d2e; --surface3: #1c2540;
+      --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.13);
+      --text: #f0f4ff; --text-muted: #8b9ab4; --text-dim: #5a6a84;
+      --primary: #4f8ef7; --primary-dim: rgba(79,142,247,0.15);
+      --secondary: #2dd4bf; --secondary-dim: rgba(45,212,191,0.15);
+      --accent: #f59e0b; --accent-dim: rgba(245,158,11,0.15);
+      --green: #34d399; --green-dim: rgba(52,211,153,0.15);
+      --red: #f87171; --red-dim: rgba(248,113,113,0.15);
+      --purple: #9f6ef5; --purple-dim: rgba(159,110,245,0.15);
+      --rose: #f472b6;
+      /* Week 6 theme — Green */
+      --w6: #34d399; --w6-dim: rgba(52,211,153,0.15); --w6-glow: rgba(52,211,153,0.22);
+      --radius: 14px; --shadow: 0 4px 24px rgba(0,0,0,0.35);
+    }
+    html, body { min-height: 100vh; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 70% 50% at 10% 10%, rgba(52,211,153,.09) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 45% at 90% 80%, rgba(79,142,247,.08) 0%, transparent 60%);
+      pointer-events: none; z-index: 0;
+    }
+    /* ── NAV ── */
+    .top-nav { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; justify-content: space-between; padding: 16px 48px; background: rgba(11,15,26,.88); backdrop-filter: blur(14px); border-bottom: 1px solid var(--border); }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+    .nav-logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, var(--w6), var(--primary)); border-radius: 8px; display: grid; place-items: center; font-size: 15px; }
+    .nav-logo-text { font-size: 15px; font-weight: 700; }
+    .nav-logo-text span { color: var(--w6); }
+    .back-btn { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--text-muted); text-decoration: none; background: rgba(255,255,255,.04); border: 1px solid var(--border); padding: 7px 14px; border-radius: 9px; transition: all .2s; }
+    .back-btn:hover { color: var(--text); background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.15); }
+    /* ── HERO ── */
+    .hero { position: relative; z-index: 1; background: linear-gradient(135deg, #091a12 0%, #0d2218 50%, #0d1545 100%); border-bottom: 1px solid var(--border); padding: 60px 40px 50px; text-align: center; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(52,211,153,.2) 0%, transparent 70%); pointer-events: none; }
+    .hero .badge { position: relative; display: inline-block; background: rgba(52,211,153,.15); border: 1px solid rgba(52,211,153,.35); border-radius: 999px; padding: 6px 18px; font-size: .78rem; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 18px; color: var(--w6); font-weight: 600; }
+    .hero h1 { position: relative; font-size: clamp(1.9rem, 4vw, 2.8rem); font-weight: 800; margin-bottom: 14px; letter-spacing: -.5px; background: linear-gradient(135deg, #fff 30%, var(--w6) 70%, var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero p { position: relative; font-size: 1.05rem; color: var(--text-muted); max-width: 640px; margin: 0 auto 28px; }
+    .hero .topics-count { position: relative; display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,.07); border: 1px solid var(--border2); border-radius: 999px; padding: 8px 20px; font-size: .9rem; color: var(--text-muted); font-weight: 500; }
+    /* ── LEARNING PATH NAV ── */
+    .path-wrapper { position: relative; z-index: 1; background: var(--surface); border-bottom: 1px solid var(--border); padding: 26px 40px; }
+    .path-wrapper h2 { font-size: .78rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 16px; font-weight: 700; }
+    .path-phases { display: flex; gap: 0; flex-wrap: wrap; }
+    .phase-block { flex: 1; min-width: 180px; position: relative; }
+    .phase-block:not(:last-child)::after { content: '›'; position: absolute; right: -10px; top: 50%; transform: translateY(-50%); font-size: 1.4rem; color: var(--text-dim); z-index: 1; }
+    .phase-inner { background: var(--surface2); border-radius: 10px; padding: 12px 14px; margin: 0 18px 0 0; border: 1px solid var(--border); }
+    .phase-block:last-child .phase-inner { margin-right: 0; }
+    .phase-label { font-size: .7rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 6px; }
+    .phase-topics a { color: var(--text-muted); text-decoration: none; display: block; padding: 1px 0; font-size: .78rem; line-height: 1.5; transition: color .2s; }
+    .phase-topics a:hover { color: var(--w6); }
+    .ph1 .phase-label { color: #34d399; } .ph1 .phase-inner { border-left: 3px solid #059669; }
+    .ph2 .phase-label { color: #60a5fa; } .ph2 .phase-inner { border-left: 3px solid #2563eb; }
+    .ph3 .phase-label { color: #fbbf24; } .ph3 .phase-inner { border-left: 3px solid #d97706; }
+    .ph4 .phase-label { color: #f472b6; } .ph4 .phase-inner { border-left: 3px solid #db2777; }
+    .ph5 .phase-label { color: #a78bfa; } .ph5 .phase-inner { border-left: 3px solid #7c3aed; }
+    /* ── MAIN ── */
+    .main { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 40px 32px 80px; }
+    /* ── PHASE DIVIDER ── */
+    .phase-divider { display: flex; align-items: center; gap: 16px; margin: 48px 0 32px; }
+    .pd-badge { display: inline-flex; align-items: center; gap: 8px; font-size: .78rem; font-weight: 700; padding: 7px 16px; border-radius: 999px; white-space: nowrap; letter-spacing: .3px; }
+    .pd-1 { background: rgba(52,211,153,.15);  color: #34d399; border: 1px solid rgba(52,211,153,.3); }
+    .pd-2 { background: rgba(79,142,247,.15);  color: #60a5fa; border: 1px solid rgba(79,142,247,.3); }
+    .pd-3 { background: rgba(245,158,11,.15);  color: #fbbf24; border: 1px solid rgba(245,158,11,.3); }
+    .pd-4 { background: rgba(244,114,182,.15); color: #f472b6; border: 1px solid rgba(244,114,182,.3); }
+    .pd-5 { background: rgba(159,110,245,.15); color: #a78bfa; border: 1px solid rgba(159,110,245,.3); }
+    .pd-line { flex: 1; height: 1px; background: var(--border2); }
+    /* ── CARDS ── */
+    .card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 28px 30px; box-shadow: var(--shadow); margin-bottom: 22px; }
+    .card-header { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+    .card-icon-wrap { width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; font-size: 1.3rem; flex-shrink: 0; }
+    .card-section-label { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-dim); margin-bottom: 3px; }
+    .card-title { font-size: 1.12rem; font-weight: 800; letter-spacing: -.2px; }
+    .card p { color: var(--text-muted); font-size: .92rem; line-height: 1.75; margin-bottom: 14px; }
+    .card p:last-child { margin-bottom: 0; }
+    strong { color: var(--text); font-weight: 700; }
+    /* ── CALLOUTS ── */
+    .callout { border-radius: 10px; padding: 16px 20px; margin: 18px 0; font-size: .88rem; line-height: 1.7; }
+    .callout-green  { background: rgba(52,211,153,.1);  border: 1px solid rgba(52,211,153,.25);  border-left: 3px solid var(--green); color: var(--text-muted); }
+    .callout-blue   { background: rgba(79,142,247,.1);  border: 1px solid rgba(79,142,247,.25);  border-left: 3px solid var(--primary); color: var(--text-muted); }
+    .callout-amber  { background: rgba(245,158,11,.1);  border: 1px solid rgba(245,158,11,.25);  border-left: 3px solid var(--accent); color: var(--text-muted); }
+    .callout-purple { background: rgba(159,110,245,.1); border: 1px solid rgba(159,110,245,.25); border-left: 3px solid var(--purple); color: var(--text-muted); }
+    .callout-teal   { background: rgba(45,212,191,.1);  border: 1px solid rgba(45,212,191,.25);  border-left: 3px solid var(--secondary); color: var(--text-muted); }
+    .callout-rose   { background: rgba(244,114,182,.1); border: 1px solid rgba(244,114,182,.25); border-left: 3px solid var(--rose); color: var(--text-muted); }
+    .callout-title  { font-weight: 700; color: var(--text); margin-bottom: 6px; font-size: .82rem; text-transform: uppercase; letter-spacing: .8px; }
+    /* ── TABLES ── */
+    .data-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: .85rem; }
+    .data-table thead tr { background: var(--surface2); }
+    .data-table th { padding: 10px 14px; text-align: left; font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--text-dim); border-bottom: 1px solid var(--border2); }
+    .data-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text-muted); vertical-align: top; }
+    .data-table tbody tr:last-child td { border-bottom: none; }
+    .data-table tbody tr:hover { background: rgba(255,255,255,.02); }
+    .data-table td:first-child { color: var(--w6); font-weight: 700; }
+    /* ── DECISION MATRIX ── */
+    .decision-row { display: flex; flex-direction: column; gap: 9px; margin: 16px 0; }
+    .decision-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; }
+    .decision-label { font-size: .74rem; font-weight: 800; text-transform: uppercase; letter-spacing: .6px; margin-bottom: 5px; }
+    .decision-text { font-size: .82rem; color: var(--text-muted); line-height: 1.6; }
+    .decision-when { font-size: .76rem; color: var(--text-dim); margin-top: 5px; }
+    /* ── PILLAR GRID ── */
+    .pillar-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin: 16px 0; }
+    .pillar { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 16px; text-align: center; }
+    .pillar-icon { font-size: 1.5rem; margin-bottom: 7px; }
+    .pillar-name { font-size: .8rem; font-weight: 800; margin-bottom: 5px; }
+    .pillar-desc { font-size: .75rem; color: var(--text-muted); line-height: 1.55; }
+    /* ── CASE STUDY EXPANDERS ── */
+    .case { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 9px; overflow: hidden; }
+    .case > summary { cursor: pointer; list-style: none; padding: 12px 16px; display: flex; align-items: center; gap: 10px; font-size: .86rem; font-weight: 600; color: var(--text); transition: background .2s; }
+    .case > summary::-webkit-details-marker { display: none; }
+    .case > summary::after { content: '+'; margin-left: auto; color: var(--text-dim); font-size: 1.15rem; font-weight: 700; }
+    .case[open] > summary::after { content: '\2013'; }
+    .case > summary:hover { background: rgba(255,255,255,.03); }
+    .case-body { padding: 4px 16px 15px; font-size: .82rem; color: var(--text-muted); line-height: 1.7; }
+    .case-body strong { color: var(--text); }
+    .case-tag { font-size: .62rem; font-weight: 800; text-transform: uppercase; letter-spacing: .6px; padding: 3px 9px; border-radius: 6px; flex-shrink: 0; }
+    .tag-green { background: rgba(52,211,153,.15); color: #34d399; border: 1px solid rgba(52,211,153,.3); }
+    .tag-blue  { background: rgba(79,142,247,.15); color: #60a5fa; border: 1px solid rgba(79,142,247,.3); }
+    .tag-amber { background: rgba(245,158,11,.15); color: #fbbf24; border: 1px solid rgba(245,158,11,.3); }
+    .tag-purple{ background: rgba(159,110,245,.15); color: #c084fc; border: 1px solid rgba(159,110,245,.3); }
+    .tag-rose  { background: rgba(244,114,182,.15); color: #f472b6; border: 1px solid rgba(244,114,182,.3); }
+    /* ── CHECKLIST ── */
+    .checklist { list-style: none; margin: 12px 0; }
+    .checklist li { display: flex; align-items: flex-start; gap: 10px; font-size: .88rem; color: var(--text-muted); padding: 7px 0; border-bottom: 1px solid var(--border); line-height: 1.55; }
+    .checklist li:last-child { border-bottom: none; }
+    .checklist li::before { content: '✓'; color: var(--w6); font-weight: 800; font-size: .82rem; flex-shrink: 0; margin-top: 1px; }
+    /* ── CODE BLOCK ── */
+    .code-block { background: var(--surface2); border: 1px solid var(--border2); border-radius: 10px; padding: 14px 18px; font-family: 'Courier New', monospace; font-size: .78rem; color: #a5b4fc; line-height: 1.7; margin: 14px 0; overflow-x: auto; white-space: pre; }
+    /* ── TAKEAWAYS ── */
+    .takeaway-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-top: 18px; }
+    .takeaway-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+    .takeaway-num { font-size: 1.4rem; font-weight: 800; color: var(--w6); line-height: 1; margin-bottom: 6px; }
+    .takeaway-text { font-size: .82rem; color: var(--text-muted); line-height: 1.6; }
+    /* ── FOOTER ── */
+    footer { margin-top: auto; text-align: center; padding: 24px; font-size: .75rem; color: var(--text-muted); border-top: 1px solid var(--border); position: relative; z-index: 1; }
+    footer span { color: var(--w6); }
+    @media (max-width: 640px) {
+      .top-nav { padding: 14px 18px; } .main { padding: 28px 18px 60px; }
+      .path-wrapper { padding: 18px; } .hero { padding: 44px 20px 36px; }
+      .path-phases { flex-direction: column; gap: 10px; }
+      .phase-block:not(:last-child)::after { display: none; } .phase-inner { margin-right: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <a class="nav-logo" href="default.html">
+    <div class="nav-logo-icon">🔧</div>
+    <div class="nav-logo-text">AI <span>PM</span> Tool</div>
+  </a>
+  <a class="back-btn" href="ai-learning.html">← AI Learning Hub</a>
+</nav>
+
+<section class="hero">
+  <div class="badge">Week 6 · Fine-Tuning &amp; Applied AI PM</div>
+  <h1>Fine-Tuning, MLOps &amp; AI Product Strategy</h1>
+  <p>From training your own model to shipping it responsibly — fine-tuning, embeddings, MLOps, AI PRDs, business cases, and go-to-market strategy for the applied AI PM.</p>
+  <div class="topics-count">🔧 18 Topics &nbsp;·&nbsp; 5 Phases &nbsp;·&nbsp; Applied AI PM Lens</div>
+</section>
+
+<div class="path-wrapper">
+  <h2>📍 Week 6 Learning Path</h2>
+  <div class="path-phases">
+    <div class="phase-block ph1">
+      <div class="phase-inner">
+        <div class="phase-label">Phase 1 — Fine-Tuning</div>
+        <div class="phase-topics">
+          <a href="#what-is-fine-tuning">What is Fine-Tuning?</a>
+          <a href="#ft-vs-rag">Fine-Tune vs RAG vs Prompting</a>
+          <a href="#ft-types">Types of Fine-Tuning</a>
+        </div>
+      </div>
+    </div>
+    <div class="phase-block ph2">
+      <div class="phase-inner">
+        <div class="phase-label">Phase 2 — Embeddings &amp; Vector DBs</div>
+        <div class="phase-topics">
+          <a href="#what-are-embeddings">What are Embeddings?</a>
+          <a href="#vector-databases">Vector Databases</a>
+          <a href="#semantic-search">Semantic vs Keyword Search</a>
+        </div>
+      </div>
+    </div>
+    <div class="phase-block ph3">
+      <div class="phase-inner">
+        <div class="phase-label">Phase 3 — Data Strategy &amp; MLOps</div>
+        <div class="phase-topics">
+          <a href="#data-strategy">Data Strategy &amp; Flywheels</a>
+          <a href="#model-monitoring">Model Monitoring</a>
+          <a href="#ai-incident">AI Incident Management</a>
+        </div>
+      </div>
+    </div>
+    <div class="phase-block ph4">
+      <div class="phase-inner">
+        <div class="phase-label">Phase 4 — AI Product Craft</div>
+        <div class="phase-topics">
+          <a href="#ai-prd">Writing AI PRDs</a>
+          <a href="#ai-discovery">AI Feature Discovery</a>
+          <a href="#ab-testing">A/B Testing AI Features</a>
+          <a href="#user-research">User Research for AI</a>
+        </div>
+      </div>
+    </div>
+    <div class="phase-block ph5">
+      <div class="phase-inner">
+        <div class="phase-label">Phase 5 — AI Strategy &amp; Business</div>
+        <div class="phase-topics">
+          <a href="#build-vs-buy">Build vs Buy vs Fine-tune</a>
+          <a href="#ai-business-models">AI Business Models</a>
+          <a href="#ai-roi">AI ROI &amp; Business Case</a>
+          <a href="#gtm">Go-to-Market for AI</a>
+          <a href="#key-takeaways">Key Takeaways</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- ══════════════════════════════
+       PHASE 1 — FINE-TUNING
+       ══════════════════════════════ -->
+  <div class="phase-divider">
+    <span class="pd-badge pd-1">🔧 Phase 1 — Fine-Tuning</span>
+    <div class="pd-line"></div>
+  </div>
+
+  <div class="card" id="what-is-fine-tuning">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.25);">🔧</div>
+      <div>
+        <div class="card-section-label">Topic 1 of 18</div>
+        <div class="card-title">What is Fine-Tuning?</div>
+      </div>
+    </div>
+    <p><strong>Fine-tuning</strong> is the process of taking a pre-trained foundation model and continuing its training on a smaller, task-specific dataset — so the model specialises in your domain, tone, format, or task without being built from scratch.</p>
+    <p>Think of it as the difference between hiring a general consultant (foundation model) and a consultant who's spent 3 months embedded in your company (fine-tuned model). They already know how to think — now they know your business.</p>
+    <div class="callout callout-green">
+      <div class="callout-title">🧠 What Fine-Tuning Changes</div>
+      Fine-tuning updates the model's <strong>weights</strong> — the internal numerical parameters that determine how it processes language. This makes the change permanent and baked in, unlike a system prompt which is applied at runtime and can be overridden.
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin:16px 0;">
+      <div style="background:var(--surface2);border:1px solid rgba(52,211,153,.2);border-left:4px solid var(--w6);border-radius:10px;padding:14px 18px;">
+        <div style="font-size:.74rem;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--w6);margin-bottom:4px;">✅ What Fine-Tuning Is Good For</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">Domain-specific vocabulary and writing style · Consistent output format (always respond as JSON) · Task specialisation (always classify, never explain) · Reducing latency by compressing instructions into weights · Reducing cost by using a smaller base model with specialist training</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid rgba(248,113,113,.2);border-left:4px solid var(--red);border-radius:10px;padding:14px 18px;">
+        <div style="font-size:.74rem;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--red);margin-bottom:4px;">❌ What Fine-Tuning Cannot Do</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">Add new factual knowledge (it won't learn your real-time data) · Replace retrieval for current or dynamic information · Guarantee accuracy on facts it wasn't trained on · Make a small model perform like a large one on complex reasoning</div>
+      </div>
+    </div>
+    <div class="callout callout-amber">
+      <div class="callout-title">📋 PM Tip — Fine-Tuning is Expensive to Maintain</div>
+      Every time the base model provider releases a new version, you may need to re-fine-tune. Build this maintenance cost into your roadmap before committing to fine-tuning as your primary strategy.
+    </div>
+  </div>
+
+  <div class="card" id="ft-vs-rag">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(79,142,247,.15);border:1px solid rgba(79,142,247,.25);">⚖️</div>
+      <div>
+        <div class="card-section-label">Topic 2 of 18</div>
+        <div class="card-title">Fine-Tuning vs RAG vs Prompt Engineering — Decision Framework</div>
+      </div>
+    </div>
+    <p>These three approaches are often confused. They solve different problems and are frequently used together. Here's how to decide which to reach for first.</p>
+    <table class="data-table">
+      <thead><tr><th>Dimension</th><th>Prompt Engineering</th><th>RAG</th><th>Fine-Tuning</th></tr></thead>
+      <tbody>
+        <tr><td>What it changes</td><td>Runtime input</td><td>Retrieved context</td><td>Model weights</td></tr>
+        <tr><td>Cost to implement</td><td>Very low</td><td>Medium</td><td>High</td></tr>
+        <tr><td>Time to implement</td><td>Hours</td><td>Days–weeks</td><td>Weeks–months</td></tr>
+        <tr><td>Best for</td><td>Behaviour, tone, format</td><td>Current/dynamic facts</td><td>Style, vocabulary, specialisation</td></tr>
+        <tr><td>Reversible?</td><td>Instantly</td><td>Yes (update index)</td><td>Requires retraining</td></tr>
+        <tr><td>Adds new knowledge?</td><td>Via context only</td><td>Yes — from documents</td><td>Only from training data</td></tr>
+        <tr><td>Hallucination risk</td><td>Moderate</td><td>Low (grounded)</td><td>Moderate</td></tr>
+        <tr><td>Latency impact</td><td>None</td><td>+retrieval time</td><td>Can reduce (smaller model)</td></tr>
+      </tbody>
+    </table>
+    <div class="callout callout-green">
+      <div class="callout-title">🧭 The Decision Ladder</div>
+      <strong>Start with prompt engineering.</strong> If it solves the problem, ship it.<br>
+      <strong>Add RAG</strong> if the model needs access to current, proprietary, or large-scale facts.<br>
+      <strong>Fine-tune</strong> only when you need consistent style/format, domain vocabulary, or you've squeezed everything from the above two and quality still falls short.
+    </div>
+  </div>
+
+  <div class="card" id="ft-types">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.25);">🧬</div>
+      <div>
+        <div class="card-section-label">Topic 3 of 18</div>
+        <div class="card-title">Types of Fine-Tuning</div>
+      </div>
+    </div>
+    <p>There is no single fine-tuning method. The approach you choose depends on your budget, data volume, and how much you want to change the model's behaviour.</p>
+    <div class="decision-row">
+      <div class="decision-card" style="border-left:4px solid var(--w6);">
+        <div class="decision-label" style="color:var(--w6);">Full Fine-Tuning</div>
+        <div class="decision-text">All model weights are updated on your dataset. Maximum control and performance gain — but requires significant compute, large labelled datasets (10k+ examples), and a full retraining cycle for every model update.</div>
+        <div class="decision-when">📍 Use when: you have significant data, budget, and need maximum specialisation.</div>
+      </div>
+      <div class="decision-card" style="border-left:4px solid var(--primary);">
+        <div class="decision-label" style="color:var(--primary);">LoRA / QLoRA (Parameter-Efficient Fine-Tuning)</div>
+        <div class="decision-text">Only a small set of adapter parameters are trained — the base model weights are frozen. Dramatically cheaper (can run on a single GPU), faster to iterate, and easy to swap adapters. LoRA is the dominant fine-tuning method for most teams in 2024–25.</div>
+        <div class="decision-when">📍 Use when: you want to fine-tune cheaply on consumer or cloud GPU. Best starting point for most teams.</div>
+      </div>
+      <div class="decision-card" style="border-left:4px solid var(--accent);">
+        <div class="decision-label" style="color:var(--accent);">Instruction Tuning</div>
+        <div class="decision-text">Fine-tune the model to follow instructions reliably — using datasets of (instruction, response) pairs. This is how base models become "chat" models. Use it to teach a model a domain-specific task format.</div>
+        <div class="decision-when">📍 Use when: you need the model to reliably follow a specific task structure (e.g., always extract 5 fields from a document in JSON).</div>
+      </div>
+      <div class="decision-card" style="border-left:4px solid var(--purple);">
+        <div class="decision-label" style="color:var(--purple);">RLHF (Reinforcement Learning from Human Feedback)</div>
+        <div class="decision-text">Human raters score model outputs, and a reward model is trained on those scores. The LLM is then fine-tuned to maximise reward. This is how OpenAI, Anthropic, and Google align their frontier models. Expensive, complex, and rarely done at the product team level.</div>
+        <div class="decision-when">📍 Use when: you're building a foundation model or need deep alignment adjustment. Not a typical PM-level decision.</div>
+      </div>
+      <div class="decision-card" style="border-left:4px solid var(--rose);">
+        <div class="decision-label" style="color:var(--rose);">RLAIF / DPO (Newer Alternatives to RLHF)</div>
+        <div class="decision-text">Direct Preference Optimisation (DPO) skips the reward model entirely, training directly from preference pairs (preferred response A vs rejected response B). Simpler and increasingly popular for product teams doing preference-based alignment.</div>
+        <div class="decision-when">📍 Use when: you want RLHF-quality alignment without the complexity. Growing fast in 2025.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       PHASE 2 — EMBEDDINGS & VECTOR DBs
+       ══════════════════════════════ -->
+  <div class="phase-divider">
+    <span class="pd-badge pd-2">🔢 Phase 2 — Embeddings &amp; Vector Databases</span>
+    <div class="pd-line"></div>
+  </div>
+
+  <div class="card" id="what-are-embeddings">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(79,142,247,.15);border:1px solid rgba(79,142,247,.25);">🔢</div>
+      <div>
+        <div class="card-section-label">Topic 4 of 18</div>
+        <div class="card-title">What are Embeddings?</div>
+      </div>
+    </div>
+    <p>An <strong>embedding</strong> is a numerical representation of text (or an image, audio clip, etc.) as a point in high-dimensional space. Words, sentences, or documents that are semantically similar end up close together in that space — even if they use different words.</p>
+    <div class="callout callout-blue">
+      <div class="callout-title">💡 The Geography Analogy</div>
+      Imagine a map where every concept has a location. "Fraud" and "unauthorised transaction" end up near each other on the map, even though the words are different. "Groceries" and "dining" cluster together. "Credit limit" sits near "spending cap." Embeddings <em>are</em> that map — just in 1,536 dimensions instead of 2.
+    </div>
+    <p>Embeddings power three critical AI capabilities:</p>
+    <div class="pillar-row">
+      <div class="pillar" style="border-top:3px solid var(--primary);">
+        <div class="pillar-icon">🔍</div>
+        <div class="pillar-name" style="color:var(--primary);">Semantic Search</div>
+        <div class="pillar-desc">Find documents by meaning, not keyword. "When does my statement close?" matches "billing cycle end date."</div>
+      </div>
+      <div class="pillar" style="border-top:3px solid var(--w6);">
+        <div class="pillar-icon">🗂️</div>
+        <div class="pillar-name" style="color:var(--w6);">RAG Retrieval</div>
+        <div class="pillar-desc">The retrieval step in RAG converts the user query into an embedding and fetches the nearest document chunks.</div>
+      </div>
+      <div class="pillar" style="border-top:3px solid var(--accent);">
+        <div class="pillar-icon">🏷️</div>
+        <div class="pillar-name" style="color:var(--accent);">Classification</div>
+        <div class="pillar-desc">Train a classifier on top of embeddings to categorise transactions, tickets, or feedback without a large labelled dataset.</div>
+      </div>
+      <div class="pillar" style="border-top:3px solid var(--purple);">
+        <div class="pillar-icon">🧩</div>
+        <div class="pillar-name" style="color:var(--purple);">Deduplication</div>
+        <div class="pillar-desc">Find near-duplicate disputes, similar merchant names, or repeated customer complaints by proximity in embedding space.</div>
+      </div>
+    </div>
+    <div class="callout callout-amber">
+      <div class="callout-title">📋 PM Tip — Embedding Models vs LLMs</div>
+      Embedding models (text-embedding-3-large, Cohere Embed) are separate from chat LLMs. They're cheaper, faster, and purpose-built for similarity. Don't use an LLM to compare documents — use an embedding model.
+    </div>
+  </div>
+
+  <div class="card" id="vector-databases">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.25);">🗄️</div>
+      <div>
+        <div class="card-section-label">Topic 5 of 18</div>
+        <div class="card-title">Vector Databases</div>
+      </div>
+    </div>
+    <p>A <strong>vector database</strong> is purpose-built to store, index, and query embeddings at scale. It answers the question: <em>"Which stored vectors are closest to this query vector?"</em> — in milliseconds, across millions of documents.</p>
+    <table class="data-table">
+      <thead><tr><th>Database</th><th>Best For</th><th>Key Strength</th><th>Consideration</th></tr></thead>
+      <tbody>
+        <tr><td>Pinecone</td><td>Production SaaS, fast setup</td><td>Fully managed, low ops overhead</td><td>Vendor lock-in, cost at scale</td></tr>
+        <tr><td>Weaviate</td><td>Open-source + hybrid search</td><td>Combines vector + keyword search</td><td>More ops complexity</td></tr>
+        <tr><td>pgvector</td><td>Teams already on PostgreSQL</td><td>No new infrastructure needed</td><td>Slower at very large scale</td></tr>
+        <tr><td>Chroma</td><td>Prototyping &amp; local dev</td><td>Lightweight, great for testing</td><td>Not production-grade at scale</td></tr>
+        <tr><td>Qdrant</td><td>High-performance self-hosted</td><td>Fast, Rust-based, payload filtering</td><td>Newer, smaller community</td></tr>
+      </tbody>
+    </table>
+    <div class="callout callout-teal">
+      <div class="callout-title">🏗️ How It Fits Into a RAG Pipeline</div>
+      <strong>Ingest:</strong> chunk documents → embed each chunk → store vectors in the DB<br>
+      <strong>Query:</strong> embed the user question → search DB for nearest chunks → inject chunks into LLM prompt → generate grounded answer
+    </div>
+  </div>
+
+  <div class="card" id="semantic-search">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(79,142,247,.15);border:1px solid rgba(79,142,247,.25);">🔍</div>
+      <div>
+        <div class="card-section-label">Topic 6 of 18</div>
+        <div class="card-title">Semantic Search vs Keyword Search</div>
+      </div>
+    </div>
+    <p>Understanding this distinction is essential for any PM building a search or retrieval feature. They find documents in fundamentally different ways.</p>
+    <table class="data-table">
+      <thead><tr><th>Dimension</th><th>Keyword Search (BM25 / Elasticsearch)</th><th>Semantic Search (Embeddings)</th></tr></thead>
+      <tbody>
+        <tr><td>How it works</td><td>Matches exact or stemmed words</td><td>Matches by meaning and context</td></tr>
+        <tr><td>Query: "card not working"</td><td>Finds docs with "card" and "working"</td><td>Finds docs about declined transactions, chip errors, PIN issues</td></tr>
+        <tr><td>Handles typos?</td><td>Poorly</td><td>Well (embedding is robust)</td></tr>
+        <tr><td>Handles synonyms?</td><td>Only if configured</td><td>Naturally</td></tr>
+        <tr><td>Speed</td><td>Very fast</td><td>Fast (with ANN indexing)</td></tr>
+        <tr><td>Explainability</td><td>Easy — shows matched terms</td><td>Harder — why vectors are close</td></tr>
+        <tr><td>Best for</td><td>Known terminology, IDs, codes</td><td>Natural language, intent, paraphrase</td></tr>
+      </tbody>
+    </table>
+    <div class="callout callout-green">
+      <div class="callout-title">✅ Hybrid Search — Best of Both</div>
+      Most production search systems use <strong>hybrid search</strong> — run both keyword and semantic retrieval, then re-rank the merged results. This handles both "BIN 424242" (keyword) and "why was my payment declined" (semantic) in the same pipeline.
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       PHASE 3 — DATA STRATEGY & MLOPS
+       ══════════════════════════════ -->
+  <div class="phase-divider">
+    <span class="pd-badge pd-3">⚙️ Phase 3 — Data Strategy &amp; MLOps</span>
+    <div class="pd-line"></div>
+  </div>
+
+  <div class="card" id="data-strategy">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.25);">🗃️</div>
+      <div>
+        <div class="card-section-label">Topic 7 of 18</div>
+        <div class="card-title">Data Strategy &amp; Data Flywheels</div>
+      </div>
+    </div>
+    <p>For AI products, <strong>data is the moat</strong>. The model is a commodity — anyone can API-call GPT-4o. The proprietary dataset you accumulate is what competitors can't copy.</p>
+    <div class="callout callout-amber">
+      <div class="callout-title">🔄 The Data Flywheel</div>
+      More users → more interactions → more labelled data → better model → better product → more users.<br><br>
+      The key PM insight: <strong>every user interaction is a data asset</strong>. Design your product to capture implicit feedback (did the user accept the AI suggestion? Did they edit it? Did they re-ask?) — not just explicit ratings.
+    </div>
+    <p><strong>Five data strategy decisions every AI PM must make:</strong></p>
+    <ul style="color:var(--text-muted);font-size:.88rem;padding-left:1.4rem;line-height:2.1;">
+      <li><strong>Collection:</strong> What signals will you capture? Clicks, edits, thumbs up/down, task completion?</li>
+      <li><strong>Labelling:</strong> Who labels the data? Internal SMEs, outsourced annotators, or synthetic generation?</li>
+      <li><strong>Quality:</strong> How do you measure and maintain annotation quality? Inter-annotator agreement?</li>
+      <li><strong>Governance:</strong> Can this data be used for training? Check user consent and T&amp;Cs.</li>
+      <li><strong>Freshness:</strong> How quickly does data go stale? How often do you need to refresh training data?</li>
+    </ul>
+    <div class="callout callout-amber">
+      <div class="callout-title">📋 PM Tip — Synthetic Data</div>
+      When you lack real training data, use the LLM itself to generate labelled examples — a technique called <strong>synthetic data generation</strong>. Works well for edge cases, rare events (like unusual fraud patterns), and bootstrapping a new model before real data arrives.
+    </div>
+  </div>
+
+  <div class="card" id="model-monitoring">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.25);">📡</div>
+      <div>
+        <div class="card-section-label">Topic 8 of 18</div>
+        <div class="card-title">Model Monitoring &amp; Observability</div>
+      </div>
+    </div>
+    <p>AI models <strong>degrade silently</strong>. Unlike a software bug that crashes visibly, a drifting model just gets quietly worse. Monitoring is what catches this before users do.</p>
+    <p>There are two types of drift to watch for:</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0;">
+      <div style="background:var(--surface2);border:1px solid rgba(245,158,11,.2);border-top:3px solid var(--accent);border-radius:10px;padding:14px;">
+        <div style="font-size:.76rem;font-weight:800;color:var(--accent);margin-bottom:6px;">📊 Data Drift</div>
+        <div style="font-size:.8rem;color:var(--text-muted);">The distribution of real inputs changes vs what the model was trained on. Example: a fraud model trained pre-2023 never saw "AI-generated phishing emails" as a fraud vector.</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid rgba(248,113,113,.2);border-top:3px solid var(--red);border-radius:10px;padding:14px;">
+        <div style="font-size:.76rem;font-weight:800;color:var(--red);margin-bottom:6px;">📉 Concept Drift</div>
+        <div style="font-size:.8rem;color:var(--text-muted);">The relationship between input and correct output changes. Example: "contactless payment" used to be unusual (flag it). Now it's normal (don't flag it).</div>
+      </div>
+    </div>
+    <table class="data-table" style="margin-top:14px;">
+      <thead><tr><th>Metric to Monitor</th><th>What It Catches</th><th>Alert Threshold Example</th></tr></thead>
+      <tbody>
+        <tr><td>Prediction distribution</td><td>Model outputting unusually high/low fraud scores</td><td>Daily fraud rate &gt;3σ from 30-day baseline</td></tr>
+        <tr><td>Output confidence</td><td>Model becoming uncertain across all inputs</td><td>Mean confidence drops &gt;10% week-over-week</td></tr>
+        <tr><td>Latency P95</td><td>Inference slowdowns affecting user experience</td><td>P95 latency &gt;500ms for 5 min</td></tr>
+        <tr><td>Hallucination rate</td><td>LLM quality regression after model update</td><td>Weekly eval score drops &gt;5%</td></tr>
+        <tr><td>User override rate</td><td>Users rejecting AI suggestions more often</td><td>&gt;20% of suggestions edited or dismissed</td></tr>
+      </tbody>
+    </table>
+    <div class="callout callout-amber">
+      <div class="callout-title">📋 PM Tip — Shadow Mode Deployment</div>
+      Before fully switching to a new model version, run it in <strong>shadow mode</strong> — it processes real traffic and logs outputs, but doesn't serve users. Compare shadow outputs to the live model for 1–2 weeks before cutting over. Prevents silent regressions.
+    </div>
+  </div>
+
+  <div class="card" id="ai-incident">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(248,113,113,.15);border:1px solid rgba(248,113,113,.25);">🚨</div>
+      <div>
+        <div class="card-section-label">Topic 9 of 18</div>
+        <div class="card-title">AI Incident Management</div>
+      </div>
+    </div>
+    <p>When an AI model fails in production — whether by hallucinating, producing biased outputs, or being exploited — you need a clear runbook. AI incidents are different from software incidents because the cause is often probabilistic and hard to reproduce exactly.</p>
+    <div class="decision-row">
+      <div class="decision-card" style="border-left:4px solid var(--red);">
+        <div class="decision-label" style="color:var(--red);">Severity 1 — Model producing harmful or discriminatory outputs at scale</div>
+        <div class="decision-text"><strong>Immediate action:</strong> Kill switch — revert to the previous model version or disable the AI feature entirely. Notify your safety and legal teams within the hour. Do not attempt to patch the prompt in production.</div>
+      </div>
+      <div class="decision-card" style="border-left:4px solid var(--accent);">
+        <div class="decision-label" style="color:var(--accent);">Severity 2 — Significant quality regression noticed by users</div>
+        <div class="decision-text"><strong>Action:</strong> Run your eval suite immediately to quantify the regression. If score drops &gt;10%, roll back. Flag to engineering and model team. Communicate to affected users if decisions were impacted.</div>
+      </div>
+      <div class="decision-card" style="border-left:4px solid var(--primary);">
+        <div class="decision-label" style="color:var(--primary);">Severity 3 — Minor quality issue or edge case failure</div>
+        <div class="decision-text"><strong>Action:</strong> Log the failing examples. Add them to your eval suite. Schedule a prompt or fine-tuning fix in the next sprint. No emergency action required.</div>
+      </div>
+    </div>
+    <div class="callout callout-green">
+      <div class="callout-title">✅ The AI Incident Checklist</div>
+      <ul style="padding-left:1.2rem;line-height:2;">
+        <li>Do you have a kill switch that can disable the AI feature in &lt;5 minutes?</li>
+        <li>Is there a human fallback path for every AI decision that affects users?</li>
+        <li>Is there a communication template ready for user-impacting AI failures?</li>
+        <li>Does your post-mortem process cover model behaviour, not just system uptime?</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       PHASE 4 — AI PRODUCT CRAFT
+       ══════════════════════════════ -->
+  <div class="phase-divider">
+    <span class="pd-badge pd-4">📋 Phase 4 — AI Product Craft</span>
+    <div class="pd-line"></div>
+  </div>
+
+  <div class="card" id="ai-prd">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(244,114,182,.15);border:1px solid rgba(244,114,182,.25);">📄</div>
+      <div>
+        <div class="card-section-label">Topic 10 of 18</div>
+        <div class="card-title">Writing AI PRDs — What's Different</div>
+      </div>
+    </div>
+    <p>An AI PRD is structurally similar to a standard PRD, but it must answer several questions that never appear in traditional software specs. Skipping these is how AI features ship without a safety plan.</p>
+    <table class="data-table">
+      <thead><tr><th>PRD Section</th><th>Standard Software</th><th>AI Product — What to Add</th></tr></thead>
+      <tbody>
+        <tr><td>Problem Statement</td><td>User pain point</td><td>+ Why AI specifically? What fails without it?</td></tr>
+        <tr><td>Solution</td><td>Feature description</td><td>+ Model choice, approach (prompt/RAG/fine-tune), confidence thresholds</td></tr>
+        <tr><td>Success Metrics</td><td>DAU, conversion, NPS</td><td>+ Accuracy, hallucination rate, human override rate, latency P95</td></tr>
+        <tr><td>Failure Modes</td><td>Often absent</td><td>Required: worst-case output, mitigation, kill switch</td></tr>
+        <tr><td>Data Requirements</td><td>N/A</td><td>Training data, eval dataset, labelling process, data consent</td></tr>
+        <tr><td>Human Oversight</td><td>N/A</td><td>When does a human review? What can the model decide autonomously?</td></tr>
+        <tr><td>Explainability</td><td>N/A</td><td>Can users understand why the AI decided X? Is that legally required?</td></tr>
+        <tr><td>Launch Gates</td><td>QA pass, perf test</td><td>+ Red team sign-off, eval threshold met, bias audit</td></tr>
+      </tbody>
+    </table>
+    <div class="callout callout-rose">
+      <div class="callout-title">📋 The One Sentence Test</div>
+      Every AI PRD should be able to answer: <em>"What is the worst thing this model could plausibly do, and what is our plan if it happens?"</em> If your PRD can't answer this, it's not ready to ship.
+    </div>
+  </div>
+
+  <div class="card" id="ai-discovery">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(244,114,182,.15);border:1px solid rgba(244,114,182,.25);">🔭</div>
+      <div>
+        <div class="card-section-label">Topic 11 of 18</div>
+        <div class="card-title">AI Feature Discovery — Finding Where AI Adds Value</div>
+      </div>
+    </div>
+    <p>Not every problem needs AI. The PM's job is to identify where AI creates <strong>disproportionate value</strong> — where it does something that rule-based systems, humans, or traditional software cannot match.</p>
+    <p>AI adds the most value when tasks share these properties:</p>
+    <div style="display:flex;flex-direction:column;gap:8px;margin:14px 0;">
+      <div style="background:var(--surface2);border-left:3px solid var(--w6);border-radius:8px;padding:11px 16px;font-size:.84rem;color:var(--text-muted);"><strong>High volume, low unit value</strong> — too many decisions for humans to make manually (categorise 50M transactions, triage 100k support tickets).</div>
+      <div style="background:var(--surface2);border-left:3px solid var(--primary);border-radius:8px;padding:11px 16px;font-size:.84rem;color:var(--text-muted);"><strong>Pattern recognition in unstructured data</strong> — extracting meaning from text, images, audio that rules can't handle.</div>
+      <div style="background:var(--surface2);border-left:3px solid var(--accent);border-radius:8px;padding:11px 16px;font-size:.84rem;color:var(--text-muted);"><strong>Personalisation at scale</strong> — different outputs for every user, based on context and history.</div>
+      <div style="background:var(--surface2);border-left:3px solid var(--purple);border-radius:8px;padding:11px 16px;font-size:.84rem;color:var(--text-muted);"><strong>Natural language interaction</strong> — where the interface benefit of free-text input outweighs the cost of handling variability.</div>
+      <div style="background:var(--surface2);border-left:3px solid var(--rose);border-radius:8px;padding:11px 16px;font-size:.84rem;color:var(--text-muted);"><strong>Augmenting expert judgement</strong> — helping a specialist (fraud analyst, compliance officer) work faster without replacing their decision authority.</div>
+    </div>
+    <div class="callout callout-amber">
+      <div class="callout-title">📋 PM Tip — The 3-Question Filter</div>
+      Before pursuing any AI feature: (1) Could a well-written rule or formula solve this adequately? (2) Do we have (or can we get) the data to make this work? (3) Is the cost of being wrong acceptable? If you can't answer all three, pause.
+    </div>
+  </div>
+
+  <div class="card" id="ab-testing">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(244,114,182,.15);border:1px solid rgba(244,114,182,.25);">🧪</div>
+      <div>
+        <div class="card-section-label">Topic 12 of 18</div>
+        <div class="card-title">A/B Testing AI Features — Unique Challenges</div>
+      </div>
+    </div>
+    <p>A/B testing AI features follows the same statistical principles as traditional experiments — but introduces several complications that standard testing frameworks don't handle well.</p>
+    <table class="data-table">
+      <thead><tr><th>Challenge</th><th>Why It's Different for AI</th><th>How to Handle It</th></tr></thead>
+      <tbody>
+        <tr><td>Non-determinism</td><td>Same prompt → different output each run. Hard to reproduce "variant A."</td><td>Fix temperature=0 for controlled tests; log inputs and outputs for audit.</td></tr>
+        <tr><td>Metrics lag</td><td>AI quality impact (e.g. trust erosion) shows up weeks after exposure.</td><td>Run longer experiments (4+ weeks); track downstream metrics, not just click-through.</td></tr>
+        <tr><td>Novelty effect</td><td>Users engage more with AI just because it's new, not because it's better.</td><td>Run a holdout group for 6+ weeks; measure sustained engagement, not first-week spikes.</td></tr>
+        <tr><td>Contamination</td><td>AI recommendations influence user behaviour, which affects the control group too.</td><td>Use cluster randomisation (by user or account) rather than request-level splits.</td></tr>
+        <tr><td>Safety can't be A/B tested</td><td>You can't show harmful outputs to 50% of users to "test" the impact.</td><td>Use offline red team evals to assess safety before any live experiment.</td></tr>
+      </tbody>
+    </table>
+    <div class="callout callout-green">
+      <div class="callout-title">✅ What to Measure in an AI A/B Test</div>
+      <strong>Task success rate</strong> — did the user accomplish their goal? <br>
+      <strong>Override/edit rate</strong> — how often do users reject or change the AI output?<br>
+      <strong>Time-to-completion</strong> — is the AI making users faster?<br>
+      <strong>Escalation rate</strong> — are users needing human help less often?<br>
+      <strong>Return rate</strong> — do users keep using the feature after first try?
+    </div>
+  </div>
+
+  <div class="card" id="user-research">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(244,114,182,.15);border:1px solid rgba(244,114,182,.25);">👥</div>
+      <div>
+        <div class="card-section-label">Topic 13 of 18</div>
+        <div class="card-title">User Research for AI Products</div>
+      </div>
+    </div>
+    <p>Standard user research methods still apply to AI products — but several new questions emerge that traditional UX interviews don't cover.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0;">
+      <div style="background:var(--surface2);border:1px solid rgba(244,114,182,.2);border-top:3px solid var(--rose);border-radius:10px;padding:14px;">
+        <div style="font-size:.76rem;font-weight:800;color:var(--rose);margin-bottom:6px;">🆕 New Questions to Ask</div>
+        <div style="font-size:.8rem;color:var(--text-muted);line-height:1.7;">How much do they trust AI outputs? When do they verify? What makes them distrust? Have they been burned by AI before? Do they feel the AI "understands" their intent?</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid rgba(52,211,153,.2);border-top:3px solid var(--w6);border-radius:10px;padding:14px;">
+        <div style="font-size:.76rem;font-weight:800;color:var(--w6);margin-bottom:6px;">🔍 New Research Methods</div>
+        <div style="font-size:.8rem;color:var(--text-muted);line-height:1.7;">Think-aloud testing with AI outputs. Wizard of Oz (human pretending to be AI). Longitudinal studies to measure trust calibration over time.</div>
+      </div>
+    </div>
+    <p><strong>Three trust anti-patterns to test for:</strong></p>
+    <ul style="color:var(--text-muted);font-size:.88rem;padding-left:1.4rem;line-height:2.1;">
+      <li><strong>Over-trust:</strong> Users accept all AI outputs without checking — even clearly wrong ones. Risk: errors propagate.</li>
+      <li><strong>Under-trust:</strong> Users ignore AI output and do everything manually. Risk: AI adds no value.</li>
+      <li><strong>Miscalibrated trust:</strong> Users trust AI on the tasks where it's weakest, and distrust it on the tasks where it's strongest. Most common and hardest to fix.</li>
+    </ul>
+  </div>
+
+  <!-- ══════════════════════════════
+       PHASE 5 — AI STRATEGY & BUSINESS
+       ══════════════════════════════ -->
+  <div class="phase-divider">
+    <span class="pd-badge pd-5">💼 Phase 5 — AI Strategy &amp; Business</span>
+    <div class="pd-line"></div>
+  </div>
+
+  <div class="card" id="build-vs-buy">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(159,110,245,.15);border:1px solid rgba(159,110,245,.25);">🏗️</div>
+      <div>
+        <div class="card-section-label">Topic 14 of 18</div>
+        <div class="card-title">Build vs Buy vs Fine-Tune vs Prompt — Decision Framework</div>
+      </div>
+    </div>
+    <p>Every AI product decision starts here. Getting this wrong is the most expensive mistake a PM can make — either over-engineering (building what you could buy) or under-investing (prompting where you needed fine-tuning).</p>
+    <div class="decision-row">
+      <div class="decision-card" style="border-left:4px solid var(--w6);">
+        <div class="decision-label" style="color:var(--w6);">Just Prompt It</div>
+        <div class="decision-text">Use an off-the-shelf model API with a well-crafted system prompt. No training, no infra. Ship in days.</div>
+        <div class="decision-when">✅ Use when: the task is general, quality is acceptable, and you're iterating fast. Start here by default.</div>
+      </div>
+      <div class="decision-card" style="border-left:4px solid var(--primary);">
+        <div class="decision-label" style="color:var(--primary);">Add RAG</div>
+        <div class="decision-text">Keep the off-the-shelf model, add a retrieval layer over your proprietary documents or real-time data.</div>
+        <div class="decision-when">✅ Use when: the model needs facts it wasn't trained on, data changes frequently, or you need citations.</div>
+      </div>
+      <div class="decision-card" style="border-left:4px solid var(--accent);">
+        <div class="decision-label" style="color:var(--accent);">Buy / Integrate a Specialist Model</div>
+        <div class="decision-text">Use a third-party model purpose-built for your domain (e.g. a fraud-specific model, a medical NLP API).</div>
+        <div class="decision-when">✅ Use when: a specialist provider exists, their accuracy beats general models, and build cost exceeds buy cost over 2 years.</div>
+      </div>
+      <div class="decision-card" style="border-left:4px solid var(--purple);">
+        <div class="decision-label" style="color:var(--purple);">Fine-Tune an Existing Model</div>
+        <div class="decision-text">Take a foundation model and train it on your domain data. Requires data, compute, and ongoing maintenance.</div>
+        <div class="decision-when">✅ Use when: general models consistently underperform on your task, you have 1k+ labelled examples, and latency/cost savings justify the investment.</div>
+      </div>
+      <div class="decision-card" style="border-left:4px solid var(--red);">
+        <div class="decision-label" style="color:var(--red);">Build From Scratch</div>
+        <div class="decision-text">Train your own foundation model. Only viable for very large organisations with unique data, massive compute budgets, and dedicated ML research teams.</div>
+        <div class="decision-when">✅ Use when: you are OpenAI, Anthropic, Google, or Meta. Almost never the right call for a product team.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="ai-business-models">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(159,110,245,.15);border:1px solid rgba(159,110,245,.25);">💡</div>
+      <div>
+        <div class="card-section-label">Topic 15 of 18</div>
+        <div class="card-title">AI Business Models &amp; Competitive Moats</div>
+      </div>
+    </div>
+    <p>The model is not the moat — it's a commodity. Sustainable AI businesses are built on what wraps the model: proprietary data, workflow integration, switching costs, and network effects.</p>
+    <table class="data-table">
+      <thead><tr><th>Moat Type</th><th>How AI Creates It</th><th>Credit Card Example</th></tr></thead>
+      <tbody>
+        <tr><td>Data Flywheel</td><td>More usage → more labelled data → better model → more usage</td><td>Every fraud decision teaches the model; competitors without that history can't match accuracy</td></tr>
+        <tr><td>Workflow Lock-in</td><td>AI deeply embedded in daily workflows is hard to rip out</td><td>Analysts trained on AI-assisted dispute triage won't switch to a manual tool</td></tr>
+        <tr><td>Network Effects</td><td>AI improves as more users join the same model</td><td>Consortium fraud models improve for all members as the network grows</td></tr>
+        <tr><td>Proprietary Data</td><td>Unique training data competitors can't access</td><td>Decades of anonymised transaction history is impossible to replicate</td></tr>
+        <tr><td>API-First Distribution</td><td>Become the infrastructure others build on</td><td>Selling fraud scoring as an API to other issuers</td></tr>
+      </tbody>
+    </table>
+    <div class="callout callout-purple">
+      <div class="callout-title">⚠️ The Thin Wrapper Trap</div>
+      A product that simply wraps an LLM API with a nice UI has no moat. Any competitor can replicate the wrapper in a weekend. The question every AI PM must ask: <strong>"If OpenAI ships this feature natively tomorrow, does our product survive?"</strong> If the answer is no, you need to build a deeper moat.
+    </div>
+  </div>
+
+  <div class="card" id="ai-roi">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(159,110,245,.15);border:1px solid rgba(159,110,245,.25);">📊</div>
+      <div>
+        <div class="card-section-label">Topic 16 of 18</div>
+        <div class="card-title">AI ROI &amp; Building the Business Case</div>
+      </div>
+    </div>
+    <p>AI projects frequently get approved based on vague promises of efficiency. A rigorous business case forces clarity on costs, benefits, and the measurement plan — before a single line of code is written.</p>
+    <p><strong>The AI ROI Formula:</strong></p>
+    <div style="background:var(--surface2);border:1px solid rgba(52,211,153,.2);border-radius:10px;padding:16px 20px;margin:14px 0;font-size:.88rem;color:var(--text-muted);line-height:1.8;">
+      <strong style="color:var(--w6);">ROI = (Value Created − Total Cost of Ownership) / Total Cost of Ownership</strong><br><br>
+      <strong>Value Created</strong> = cost savings (hours saved × headcount cost) + revenue uplift (higher conversion, fewer chargebacks) + risk reduction (regulatory fines avoided)<br><br>
+      <strong>Total Cost of Ownership</strong> = model API costs + engineering build + data labelling + ongoing evals + compliance + monitoring + model refresh cycles
+    </div>
+    <div class="callout callout-amber">
+      <div class="callout-title">📋 PM Tip — Most Teams Underestimate TCO by 3×</div>
+      The API call cost is visible. The hidden costs — annotation, evals, monitoring, red teaming, model updates, compliance review — are not. Build a 3-year TCO model before presenting an AI business case. The first year almost never pays off.
+    </div>
+    <p><strong>Three ROI archetypes in credit card AI:</strong></p>
+    <ul style="color:var(--text-muted);font-size:.88rem;padding-left:1.4rem;line-height:2.1;">
+      <li><strong>Cost reduction:</strong> AI handles Tier-1 disputes → 40% reduction in contact centre volume → $X million saved annually</li>
+      <li><strong>Revenue protection:</strong> Better fraud detection → fewer false positives → fewer legitimate transactions blocked → $X million in preserved revenue</li>
+      <li><strong>Risk reduction:</strong> AI-assisted compliance review → faster regulatory submissions → fewer fines → $X million in avoided penalties</li>
+    </ul>
+  </div>
+
+  <div class="card" id="gtm">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(159,110,245,.15);border:1px solid rgba(159,110,245,.25);">🚀</div>
+      <div>
+        <div class="card-section-label">Topic 17 of 18</div>
+        <div class="card-title">Go-to-Market Strategy for AI Features</div>
+      </div>
+    </div>
+    <p>Launching an AI feature requires a different GTM playbook than traditional software — primarily because user trust must be built deliberately, and failure modes are visible and reputational.</p>
+    <div class="decision-row">
+      <div class="decision-card" style="border-left:4px solid var(--w6);">
+        <div class="decision-label" style="color:var(--w6);">1. Staged Rollout (not Big Bang)</div>
+        <div class="decision-text">Start with 1–5% of users. Monitor error rates, hallucinations, and user override rates. Expand only when each cohort passes your quality gates. AI failures at 100% rollout are reputational catastrophes.</div>
+      </div>
+      <div class="decision-card" style="border-left:4px solid var(--primary);">
+        <div class="decision-label" style="color:var(--primary);">2. Set Expectations Early</div>
+        <div class="decision-text">Label AI features clearly ("Suggested by AI"). Disclose confidence levels where appropriate. Users who know they're using AI calibrate trust better and are more forgiving of errors.</div>
+      </div>
+      <div class="decision-card" style="border-left:4px solid var(--accent);">
+        <div class="decision-label" style="color:var(--accent);">3. Human Fallback Always Visible</div>
+        <div class="decision-text">Never remove the non-AI path entirely at launch. Users who distrust the AI feature need an out. Removing it triggers churn and regulatory scrutiny.</div>
+      </div>
+      <div class="decision-card" style="border-left:4px solid var(--purple);">
+        <div class="decision-label" style="color:var(--purple);">4. Internal Champions First</div>
+        <div class="decision-text">Before external launch, deploy to internal teams (customer service, fraud ops, compliance). They find failure modes faster than any QA process and build the human feedback loop you need for the data flywheel.</div>
+      </div>
+      <div class="decision-card" style="border-left:4px solid var(--rose);">
+        <div class="decision-label" style="color:var(--rose);">5. Build the Narrative, Not Just the Feature</div>
+        <div class="decision-text">AI features need a clear "why" for both users and regulators. "Our AI reduces dispute resolution time from 10 days to 48 hours" is a story. "AI-powered disputes" is not. Define the before/after and make it measurable.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       KEY TAKEAWAYS
+       ══════════════════════════════ -->
+  <div class="phase-divider" id="key-takeaways">
+    <span class="pd-badge pd-1">🏁 Key Takeaways — Week 6</span>
+    <div class="pd-line"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.25);">🏁</div>
+      <div>
+        <div class="card-section-label">Topic 18 of 18</div>
+        <div class="card-title">Week 6 Key Takeaways</div>
+      </div>
+    </div>
+    <p>Applied AI PM is about connecting the technical and the commercial — knowing when to fine-tune vs prompt, how to monitor what you ship, and how to build a business case that survives scrutiny.</p>
+    <div class="takeaway-grid">
+      <div class="takeaway-item">
+        <div class="takeaway-num">01</div>
+        <div class="takeaway-text"><strong>Start with prompting, always.</strong> The decision ladder is: prompt → RAG → buy → fine-tune → build. Most problems are solved before you reach fine-tuning.</div>
+      </div>
+      <div class="takeaway-item">
+        <div class="takeaway-num">02</div>
+        <div class="takeaway-text"><strong>LoRA is the practical fine-tuning default.</strong> Full fine-tuning is expensive and brittle. LoRA gives you 80% of the benefit at 10% of the cost — it's where most teams should start.</div>
+      </div>
+      <div class="takeaway-item">
+        <div class="takeaway-num">03</div>
+        <div class="takeaway-text"><strong>Embeddings power more than search.</strong> Classification, deduplication, anomaly detection, and RAG retrieval all run on embeddings. Understanding them unlocks half the AI toolbox.</div>
+      </div>
+      <div class="takeaway-item">
+        <div class="takeaway-num">04</div>
+        <div class="takeaway-text"><strong>AI models degrade silently.</strong> Monitoring is not optional — it's the difference between catching drift in your dashboard and catching it in a headline. Build monitoring before launch, not after.</div>
+      </div>
+      <div class="takeaway-item">
+        <div class="takeaway-num">05</div>
+        <div class="takeaway-text"><strong>An AI PRD must answer the worst-case question.</strong> If your spec doesn't describe the failure mode and the mitigation, it's not ready to ship.</div>
+      </div>
+      <div class="takeaway-item">
+        <div class="takeaway-num">06</div>
+        <div class="takeaway-text"><strong>Data is the real moat.</strong> The model is a commodity. The proprietary data flywheel you build through user interactions is what competitors cannot replicate.</div>
+      </div>
+      <div class="takeaway-item">
+        <div class="takeaway-num">07</div>
+        <div class="takeaway-text"><strong>TCO is 3× what you see.</strong> API costs are the tip of the iceberg. Labelling, evals, monitoring, compliance, and model refresh cycles are what sink AI business cases that looked profitable on a spreadsheet.</div>
+      </div>
+      <div class="takeaway-item">
+        <div class="takeaway-num">08</div>
+        <div class="takeaway-text"><strong>Launch staged, build trust deliberately.</strong> AI GTM is about earning trust incrementally — with users, with regulators, and with your own organisation. Big bang AI launches almost always end badly.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>Robin <span>AI Learnings</span> · Week 6 of 7 · Fine-Tuning, MLOps &amp; AI Product Strategy</footer>
+</body>
+</html>
