@@ -355,7 +355,12 @@
     n8nBadge.className = `n8n-badge ${n8nOnline ? 'online' : 'offline'}`;
     n8nBadgeText.textContent = n8nOnline
       ? 'n8n validation active'
-      : 'n8n offline — validation will be skipped';
+      : 'n8n required — activate workflow before uploading';
+    // Block the submit button when n8n is not active
+    if (!n8nOnline) {
+      submitBtn.disabled = true;
+      submitLabel.textContent = 'n8n validation required to upload';
+    }
   }
   checkN8n();
 
@@ -478,21 +483,21 @@
           }
         }
       } catch (err) {
-        if (err.name === 'AbortError') {
-          // Genuine timeout — n8n unreachable, skip and proceed
-          stepDone('step1');
-        } else {
-          // Empty body / bad JSON — workflow exists but is NOT activated in n8n
-          loadingSection.classList.remove('visible');
-          uploadSection.style.display = 'block';
-          showError('⚠️ n8n validation workflow is not active. Please open n8n at localhost:5678, import excel-validation.json, and activate the workflow before uploading.');
-          return;
-        }
+        // Any failure — timeout, empty body, bad JSON — all block the upload
+        loadingSection.classList.remove('visible');
+        uploadSection.style.display = 'block';
+        const msg = err.name === 'AbortError'
+          ? '⚠️ n8n validation timed out. Please check that n8n is running at localhost:5678 and the workflow is active.'
+          : '⚠️ n8n validation workflow is not active. Open n8n at localhost:5678, import excel-validation.json, and activate it before uploading.';
+        showError(msg);
+        return;
       }
     } else {
-      // n8n offline — skip with a brief pause so the step is visible
-      await new Promise(r => setTimeout(r, 500));
-      stepDone('step1');
+      // n8n offline — hard block, do not proceed
+      loadingSection.classList.remove('visible');
+      uploadSection.style.display = 'block';
+      showError('⚠️ n8n validation is required before uploading. Please start n8n at localhost:5678 and activate the Excel Validation workflow.');
+      return;
     }
 
     // ── Steps 2–6: animate remaining steps ──
