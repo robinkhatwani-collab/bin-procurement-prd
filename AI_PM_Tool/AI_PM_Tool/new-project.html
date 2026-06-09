@@ -315,6 +315,7 @@
   <footer>Built for <span>Robin Khatwani</span> · AI PM Tool</footer>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
   // ── n8n webhook URL — update if your n8n runs on a different port ──
   const N8N_VALIDATE_URL = 'http://localhost:5678/webhook/validate-excel';
@@ -451,33 +452,46 @@
     loadingSection.classList.add('visible');
 
     // ── Step 1: n8n Excel Validation ──
+    // Parse Excel in the browser first (avoids n8n binary handling issues)
+    // then send rows as JSON to n8n for guardrail checks.
     stepActive('step1');
 
     if (n8nOnline) {
       try {
-        const valForm = new FormData();
-        valForm.append('data', selectedFile);
+        // Parse Excel locally using SheetJS
+        const arrayBuf = await selectedFile.arrayBuffer();
+        const wb       = XLSX.read(new Uint8Array(arrayBuf), { type: 'array', cellDates: true, raw: false });
+        const ws       = wb.Sheets[wb.SheetNames[0]];
+        const rawRows  = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '', blankrows: false });
 
+        if (!rawRows || rawRows.length < 2) {
+          loadingSection.classList.remove('visible');
+          uploadSection.style.display = 'block';
+          showError('❌ The Excel file appears empty or has fewer than 2 rows. Please check the file and re-upload.');
+          return;
+        }
+
+        // Send parsed rows as JSON — n8n no longer needs to handle binary
         const ctrl = new AbortController();
         setTimeout(() => ctrl.abort(), 15000);
-        const valRes = await fetch(N8N_VALIDATE_URL, { method: 'POST', body: valForm, signal: ctrl.signal });
-        const ct     = valRes.headers.get('content-type') || '';
+        const valRes = await fetch(N8N_VALIDATE_URL, {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ rows: rawRows, fileName: selectedFile.name }),
+          signal:  ctrl
+        });
+        const ct = valRes.headers.get('content-type') || '';
 
-        // If n8n returns HTML (not running / wrong port) treat as offline and skip
         if (!ct.includes('application/json')) {
           stepDone('step1');
-          // fall through to upload
         } else {
           const valData = await valRes.json();
-
           if (!valRes.ok || !valData.passed) {
-            // Validation failed — show Claude's friendly error and go back
             loadingSection.classList.remove('visible');
             uploadSection.style.display = 'block';
             showError(valData.reply || '❌ Excel validation failed. Please check your file matches the expected format.');
             return;
           }
-          // Validation passed
           stepDone('step1');
           if (valData.warnings && valData.warnings.length) {
             console.warn('Validation warnings:', valData.warnings);
