@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Week 5 – AI Learning Summary</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:            #0b0f1a;
+      --surface:       #111827;
+      --surface2:      #161d2e;
+      --surface3:      #1c2540;
+      --border:        rgba(255,255,255,0.08);
+      --border2:       rgba(255,255,255,0.13);
+      --text:          #f0f4ff;
+      --text-muted:    #8b9ab4;
+      --text-dim:      #5a6a84;
+      --primary:       #4f8ef7;
+      --primary-dim:   rgba(79,142,247,0.15);
+      --secondary:     #2dd4bf;
+      --secondary-dim: rgba(45,212,191,0.15);
+      --accent:        #f59e0b;
+      --accent-dim:    rgba(245,158,11,0.15);
+      --green:         #34d399;
+      --green-dim:     rgba(52,211,153,0.15);
+      --red:           #f87171;
+      --red-dim:       rgba(248,113,113,0.15);
+      --purple:        #9f6ef5;
+      --purple-dim:    rgba(159,110,245,0.15);
+      /* Week 5 theme — Rose */
+      --w5:            #f472b6;
+      --w5-dim:        rgba(244,114,182,0.15);
+      --w5-glow:       rgba(244,114,182,0.22);
+      --teal:          #2dd4bf;
+      --radius:        14px;
+      --shadow:        0 4px 24px rgba(0,0,0,0.35);
+    }
+
+    html, body { min-height: 100vh; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 70% 50% at 10% 10%, rgba(244,114,182,.09) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 45% at 90% 80%, rgba(79,142,247,.08) 0%, transparent 60%);
+      pointer-events: none; z-index: 0;
+    }
+
+    /* ── NAV ── */
+    .top-nav {
+      position: sticky; top: 0; z-index: 20;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 48px;
+      background: rgba(11,15,26,.88); backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+    .nav-logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, var(--w5), var(--primary)); border-radius: 8px; display: grid; place-items: center; font-size: 15px; }
+    .nav-logo-text { font-size: 15px; font-weight: 700; }
+    .nav-logo-text span { color: var(--w5); }
+    .back-btn {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 12px; font-weight: 600; color: var(--text-muted);
+      text-decoration: none; background: rgba(255,255,255,.04);
+      border: 1px solid var(--border); padding: 7px 14px; border-radius: 9px;
+      transition: all .2s;
+    }
+    .back-btn:hover { color: var(--text); background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.15); }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative; z-index: 1;
+      background: linear-gradient(135deg, #1a0814 0%, #2a0d1e 50%, #0d1545 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 60px 40px 50px; text-align: center; overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(244,114,182,.2) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero .badge {
+      position: relative;
+      display: inline-block; background: rgba(244,114,182,.15); border: 1px solid rgba(244,114,182,.35);
+      border-radius: 999px; padding: 6px 18px; font-size: .78rem; letter-spacing: 1.5px;
+      text-transform: uppercase; margin-bottom: 18px; color: var(--w5); font-weight: 600;
+    }
+    .hero h1 {
+      position: relative; font-size: clamp(1.9rem, 4vw, 2.8rem); font-weight: 800;
+      margin-bottom: 14px; letter-spacing: -.5px;
+      background: linear-gradient(135deg, #fff 30%, var(--w5) 70%, var(--primary));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .hero p { position: relative; font-size: 1.05rem; color: var(--text-muted); max-width: 640px; margin: 0 auto 28px; }
+    .hero .topics-count {
+      position: relative;
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,.07); border: 1px solid var(--border2);
+      border-radius: 999px; padding: 8px 20px; font-size: .9rem; color: var(--text-muted); font-weight: 500;
+    }
+
+    /* ── LEARNING PATH NAV ── */
+    .path-wrapper {
+      position: relative; z-index: 1;
+      background: var(--surface); border-bottom: 1px solid var(--border); padding: 26px 40px;
+    }
+    .path-wrapper h2 { font-size: .78rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 16px; font-weight: 700; }
+    .path-phases { display: flex; gap: 0; flex-wrap: wrap; }
+    .phase-block { flex: 1; min-width: 200px; position: relative; }
+    .phase-block:not(:last-child)::after { content: '›'; position: absolute; right: -10px; top: 50%; transform: translateY(-50%); font-size: 1.4rem; color: var(--text-dim); z-index: 1; }
+    .phase-inner { background: var(--surface2); border-radius: 10px; padding: 12px 14px; margin: 0 18px 0 0; border: 1px solid var(--border); }
+    .phase-block:last-child .phase-inner { margin-right: 0; }
+    .phase-label { font-size: .7rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 6px; }
+    .phase-topics a { color: var(--text-muted); text-decoration: none; display: block; padding: 1px 0; font-size: .78rem; line-height: 1.5; transition: color .2s; }
+    .phase-topics a:hover { color: var(--w5); }
+    .ph1 .phase-label { color: #fb7185; }  .ph1 .phase-inner { border-left: 3px solid #e11d48; }
+    .ph2 .phase-label { color: #c084fc; }  .ph2 .phase-inner { border-left: 3px solid #7c3aed; }
+    .ph3 .phase-label { color: #60a5fa; }  .ph3 .phase-inner { border-left: 3px solid #2563eb; }
+    .ph4 .phase-label { color: #34d399; }  .ph4 .phase-inner { border-left: 3px solid #059669; }
+
+    /* ── MAIN CONTENT ── */
+    .main { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 40px 32px 80px; }
+
+    /* ── PHASE DIVIDER ── */
+    .phase-divider { display: flex; align-items: center; gap: 16px; margin: 48px 0 32px; }
+    .pd-badge { display: inline-flex; align-items: center; gap: 8px; font-size: .78rem; font-weight: 700; padding: 7px 16px; border-radius: 999px; white-space: nowrap; letter-spacing: .3px; }
+    .pd-1 { background: rgba(244,114,182,.15); color: #fb7185;  border: 1px solid rgba(244,114,182,.3); }
+    .pd-2 { background: rgba(159,110,245,.15); color: #c084fc;  border: 1px solid rgba(159,110,245,.3); }
+    .pd-3 { background: rgba(79,142,247,.15);  color: #60a5fa;  border: 1px solid rgba(79,142,247,.3); }
+    .pd-4 { background: rgba(52,211,153,.15);  color: #34d399;  border: 1px solid rgba(52,211,153,.3); }
+    .pd-line { flex: 1; height: 1px; background: var(--border2); }
+
+    /* ── CARDS ── */
+    .card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 28px 30px; box-shadow: var(--shadow); margin-bottom: 22px; }
+    .card-header { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+    .card-icon-wrap { width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; font-size: 1.3rem; flex-shrink: 0; }
+    .card-section-label { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-dim); margin-bottom: 3px; }
+    .card-title { font-size: 1.12rem; font-weight: 800; letter-spacing: -.2px; }
+    .card p { color: var(--text-muted); font-size: .92rem; line-height: 1.75; margin-bottom: 14px; }
+    .card p:last-child { margin-bottom: 0; }
+    strong { color: var(--text); font-weight: 700; }
+
+    /* ── CALLOUTS ── */
+    .callout { border-radius: 10px; padding: 16px 20px; margin: 18px 0; font-size: .88rem; line-height: 1.7; }
+    .callout-teal   { background: rgba(45,212,191,.1);  border: 1px solid rgba(45,212,191,.25);  border-left: 3px solid var(--teal); color: var(--text-muted); }
+    .callout-blue   { background: rgba(79,142,247,.1);  border: 1px solid rgba(79,142,247,.25);  border-left: 3px solid var(--primary); color: var(--text-muted); }
+    .callout-green  { background: rgba(52,211,153,.1);  border: 1px solid rgba(52,211,153,.25);  border-left: 3px solid var(--green); color: var(--text-muted); }
+    .callout-amber  { background: rgba(245,158,11,.1);  border: 1px solid rgba(245,158,11,.25);  border-left: 3px solid var(--accent); color: var(--text-muted); }
+    .callout-purple { background: rgba(159,110,245,.1); border: 1px solid rgba(159,110,245,.25); border-left: 3px solid var(--purple); color: var(--text-muted); }
+    .callout-red    { background: rgba(248,113,113,.1); border: 1px solid rgba(248,113,113,.25); border-left: 3px solid var(--red); color: var(--text-muted); }
+    .callout-rose   { background: rgba(244,114,182,.1); border: 1px solid rgba(244,114,182,.25); border-left: 3px solid var(--w5); color: var(--text-muted); }
+    .callout-title  { font-weight: 700; color: var(--text); margin-bottom: 6px; font-size: .82rem; text-transform: uppercase; letter-spacing: .8px; }
+
+    /* ── RISK TABLE ── */
+    .risk-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: .85rem; }
+    .risk-table thead tr { background: var(--surface2); }
+    .risk-table th { padding: 10px 14px; text-align: left; font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--text-dim); border-bottom: 1px solid var(--border2); }
+    .risk-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text-muted); vertical-align: top; }
+    .risk-table tbody tr:last-child td { border-bottom: none; }
+    .risk-table tbody tr:hover { background: rgba(255,255,255,.02); }
+    .risk-table td:first-child { color: var(--w5); font-weight: 700; }
+
+    /* ── RISK LEVEL BADGE ── */
+    .risk-high   { display: inline-block; background: rgba(248,113,113,.15); color: #f87171; border: 1px solid rgba(248,113,113,.3); border-radius: 6px; padding: 2px 9px; font-size: .68rem; font-weight: 700; }
+    .risk-med    { display: inline-block; background: rgba(245,158,11,.15); color: #fbbf24; border: 1px solid rgba(245,158,11,.3); border-radius: 6px; padding: 2px 9px; font-size: .68rem; font-weight: 700; }
+    .risk-low    { display: inline-block; background: rgba(52,211,153,.15); color: #34d399; border: 1px solid rgba(52,211,153,.3); border-radius: 6px; padding: 2px 9px; font-size: .68rem; font-weight: 700; }
+
+    /* ── FRAMEWORK PILLARS ── */
+    .pillar-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 16px 0; }
+    .pillar { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 18px; text-align: center; }
+    .pillar-icon { font-size: 1.6rem; margin-bottom: 8px; }
+    .pillar-name { font-size: .82rem; font-weight: 800; margin-bottom: 6px; }
+    .pillar-desc { font-size: .76rem; color: var(--text-muted); line-height: 1.55; }
+
+    /* ── KEY TAKEAWAYS ── */
+    .takeaway-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-top: 18px; }
+    .takeaway-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+    .takeaway-num { font-size: 1.4rem; font-weight: 800; color: var(--w5); line-height: 1; margin-bottom: 6px; }
+    .takeaway-text { font-size: .82rem; color: var(--text-muted); line-height: 1.6; }
+
+    /* ── CHECKLIST ── */
+    .checklist { list-style: none; margin: 12px 0; }
+    .checklist li { display: flex; align-items: flex-start; gap: 10px; font-size: .88rem; color: var(--text-muted); padding: 7px 0; border-bottom: 1px solid var(--border); line-height: 1.55; }
+    .checklist li:last-child { border-bottom: none; }
+    .checklist li::before { content: '✓'; color: var(--w5); font-weight: 800; font-size: .82rem; flex-shrink: 0; margin-top: 1px; }
+
+    /* ── FOOTER ── */
+    footer { margin-top: auto; text-align: center; padding: 24px; font-size: .75rem; color: var(--text-muted); border-top: 1px solid var(--border); position: relative; z-index: 1; }
+    footer span { color: var(--w5); }
+
+    @media (max-width: 640px) {
+      .top-nav { padding: 14px 18px; }
+      .main { padding: 28px 18px 60px; }
+      .path-wrapper { padding: 18px; }
+      .hero { padding: 44px 20px 36px; }
+      .path-phases { flex-direction: column; gap: 10px; }
+      .phase-block:not(:last-child)::after { display: none; }
+      .phase-inner { margin-right: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav class="top-nav">
+  <a class="nav-logo" href="default.html">
+    <div class="nav-logo-icon">🛡️</div>
+    <div class="nav-logo-text">AI <span>PM</span> Tool</div>
+  </a>
+  <a class="back-btn" href="ai-learning.html">← AI Learning Hub</a>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="badge">Week 5 · AI Safety & Ethics</div>
+  <h1>AI Safety, Ethics &amp; Responsible AI</h1>
+  <p>Building trustworthy AI products — understanding bias, fairness, explainability, hallucination handling, and the regulatory landscape every AI PM needs to know.</p>
+  <div class="topics-count">🛡️ 12 Topics &nbsp;·&nbsp; 4 Phases &nbsp;·&nbsp; Responsible AI Lens</div>
+</section>
+
+<!-- ── LEARNING PATH ── -->
+<div class="path-wrapper">
+  <h2>📍 Week 5 Learning Path</h2>
+  <div class="path-phases">
+    <div class="phase-block ph1">
+      <div class="phase-inner">
+        <div class="phase-label">Phase 1 — AI Risks & Bias</div>
+        <div class="phase-topics">
+          <a href="#what-is-ai-safety">What is AI Safety?</a>
+          <a href="#types-of-risk">Types of AI Risk</a>
+          <a href="#bias-fairness">Bias &amp; Fairness</a>
+        </div>
+      </div>
+    </div>
+    <div class="phase-block ph2">
+      <div class="phase-inner">
+        <div class="phase-label">Phase 2 — Hallucinations & XAI</div>
+        <div class="phase-topics">
+          <a href="#hallucinations">Hallucinations</a>
+          <a href="#explainability">Explainability (XAI)</a>
+          <a href="#red-teaming">Red Teaming</a>
+        </div>
+      </div>
+    </div>
+    <div class="phase-block ph3">
+      <div class="phase-inner">
+        <div class="phase-label">Phase 3 — Regulatory Landscape</div>
+        <div class="phase-topics">
+          <a href="#gdpr-ccpa">GDPR &amp; CCPA</a>
+          <a href="#eu-ai-act">EU AI Act</a>
+          <a href="#risk-categories">AI Risk Categories</a>
+        </div>
+      </div>
+    </div>
+    <div class="phase-block ph4">
+      <div class="phase-inner">
+        <div class="phase-label">Phase 4 — PM Action Framework</div>
+        <div class="phase-topics">
+          <a href="#responsible-ai-framework">Responsible AI Framework</a>
+          <a href="#pm-checklist">PM Safety Checklist</a>
+          <a href="#key-takeaways">Key Takeaways</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── MAIN ── -->
+<div class="main">
+
+  <!-- ════════════════════════════
+       PHASE 1 — AI RISKS & BIAS
+       ════════════════════════════ -->
+  <div class="phase-divider">
+    <span class="pd-badge pd-1">🛡️ Phase 1 — AI Risks &amp; Bias</span>
+    <div class="pd-line"></div>
+  </div>
+
+  <!-- What is AI Safety -->
+  <div class="card" id="what-is-ai-safety">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(244,114,182,.15);border:1px solid rgba(244,114,182,.25);">🛡️</div>
+      <div>
+        <div class="card-section-label">Topic 1 of 12</div>
+        <div class="card-title">What is AI Safety?</div>
+      </div>
+    </div>
+
+    <p><strong>AI Safety</strong> is the field focused on ensuring AI systems behave as intended, don't cause unintended harm, and remain aligned with human values — both now and as systems become more capable.</p>
+
+    <p>For a Product Manager, AI safety isn't just a technical concern. It's a <strong>product quality dimension</strong>. An unsafe AI feature ships with hidden defects that can harm users, create legal liability, and destroy trust in your brand — often in ways that are much harder to reverse than a typical software bug.</p>
+
+    <div class="callout callout-rose">
+      <div class="callout-title">🧭 The Two Dimensions of AI Safety</div>
+      <strong>Capability safety</strong> — the model can do what it claims (accuracy, reliability, robustness).<br>
+      <strong>Value alignment</strong> — the model behaves within ethical boundaries (fairness, transparency, no harmful outputs).
+      <br><br>Both matter. A highly capable but misaligned model is dangerous. A perfectly aligned but incapable model is useless.
+    </div>
+
+    <p>AI safety failures range from <strong>minor</strong> (wrong product recommendation) to <strong>severe</strong> (discriminatory loan decisions, medical misdiagnosis, generating harmful content). The PM's job is to understand where their product sits on that spectrum and design safeguards accordingly.</p>
+  </div>
+
+  <!-- Types of AI Risk -->
+  <div class="card" id="types-of-risk">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(248,113,113,.15);border:1px solid rgba(248,113,113,.25);">⚠️</div>
+      <div>
+        <div class="card-section-label">Topic 2 of 12</div>
+        <div class="card-title">Types of AI Risk</div>
+      </div>
+    </div>
+
+    <p>AI risks fall into five major categories. Understanding which ones apply to your product shapes your entire safety roadmap.</p>
+
+    <table class="risk-table">
+      <thead>
+        <tr>
+          <th>Risk Type</th>
+          <th>Description</th>
+          <th>Severity</th>
+          <th>PM Example</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Bias &amp; Discrimination</td>
+          <td>Model treats groups unfairly due to skewed training data</td>
+          <td><span class="risk-high">High</span></td>
+          <td>Loan approval model rejects minorities at higher rates</td>
+        </tr>
+        <tr>
+          <td>Hallucination</td>
+          <td>Model confidently outputs false information</td>
+          <td><span class="risk-high">High</span></td>
+          <td>Medical chatbot invents drug dosage</td>
+        </tr>
+        <tr>
+          <td>Privacy Leakage</td>
+          <td>Model memorises and repeats PII from training data</td>
+          <td><span class="risk-high">High</span></td>
+          <td>LLM reproduces real user emails from training</td>
+        </tr>
+        <tr>
+          <td>Adversarial Attacks</td>
+          <td>Deliberately crafted inputs cause failures</td>
+          <td><span class="risk-med">Medium</span></td>
+          <td>Prompt injection hijacks an AI assistant</td>
+        </tr>
+        <tr>
+          <td>Model Drift</td>
+          <td>Performance degrades as world data changes</td>
+          <td><span class="risk-med">Medium</span></td>
+          <td>Fraud model misses new attack patterns after 6 months</td>
+        </tr>
+        <tr>
+          <td>Over-reliance</td>
+          <td>Users trust AI outputs without critical evaluation</td>
+          <td><span class="risk-low">Low–Med</span></td>
+          <td>Sales team stops verifying AI-generated proposals</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-amber">
+      <div class="callout-title">📋 PM Tip — Risk Register</div>
+      Map every AI risk in your product to a severity and a mitigation owner. Make this a living doc updated with every model version change.
+    </div>
+  </div>
+
+  <!-- Bias & Fairness -->
+  <div class="card" id="bias-fairness">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(244,114,182,.15);border:1px solid rgba(244,114,182,.25);">⚖️</div>
+      <div>
+        <div class="card-section-label">Topic 3 of 12</div>
+        <div class="card-title">Bias &amp; Fairness</div>
+      </div>
+    </div>
+
+    <p><strong>AI bias</strong> occurs when a model systematically produces outputs that are unfair toward certain groups. It almost always originates from the training data — if the data reflects historical inequalities, the model learns and amplifies them.</p>
+
+    <div style="display:flex;flex-direction:column;gap:10px;margin:16px 0;">
+      <div style="background:var(--surface2);border:1px solid rgba(244,114,182,.2);border-left:4px solid var(--w5);border-radius:10px;padding:14px 18px;">
+        <div style="font-size:.74rem;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--w5);margin-bottom:4px;">📊 Historical Bias</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">Training data reflects past inequalities. Example: a hiring model trained on 10 years of hires at a male-dominated company learns that "engineer = male."</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid rgba(245,158,11,.2);border-left:4px solid var(--accent);border-radius:10px;padding:14px 18px;">
+        <div style="font-size:.74rem;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--accent);margin-bottom:4px;">🔍 Representation Bias</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">Certain groups are underrepresented in training data. The model performs well for majority groups and poorly for minorities.</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid rgba(159,110,245,.2);border-left:4px solid var(--purple);border-radius:10px;padding:14px 18px;">
+        <div style="font-size:.74rem;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--purple);margin-bottom:4px;">🏷️ Label Bias</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">Human annotators introduced their own biases when labelling training data. The model inherits those subjective judgements.</div>
+      </div>
+      <div style="background:var(--surface2);border:1px solid rgba(79,142,247,.2);border-left:4px solid var(--primary);border-radius:10px;padding:14px 18px;">
+        <div style="font-size:.74rem;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--primary);margin-bottom:4px;">📐 Measurement Bias</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">The proxy metric used for training doesn't equally measure what it claims across groups. Example: using "past arrest records" as a proxy for recidivism penalises over-policed communities.</div>
+      </div>
+    </div>
+
+    <div class="callout callout-green">
+      <div class="callout-title">✅ Fairness Mitigations for PMs</div>
+      <strong>Audit your training data</strong> — check demographic distributions before training.<br>
+      <strong>Test across subgroups</strong> — disaggregate accuracy metrics by gender, age, ethnicity.<br>
+      <strong>Set fairness KPIs</strong> — e.g. "false positive rate must not differ by more than 5% across groups."<br>
+      <strong>Use diverse annotation teams</strong> — reduces label bias at the source.
+    </div>
+  </div>
+
+  <!-- ════════════════════════════
+       PHASE 2 — HALLUCINATIONS & XAI
+       ════════════════════════════ -->
+  <div class="phase-divider">
+    <span class="pd-badge pd-2">🔮 Phase 2 — Hallucinations &amp; Explainability</span>
+    <div class="pd-line"></div>
+  </div>
+
+  <!-- Hallucinations -->
+  <div class="card" id="hallucinations">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(159,110,245,.15);border:1px solid rgba(159,110,245,.25);">🌀</div>
+      <div>
+        <div class="card-section-label">Topic 4 of 12</div>
+        <div class="card-title">Hallucinations — Why LLMs Confabulate</div>
+      </div>
+    </div>
+
+    <p><strong>Hallucination</strong> is when an LLM generates text that is confident, fluent, and completely wrong. The model isn't "lying" — it's pattern-matching on language without grounding in factual truth. It produces whatever token sequence is statistically likely, not whatever is accurate.</p>
+
+    <div class="callout callout-purple">
+      <div class="callout-title">💡 Why It Happens</div>
+      LLMs are trained to predict the next token, not to verify facts. During generation, the model maximises linguistic coherence — a plausible-sounding fabricated answer can score higher in this process than an honest "I don't know."
+    </div>
+
+    <p>Hallucinations are most common when:</p>
+    <ul style="color:var(--text-muted);font-size:.88rem;padding-left:1.5rem;line-height:2;">
+      <li>The question is about <strong>niche, recent, or very specific facts</strong></li>
+      <li>The model is asked to recall <strong>numbers, dates, or citations</strong></li>
+      <li>The system prompt provides <strong>no retrieval context</strong> (no RAG)</li>
+      <li>The model is pushed to answer <strong>outside its knowledge cutoff</strong></li>
+    </ul>
+
+    <table class="risk-table" style="margin-top:18px;">
+      <thead>
+        <tr><th>Mitigation</th><th>How It Helps</th><th>Tradeoff</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>RAG (Retrieval-Augmented Generation)</td>
+          <td>Grounds responses in retrieved source documents</td>
+          <td>Adds latency; retrieval quality matters</td>
+        </tr>
+        <tr>
+          <td>Citation enforcement</td>
+          <td>Prompt forces model to cite its source inline</td>
+          <td>Model can still fabricate citations</td>
+        </tr>
+        <tr>
+          <td>Confidence thresholding</td>
+          <td>Surface uncertainty scores to users</td>
+          <td>LLMs are often overconfident</td>
+        </tr>
+        <tr>
+          <td>Human-in-the-loop</td>
+          <td>Expert reviews before output is shown</td>
+          <td>Adds cost and latency</td>
+        </tr>
+        <tr>
+          <td>Knowledge cutoff disclosure</td>
+          <td>Tells users what the model doesn't know</td>
+          <td>Users may still over-trust</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-amber">
+      <div class="callout-title">📋 PM Tip — Hallucination Budget</div>
+      Define an acceptable hallucination rate before launch. A customer support bot might tolerate 1%; a medical advice tool should tolerate 0%. Set this as a measurable launch gate criterion.
+    </div>
+  </div>
+
+  <!-- Explainability -->
+  <div class="card" id="explainability">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(79,142,247,.15);border:1px solid rgba(79,142,247,.25);">🔬</div>
+      <div>
+        <div class="card-section-label">Topic 5 of 12</div>
+        <div class="card-title">Explainability &amp; Interpretability (XAI)</div>
+      </div>
+    </div>
+
+    <p><strong>Explainability (XAI)</strong> is the ability to describe — in human-understandable terms — why an AI system produced a particular output. It answers: <em>"Why did the model decide this?"</em></p>
+
+    <p>There's an important distinction between two related terms:</p>
+
+    <div class="pillar-row">
+      <div class="pillar" style="border-top: 3px solid var(--primary);">
+        <div class="pillar-icon">🔭</div>
+        <div class="pillar-name" style="color:var(--primary);">Interpretability</div>
+        <div class="pillar-desc">Understanding the model's <em>internal mechanics</em> — what features, weights, or representations drive decisions. Requires ML expertise.</div>
+      </div>
+      <div class="pillar" style="border-top: 3px solid var(--w5);">
+        <div class="pillar-icon">💬</div>
+        <div class="pillar-name" style="color:var(--w5);">Explainability</div>
+        <div class="pillar-desc">Providing a <em>post-hoc justification</em> a user can understand — "this loan was denied because your debt-to-income ratio exceeded 43%."</div>
+      </div>
+    </div>
+
+    <p>Common XAI techniques:</p>
+    <ul style="color:var(--text-muted);font-size:.88rem;padding-left:1.5rem;line-height:2;">
+      <li><strong>SHAP (SHapley Additive exPlanations)</strong> — shows each feature's contribution to a prediction</li>
+      <li><strong>LIME (Local Interpretable Model-agnostic Explanations)</strong> — explains individual predictions using a simpler local model</li>
+      <li><strong>Attention visualisation</strong> — shows which tokens the model focused on (limited reliability for LLMs)</li>
+      <li><strong>Chain-of-thought prompting</strong> — asks the model to reason step-by-step, surfacing its logic</li>
+    </ul>
+
+    <div class="callout callout-blue">
+      <div class="callout-title">📋 PM Tip — When XAI is Required</div>
+      Regulated industries (lending, insurance, hiring, healthcare) often <strong>legally require</strong> an explanation for automated decisions affecting individuals. Build XAI into the product spec, not as an afterthought.
+    </div>
+  </div>
+
+  <!-- Red Teaming -->
+  <div class="card" id="red-teaming">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(248,113,113,.15);border:1px solid rgba(248,113,113,.25);">🎯</div>
+      <div>
+        <div class="card-section-label">Topic 6 of 12</div>
+        <div class="card-title">Red Teaming AI Systems</div>
+      </div>
+    </div>
+
+    <p><strong>Red teaming</strong> is a structured adversarial testing process where a dedicated team deliberately tries to break, mislead, or elicit harmful behaviour from your AI system — before real users do.</p>
+
+    <div class="callout callout-red">
+      <div class="callout-title">⚔️ What Red Teams Look For</div>
+      <strong>Prompt injection</strong> — can a malicious user override system instructions?<br>
+      <strong>Jailbreaks</strong> — can the model be tricked into ignoring safety constraints?<br>
+      <strong>Data extraction</strong> — can the model be made to reveal confidential training data or system prompts?<br>
+      <strong>Bias amplification</strong> — do adversarial inputs surface discriminatory behaviour?<br>
+      <strong>Sycophancy</strong> — does the model agree with false premises to please the user?
+    </div>
+
+    <p>Red teaming is not just for launch — it should be <strong>continuous</strong>. As models are updated, fine-tuned, or connected to new tools, new attack surfaces emerge.</p>
+
+    <div class="callout callout-amber">
+      <div class="callout-title">📋 PM Tip — Red Team as a Launch Gate</div>
+      Make a red team sign-off a mandatory step in your launch checklist, alongside performance testing and accessibility review. Define a minimum pass bar (e.g. "no critical jailbreaks found") before releasing to production.
+    </div>
+  </div>
+
+  <!-- ════════════════════════════
+       PHASE 3 — REGULATORY LANDSCAPE
+       ════════════════════════════ -->
+  <div class="phase-divider">
+    <span class="pd-badge pd-3">📜 Phase 3 — Regulatory Landscape</span>
+    <div class="pd-line"></div>
+  </div>
+
+  <!-- GDPR & CCPA -->
+  <div class="card" id="gdpr-ccpa">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(79,142,247,.15);border:1px solid rgba(79,142,247,.25);">🏛️</div>
+      <div>
+        <div class="card-section-label">Topic 7 of 12</div>
+        <div class="card-title">GDPR &amp; CCPA — Data Privacy Laws</div>
+      </div>
+    </div>
+
+    <p>Two major privacy regulations shape what AI products can legally do with user data. Both impose obligations on how data is collected, stored, used, and explained to users.</p>
+
+    <table class="risk-table">
+      <thead>
+        <tr><th>Dimension</th><th>GDPR (EU)</th><th>CCPA (California)</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Scope</td>
+          <td>Any company processing EU residents' data</td>
+          <td>California residents; businesses above revenue/data thresholds</td>
+        </tr>
+        <tr>
+          <td>Lawful basis</td>
+          <td>Consent, contract, legitimate interest (must document)</td>
+          <td>Opt-out model — users can opt out of sale of data</td>
+        </tr>
+        <tr>
+          <td>Right to explanation</td>
+          <td>Article 22: right to explanation for automated decisions</td>
+          <td>No equivalent right (yet)</td>
+        </tr>
+        <tr>
+          <td>Data minimisation</td>
+          <td>Required — collect only what you need</td>
+          <td>Not explicitly required</td>
+        </tr>
+        <tr>
+          <td>Penalties</td>
+          <td>Up to 4% of global annual revenue</td>
+          <td>Up to $7,500 per intentional violation</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-blue">
+      <div class="callout-title">📋 PM Tip — AI and GDPR Article 22</div>
+      If your AI makes automated decisions that <strong>significantly affect</strong> users (credit, employment, healthcare), GDPR gives users the right to request human review. Design your product so this pathway exists — it must be accessible, not buried in a support ticket form.
+    </div>
+  </div>
+
+  <!-- EU AI Act -->
+  <div class="card" id="eu-ai-act">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(244,114,182,.15);border:1px solid rgba(244,114,182,.25);">🇪🇺</div>
+      <div>
+        <div class="card-section-label">Topic 8 of 12</div>
+        <div class="card-title">EU AI Act — The World's First AI Law</div>
+      </div>
+    </div>
+
+    <p>The <strong>EU AI Act</strong> (effective 2024–2026) is the world's first comprehensive legal framework for AI. It classifies AI systems by risk level and imposes proportionate requirements on each tier.</p>
+
+    <div style="display:flex;flex-direction:column;gap:10px;margin:16px 0;">
+      <div style="background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);border-radius:10px;padding:14px 18px;">
+        <div style="font-size:.74rem;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:#f87171;margin-bottom:4px;">🚫 Unacceptable Risk — BANNED</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">Social scoring by governments, real-time remote biometric surveillance in public spaces, manipulation of vulnerable groups. These are prohibited outright.</div>
+      </div>
+      <div style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:10px;padding:14px 18px;">
+        <div style="font-size:.74rem;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:#fbbf24;margin-bottom:4px;">⚠️ High Risk — REGULATED</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">AI in credit, employment, education, healthcare, and critical infrastructure. Must meet transparency, data quality, human oversight, and accuracy requirements before deployment.</div>
+      </div>
+      <div style="background:rgba(79,142,247,.1);border:1px solid rgba(79,142,247,.3);border-radius:10px;padding:14px 18px;">
+        <div style="font-size:.74rem;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:#60a5fa;margin-bottom:4px;">💬 Limited Risk — TRANSPARENCY OBLIGATIONS</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">Chatbots and AI-generated content must disclose they are AI. Users must always know they're interacting with a machine.</div>
+      </div>
+      <div style="background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.3);border-radius:10px;padding:14px 18px;">
+        <div style="font-size:.74rem;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:#34d399;margin-bottom:4px;">✅ Minimal Risk — FREE TO USE</div>
+        <div style="font-size:.82rem;color:var(--text-muted);">AI-powered spam filters, video games, recommendation engines. No specific legal requirements, but voluntary codes of conduct encouraged.</div>
+      </div>
+    </div>
+
+    <div class="callout callout-amber">
+      <div class="callout-title">📋 PM Tip — Know Your Risk Tier</div>
+      Before building, classify your product on the EU AI Act risk ladder. High-risk products need a conformity assessment, technical documentation, and a human oversight plan before you can ship in the EU. Build compliance into your roadmap, not as a retrofit.
+    </div>
+  </div>
+
+  <!-- AI Risk Categories -->
+  <div class="card" id="risk-categories">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(159,110,245,.15);border:1px solid rgba(159,110,245,.25);">🗂️</div>
+      <div>
+        <div class="card-section-label">Topic 9 of 12</div>
+        <div class="card-title">AI Risk Categories — A PM's Taxonomy</div>
+      </div>
+    </div>
+
+    <p>Beyond legal frameworks, PMs benefit from a practical taxonomy of risks to assess new features quickly. Use this as a mental checklist when scoping any AI-powered capability.</p>
+
+    <table class="risk-table">
+      <thead>
+        <tr><th>Category</th><th>Key Questions to Ask</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Output Risk</td>
+          <td>What is the worst thing this model could plausibly say or do? Who is harmed if it happens?</td>
+        </tr>
+        <tr>
+          <td>Data Risk</td>
+          <td>Does training or inference use personal data? Could outputs reveal that data?</td>
+        </tr>
+        <tr>
+          <td>Dependency Risk</td>
+          <td>What happens if the underlying model API goes down, changes its behaviour, or is deprecated?</td>
+        </tr>
+        <tr>
+          <td>Feedback Loop Risk</td>
+          <td>Could the model's outputs influence the data it is later trained on, creating a runaway loop?</td>
+        </tr>
+        <tr>
+          <td>Autonomy Risk</td>
+          <td>Can the model take irreversible real-world actions (send emails, make payments, delete records)?</td>
+        </tr>
+        <tr>
+          <td>Concentration Risk</td>
+          <td>Are we over-relying on a single model provider? What is the exit strategy?</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ════════════════════════════
+       PHASE 4 — PM ACTION FRAMEWORK
+       ════════════════════════════ -->
+  <div class="phase-divider">
+    <span class="pd-badge pd-4">✅ Phase 4 — PM Action Framework</span>
+    <div class="pd-line"></div>
+  </div>
+
+  <!-- Responsible AI Framework -->
+  <div class="card" id="responsible-ai-framework">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.25);">🌱</div>
+      <div>
+        <div class="card-section-label">Topic 10 of 12</div>
+        <div class="card-title">The Responsible AI Framework for PMs</div>
+      </div>
+    </div>
+
+    <p>Responsible AI isn't a feature you add at the end — it's a set of principles baked into every decision from day one. The most widely adopted framework uses six pillars.</p>
+
+    <div class="pillar-row">
+      <div class="pillar" style="border-top: 3px solid var(--w5);">
+        <div class="pillar-icon">⚖️</div>
+        <div class="pillar-name" style="color:var(--w5);">Fairness</div>
+        <div class="pillar-desc">AI treats all groups equitably. Outcomes don't systematically disadvantage any demographic.</div>
+      </div>
+      <div class="pillar" style="border-top: 3px solid var(--primary);">
+        <div class="pillar-icon">🔬</div>
+        <div class="pillar-name" style="color:var(--primary);">Reliability</div>
+        <div class="pillar-desc">AI performs consistently and safely across contexts, including edge cases and adversarial inputs.</div>
+      </div>
+      <div class="pillar" style="border-top: 3px solid var(--purple);">
+        <div class="pillar-icon">🔒</div>
+        <div class="pillar-name" style="color:var(--purple);">Privacy &amp; Security</div>
+        <div class="pillar-desc">User data is protected in training, inference, and storage. The system resists attacks.</div>
+      </div>
+      <div class="pillar" style="border-top: 3px solid var(--secondary);">
+        <div class="pillar-icon">💬</div>
+        <div class="pillar-name" style="color:var(--secondary);">Transparency</div>
+        <div class="pillar-desc">Users know they're interacting with AI. System behaviour is documented and explainable.</div>
+      </div>
+      <div class="pillar" style="border-top: 3px solid var(--accent);">
+        <div class="pillar-icon">🙋</div>
+        <div class="pillar-name" style="color:var(--accent);">Accountability</div>
+        <div class="pillar-desc">Clear ownership for AI decisions. Humans can override, audit, and correct the system.</div>
+      </div>
+      <div class="pillar" style="border-top: 3px solid var(--green);">
+        <div class="pillar-icon">🌍</div>
+        <div class="pillar-name" style="color:var(--green);">Inclusiveness</div>
+        <div class="pillar-desc">AI is designed to work well for all users, including accessibility needs and non-majority languages.</div>
+      </div>
+    </div>
+
+    <div class="callout callout-rose">
+      <div class="callout-title">🧭 Connecting to Anthropic's HHH Framework</div>
+      Anthropic's model design principles — <strong>Helpful, Harmless, Honest</strong> — map directly to this framework.<br>
+      <strong>Helpful</strong> → Reliability + Inclusiveness.<br>
+      <strong>Harmless</strong> → Fairness + Privacy + Security.<br>
+      <strong>Honest</strong> → Transparency + Accountability.
+    </div>
+  </div>
+
+  <!-- PM Safety Checklist -->
+  <div class="card" id="pm-checklist">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(244,114,182,.15);border:1px solid rgba(244,114,182,.25);">📋</div>
+      <div>
+        <div class="card-section-label">Topic 11 of 12</div>
+        <div class="card-title">PM Safety Checklist — Before You Ship</div>
+      </div>
+    </div>
+
+    <p>Use this checklist as a launch gate for any AI-powered feature. It won't catch every risk, but it ensures the most common ones have been considered.</p>
+
+    <ul class="checklist">
+      <li>Defined the worst-case output scenario and documented a mitigation for it</li>
+      <li>Audited training and fine-tuning data for demographic representation gaps</li>
+      <li>Disaggregated evaluation metrics by key subgroups (gender, age, region)</li>
+      <li>Ran red team exercises and documented findings; critical issues resolved</li>
+      <li>Set a measurable hallucination rate threshold and verified it is met</li>
+      <li>Identified which EU AI Act risk tier this product falls into</li>
+      <li>Confirmed GDPR / CCPA compliance for all personal data in the pipeline</li>
+      <li>Added user-facing disclosure that the feature is AI-powered</li>
+      <li>Designed a human override / escalation path for consequential decisions</li>
+      <li>Established a model monitoring plan with defined drift alert thresholds</li>
+      <li>Documented model version, training cutoff, and known limitations for the support team</li>
+      <li>Assigned an accountable owner for ongoing responsible AI review</li>
+    </ul>
+  </div>
+
+  <!-- ════════════════════════════
+       KEY TAKEAWAYS
+       ════════════════════════════ -->
+  <div class="phase-divider" id="key-takeaways">
+    <span class="pd-badge pd-1">🏁 Key Takeaways — Week 5</span>
+    <div class="pd-line"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon-wrap" style="background:rgba(244,114,182,.15);border:1px solid rgba(244,114,182,.25);">🏁</div>
+      <div>
+        <div class="card-section-label">Topic 12 of 12</div>
+        <div class="card-title">Week 5 Key Takeaways</div>
+      </div>
+    </div>
+    <p>Responsible AI is not a compliance checkbox — it's the quality bar for AI products. These are the ideas from this week that every AI PM should carry forward.</p>
+    <div class="takeaway-grid">
+      <div class="takeaway-item">
+        <div class="takeaway-num">01</div>
+        <div class="takeaway-text"><strong>Safety is a product quality dimension.</strong> An unsafe AI feature ships with hidden defects — often irreversible ones. Define your safety requirements before writing a line of code.</div>
+      </div>
+      <div class="takeaway-item">
+        <div class="takeaway-num">02</div>
+        <div class="takeaway-text"><strong>Bias lives in data.</strong> If your training data reflects historical inequalities, your model will amplify them. Audit data distributions before training, not after complaints.</div>
+      </div>
+      <div class="takeaway-item">
+        <div class="takeaway-num">03</div>
+        <div class="takeaway-text"><strong>Hallucinations are a design problem.</strong> RAG, citation enforcement, and human review can reduce them — but you must define an acceptable rate and measure it continuously.</div>
+      </div>
+      <div class="takeaway-item">
+        <div class="takeaway-num">04</div>
+        <div class="takeaway-text"><strong>Know your EU AI Act tier.</strong> High-risk AI requires documentation, oversight design, and conformity assessment before you can legally deploy in Europe. Build compliance in, not on.</div>
+      </div>
+      <div class="takeaway-item">
+        <div class="takeaway-num">05</div>
+        <div class="takeaway-text"><strong>Red teaming is a launch gate.</strong> Assume users will try to break your system. A dedicated red team exercise before launch catches exploits that testing never will.</div>
+      </div>
+      <div class="takeaway-item">
+        <div class="takeaway-num">06</div>
+        <div class="takeaway-text"><strong>Responsible AI = Helpful + Harmless + Honest.</strong> Anthropic's HHH framework is a practical proxy for all six responsible AI pillars. Use it as a north star for every model decision.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>Robin <span>AI Learnings</span> · Week 5 of 6 · AI Safety, Ethics &amp; Responsible AI</footer>
+</body>
+</html>
