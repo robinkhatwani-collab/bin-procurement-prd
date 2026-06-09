@@ -25,7 +25,7 @@
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1.1,
       "position": [
-        460,
+        680,
         300
       ],
       "parameters": {
@@ -219,6 +219,19 @@
       "parameters": {
         "jsCode": "return [{ json: {\n  passed: false,\n  guardrail_type: 'format',\n  critical_errors: ['Could not read the uploaded file. Please ensure it is a valid .xlsx or .xls Excel file and try again.'],\n  warnings: [],\n  stats: {}\n}}];"
       }
+    },
+    {
+      "id": "node-debug-bin",
+      "name": "Normalize Binary Key",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        460,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// n8n stores uploaded files in binary with a key that may NOT match\n// the form field name (it can be the filename, field name, or index).\n// This node finds the first binary property and renames it to 'data'\n// so the Extract Spreadsheet node always finds it reliably.\n\nconst items = $input.all();\nreturn items.map(item => {\n  if (!item.binary) return item;\n\n  const keys = Object.keys(item.binary);\n  if (keys.length === 0) return item;\n\n  // If 'data' already exists, nothing to do\n  if (item.binary.data) return item;\n\n  // Rename first binary property to 'data'\n  const firstKey = keys[0];\n  item.binary.data = item.binary[firstKey];\n  delete item.binary[firstKey];\n\n  return item;\n});"
+      }
     }
   ],
   "connections": {
@@ -226,7 +239,7 @@
       "main": [
         [
           {
-            "node": "Extract Spreadsheet",
+            "node": "Normalize Binary Key",
             "type": "main",
             "index": 0
           }
@@ -342,6 +355,17 @@
         [
           {
             "node": "Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Binary Key": {
+      "main": [
+        [
+          {
+            "node": "Extract Spreadsheet",
             "type": "main",
             "index": 0
           }
