@@ -185,6 +185,36 @@
     .takeaway-num { font-size: 1.4rem; font-weight: 800; color: var(--w5); line-height: 1; margin-bottom: 6px; }
     .takeaway-text { font-size: .82rem; color: var(--text-muted); line-height: 1.6; }
 
+    /* ── CASE STUDY EXPANDERS ── */
+    .case { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 9px; overflow: hidden; }
+    .case > summary { cursor: pointer; list-style: none; padding: 12px 16px; display: flex; align-items: center; gap: 10px; font-size: .86rem; font-weight: 600; color: var(--text); transition: background .2s; }
+    .case > summary::-webkit-details-marker { display: none; }
+    .case > summary::after { content: '+'; margin-left: auto; color: var(--text-dim); font-size: 1.15rem; font-weight: 700; }
+    .case[open] > summary::after { content: '\2013'; }
+    .case > summary:hover { background: rgba(255,255,255,.03); }
+    .case-body { padding: 4px 16px 15px; font-size: .82rem; color: var(--text-muted); line-height: 1.7; }
+    .case-body strong { color: var(--text); }
+    .case-tag { font-size: .62rem; font-weight: 800; text-transform: uppercase; letter-spacing: .6px; padding: 3px 9px; border-radius: 6px; flex-shrink: 0; }
+    .tag-fraud  { background: rgba(248,113,113,.15); color: #f87171; border: 1px solid rgba(248,113,113,.3); }
+    .tag-cx     { background: rgba(79,142,247,.15);  color: #60a5fa; border: 1px solid rgba(79,142,247,.3); }
+    .tag-risk   { background: rgba(245,158,11,.15);  color: #fbbf24; border: 1px solid rgba(245,158,11,.3); }
+    .tag-ops    { background: rgba(52,211,153,.15);  color: #34d399; border: 1px solid rgba(52,211,153,.3); }
+    .tag-compliance { background: rgba(159,110,245,.15); color: #c084fc; border: 1px solid rgba(159,110,245,.3); }
+
+    /* ── SCORE TABLE ── */
+    .score-table { width: 100%; border-collapse: collapse; font-size: .8rem; margin: 10px 0 6px; }
+    .score-table th { padding: 7px 10px; text-align: left; font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .7px; color: var(--text-dim); background: var(--surface3); border-bottom: 1px solid var(--border2); }
+    .score-table td { padding: 7px 10px; border-bottom: 1px solid var(--border); color: var(--text-muted); vertical-align: middle; }
+    .score-table tbody tr:last-child td { border-bottom: none; }
+    .score-table td:first-child { color: var(--text); font-weight: 600; }
+    .score-win  { color: #34d399 !important; font-weight: 700; }
+    .score-mid  { color: #fbbf24 !important; }
+    .score-low  { color: #f87171 !important; }
+    .verdict-badge { display: inline-block; padding: 3px 10px; border-radius: 6px; font-size: .68rem; font-weight: 800; text-transform: uppercase; letter-spacing: .4px; }
+    .verdict-pick { background: rgba(52,211,153,.15); color: #34d399; border: 1px solid rgba(52,211,153,.3); }
+    .verdict-skip { background: rgba(248,113,113,.12); color: #f87171; border: 1px solid rgba(248,113,113,.3); }
+    .verdict-ctx  { background: rgba(245,158,11,.12);  color: #fbbf24; border: 1px solid rgba(245,158,11,.3); }
+
     /* ── CHECKLIST ── */
     .checklist { list-style: none; margin: 12px 0; }
     .checklist li { display: flex; align-items: flex-start; gap: 10px; font-size: .88rem; color: var(--text-muted); padding: 7px 0; border-bottom: 1px solid var(--border); line-height: 1.55; }
@@ -938,6 +968,121 @@
     <div class="callout callout-amber">
       <div class="callout-title">📋 PM Tip — Model Selection is an Ongoing Decision</div>
       The model landscape changes every 6–8 weeks. Build a lightweight model eval pipeline you can re-run automatically when a new model releases. The best model today may not be the best model at launch — and definitely won't be the best model in 12 months.
+    </div>
+
+    <!-- Case Studies -->
+    <div style="margin-top:24px;">
+      <div style="font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);margin-bottom:14px;">💳 Credit Card Domain — Model Selection Case Studies</div>
+
+      <!-- Case 1 -->
+      <details class="case">
+        <summary>
+          <span class="case-tag tag-fraud">Fraud</span>
+          Real-time Transaction Fraud Scoring
+        </summary>
+        <div class="case-body">
+          <p><strong>Scenario:</strong> A card network needs to score every transaction for fraud risk in under 50ms at peak volume of 5,000 transactions/second. The model must explain its decision to the fraud ops team when a card is declined.</p>
+          <p style="margin-top:10px;"><strong>Why a generic LLM fails here:</strong> LLMs are too slow (200–800ms) and too expensive at transaction scale. This is a structured prediction problem, not a language task.</p>
+          <table class="score-table">
+            <thead><tr><th>Model Type</th><th>Latency</th><th>Cost/1M calls</th><th>Explainability</th><th>Verdict</th></tr></thead>
+            <tbody>
+              <tr><td>GPT-4o</td><td class="score-low">~600ms</td><td class="score-low">~$30</td><td class="score-mid">Chain-of-thought</td><td><span class="verdict-badge verdict-skip">Skip</span></td></tr>
+              <tr><td>Fine-tuned BERT</td><td class="score-win">&lt;10ms</td><td class="score-win">~$0.20</td><td class="score-mid">Attention maps</td><td><span class="verdict-badge verdict-ctx">Alert triage only</span></td></tr>
+              <tr><td>XGBoost + SHAP</td><td class="score-win">&lt;5ms</td><td class="score-win">~$0.05</td><td class="score-win">SHAP values</td><td><span class="verdict-badge verdict-pick">Pick for scoring</span></td></tr>
+              <tr><td>Claude Haiku (async)</td><td class="score-mid">~300ms</td><td class="score-mid">~$1.00</td><td class="score-win">Natural language</td><td><span class="verdict-badge verdict-pick">Pick for explanation</span></td></tr>
+            </tbody>
+          </table>
+          <p style="margin-top:8px;"><strong>Winning pattern:</strong> A <strong>hybrid architecture</strong> — XGBoost scores in real-time (&lt;5ms); when declined, Claude Haiku asynchronously generates a plain-English explanation for the fraud analyst. Best of both worlds.</p>
+        </div>
+      </details>
+
+      <!-- Case 2 -->
+      <details class="case">
+        <summary>
+          <span class="case-tag tag-cx">CX</span>
+          Dispute Resolution Chatbot
+        </summary>
+        <div class="case-body">
+          <p><strong>Scenario:</strong> A card issuer wants to automate Tier-1 dispute handling — where cardholders report unrecognised charges. The bot must gather evidence, explain the process, and decide if the dispute qualifies for auto-provisional credit.</p>
+          <p style="margin-top:10px;"><strong>Key requirements:</strong> Multi-turn conversation, retrieval of transaction history, ability to follow Regulation E / chargeback rules, and a warm handoff to a human agent when the case is complex.</p>
+          <table class="score-table">
+            <thead><tr><th>Model</th><th>Task Fit</th><th>Cost/conv.</th><th>Latency</th><th>Safety</th><th>Verdict</th></tr></thead>
+            <tbody>
+              <tr><td>Claude Sonnet</td><td class="score-win">High</td><td class="score-mid">~$0.04</td><td class="score-win">Fast</td><td class="score-win">Strong refusals</td><td><span class="verdict-badge verdict-pick">Pick</span></td></tr>
+              <tr><td>GPT-4o</td><td class="score-win">High</td><td class="score-mid">~$0.06</td><td class="score-win">Fast</td><td class="score-win">Strong</td><td><span class="verdict-badge verdict-ctx">Valid alt.</span></td></tr>
+              <tr><td>Llama 3 70B (self-hosted)</td><td class="score-mid">Medium</td><td class="score-win">~$0.008</td><td class="score-mid">Medium</td><td class="score-low">Needs red-teaming</td><td><span class="verdict-badge verdict-ctx">Cost play</span></td></tr>
+              <tr><td>GPT-3.5-turbo</td><td class="score-low">Low</td><td class="score-win">~$0.01</td><td class="score-win">Very fast</td><td class="score-mid">Moderate</td><td><span class="verdict-badge verdict-skip">Skip</span></td></tr>
+            </tbody>
+          </table>
+          <p style="margin-top:8px;"><strong>Key insight:</strong> Regulation E requires accurate, consistent advice — a hallucinating model creates legal liability. Claude Sonnet wins on safety refusal rate and instruction-following on structured multi-step workflows.</p>
+        </div>
+      </details>
+
+      <!-- Case 3 -->
+      <details class="case">
+        <summary>
+          <span class="case-tag tag-risk">Risk</span>
+          Credit Limit Recommendation Engine
+        </summary>
+        <div class="case-body">
+          <p><strong>Scenario:</strong> The risk team wants an AI system to recommend personalised credit limit increases for eligible customers, with a natural-language rationale the customer can read in the app.</p>
+          <p style="margin-top:10px;"><strong>Two distinct sub-tasks:</strong> (1) predicting the optimal limit from structured data, (2) generating a human-readable explanation of why the limit changed.</p>
+          <table class="score-table">
+            <thead><tr><th>Sub-task</th><th>Best Model Type</th><th>Why</th></tr></thead>
+            <tbody>
+              <tr><td>Limit prediction</td><td class="score-win">Gradient Boosting (LightGBM)</td><td>Tabular data, low latency, SHAP-explainable, easy to audit for bias</td></tr>
+              <tr><td>Explanation generation</td><td class="score-win">Claude Haiku or GPT-4o mini</td><td>Low cost, fast, high-quality short-form text, tone control via system prompt</td></tr>
+              <tr><td>Bias audit</td><td class="score-win">Aequitas / Fairlearn</td><td>Not an LLM — dedicated fairness tooling required for ECOA compliance</td></tr>
+            </tbody>
+          </table>
+          <p style="margin-top:8px;"><strong>Regulatory note:</strong> ECOA (Equal Credit Opportunity Act) requires that adverse action notices state specific reasons. The LLM-generated explanation must be grounded in the model's actual SHAP output — not hallucinated reasons.</p>
+        </div>
+      </details>
+
+      <!-- Case 4 -->
+      <details class="case">
+        <summary>
+          <span class="case-tag tag-ops">Ops</span>
+          Transaction Categorisation at Scale
+        </summary>
+        <div class="case-body">
+          <p><strong>Scenario:</strong> A fintech needs to categorise 50 million transactions/month into 40 merchant categories (groceries, travel, dining, etc.) to power spend analytics in its mobile app.</p>
+          <p style="margin-top:10px;"><strong>Challenge:</strong> Merchant names are messy ("AMZN MKTP US*1F3K2", "SQ *BLUE BOTTLE") — rule-based systems hit a 15% error rate on long-tail merchants.</p>
+          <table class="score-table">
+            <thead><tr><th>Approach</th><th>Accuracy</th><th>Cost/1M txns</th><th>Latency</th><th>Verdict</th></tr></thead>
+            <tbody>
+              <tr><td>Rules engine</td><td class="score-low">~85%</td><td class="score-win">~$2</td><td class="score-win">&lt;1ms</td><td><span class="verdict-badge verdict-skip">Baseline only</span></td></tr>
+              <tr><td>Fine-tuned DistilBERT</td><td class="score-win">~96%</td><td class="score-win">~$8</td><td class="score-win">&lt;15ms</td><td><span class="verdict-badge verdict-pick">Pick (batch)</span></td></tr>
+              <tr><td>GPT-4o mini</td><td class="score-win">~97%</td><td class="score-mid">~$120</td><td class="score-mid">~200ms</td><td><span class="verdict-badge verdict-ctx">Hard cases only</span></td></tr>
+              <tr><td>GPT-4o</td><td class="score-win">~98%</td><td class="score-low">~$900</td><td class="score-mid">~400ms</td><td><span class="verdict-badge verdict-skip">Too expensive</span></td></tr>
+            </tbody>
+          </table>
+          <p style="margin-top:8px;"><strong>Winning pattern:</strong> <strong>Tiered routing</strong> — fine-tuned DistilBERT handles 95% of transactions in batch; GPT-4o mini handles the &lt;5% low-confidence cases. Cost drops from $900 → ~$14 per million while maintaining 97%+ accuracy.</p>
+        </div>
+      </details>
+
+      <!-- Case 5 -->
+      <details class="case">
+        <summary>
+          <span class="case-tag tag-compliance">Compliance</span>
+          Contract &amp; Policy Document Review
+        </summary>
+        <div class="case-body">
+          <p><strong>Scenario:</strong> The legal team at a card issuer needs to review incoming merchant agreement amendments and flag clauses that deviate from standard terms (interchange rates, liability caps, data-use restrictions).</p>
+          <p style="margin-top:10px;"><strong>Key requirements:</strong> Long-context reasoning (contracts can be 40–80 pages), precise clause extraction, citation of the exact paragraph, low hallucination tolerance.</p>
+          <table class="score-table">
+            <thead><tr><th>Model</th><th>Context Window</th><th>Hallucination Risk</th><th>Cost/doc</th><th>Verdict</th></tr></thead>
+            <tbody>
+              <tr><td>Claude Opus (200k ctx)</td><td class="score-win">200,000 tokens</td><td class="score-win">Low</td><td class="score-mid">~$0.80</td><td><span class="verdict-badge verdict-pick">Pick</span></td></tr>
+              <tr><td>GPT-4o (128k ctx)</td><td class="score-win">128,000 tokens</td><td class="score-win">Low</td><td class="score-mid">~$0.60</td><td><span class="verdict-badge verdict-ctx">Valid alt.</span></td></tr>
+              <tr><td>Gemini 1.5 Pro (1M ctx)</td><td class="score-win">1,000,000 tokens</td><td class="score-mid">Medium</td><td class="score-win">~$0.35</td><td><span class="verdict-badge verdict-ctx">Very long docs</span></td></tr>
+              <tr><td>Claude Haiku</td><td class="score-mid">200,000 tokens</td><td class="score-mid">Medium</td><td class="score-win">~$0.08</td><td><span class="verdict-badge verdict-skip">Skip — too risky</span></td></tr>
+            </tbody>
+          </table>
+          <p style="margin-top:8px;"><strong>Key insight:</strong> For compliance work, hallucination risk trumps cost. Claude Opus and GPT-4o's strong instruction-following and citation accuracy justify the premium. Always validate flagged clauses with a human paralegal — use the model to triage, not to decide.</p>
+        </div>
+      </details>
+
     </div>
   </div>
 
