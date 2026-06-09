@@ -503,6 +503,10 @@
 
     try {
       const res  = await fetch('/upload-project', { method: 'POST', body: formData });
+      const resCt = res.headers.get('content-type') || '';
+      if (!resCt.includes('application/json')) {
+        throw new Error('Server returned an unexpected response. Is the Python server running on port 8080?');
+      }
       const data = await res.json();
 
       if (!res.ok || data.error) throw new Error(data.error || 'Server error');
