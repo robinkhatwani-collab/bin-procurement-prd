@@ -338,15 +338,17 @@
   let n8nOnline     = false;
 
   // ── Check n8n reachability on page load ──
-  // Sends a real POST with an empty body and checks the response is JSON
-  // (not an HTML error page from another service on the same port)
+  // Probes the webhook and checks the response is non-empty JSON
+  // A 200 with empty body means n8n is running but the workflow is NOT activated
   async function checkN8n() {
     try {
       const ctrl = new AbortController();
       setTimeout(() => ctrl.abort(), 3000);
-      const res = await fetch(N8N_VALIDATE_URL, { method: 'POST', body: new FormData(), signal: ctrl.signal });
-      const ct  = res.headers.get('content-type') || '';
-      n8nOnline = ct.includes('application/json');
+      const res  = await fetch(N8N_VALIDATE_URL, { method: 'POST', body: new FormData(), signal: ctrl.signal });
+      const ct   = res.headers.get('content-type') || '';
+      const text = await res.text();
+      // Must be JSON AND non-empty — empty body means workflow is inactive
+      n8nOnline = ct.includes('application/json') && text.trim().length > 0;
     } catch {
       n8nOnline = false;
     }
@@ -476,8 +478,16 @@
           }
         }
       } catch (err) {
-        // Timeout or network error — skip validation, proceed anyway
-        stepDone('step1');
+        if (err.name === 'AbortError') {
+          // Genuine timeout — n8n unreachable, skip and proceed
+          stepDone('step1');
+        } else {
+          // Empty body / bad JSON — workflow exists but is NOT activated in n8n
+          loadingSection.classList.remove('visible');
+          uploadSection.style.display = 'block';
+          showError('⚠️ n8n validation workflow is not active. Please open n8n at localhost:5678, import excel-validation.json, and activate the workflow before uploading.');
+          return;
+        }
       }
     } else {
       // n8n offline — skip with a brief pause so the step is visible
