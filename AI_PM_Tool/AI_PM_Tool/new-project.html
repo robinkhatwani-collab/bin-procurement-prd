@@ -478,7 +478,7 @@
           method:  'POST',
           headers: { 'Content-Type': 'application/json' },
           body:    JSON.stringify({ rows: rawRows, fileName: selectedFile.name }),
-          signal:  ctrl
+          signal:  ctrl.signal
         });
         const ct = valRes.headers.get('content-type') || '';
 
