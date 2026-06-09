@@ -338,13 +338,15 @@
   let n8nOnline     = false;
 
   // ── Check n8n reachability on page load ──
+  // Sends a real POST with an empty body and checks the response is JSON
+  // (not an HTML error page from another service on the same port)
   async function checkN8n() {
     try {
-      // Lightweight OPTIONS preflight to see if n8n is up
       const ctrl = new AbortController();
       setTimeout(() => ctrl.abort(), 3000);
-      await fetch(N8N_VALIDATE_URL, { method: 'OPTIONS', signal: ctrl.signal });
-      n8nOnline = true;
+      const res = await fetch(N8N_VALIDATE_URL, { method: 'POST', body: new FormData(), signal: ctrl.signal });
+      const ct  = res.headers.get('content-type') || '';
+      n8nOnline = ct.includes('application/json');
     } catch {
       n8nOnline = false;
     }
@@ -450,21 +452,28 @@
 
         const ctrl = new AbortController();
         setTimeout(() => ctrl.abort(), 15000);
-        const valRes  = await fetch(N8N_VALIDATE_URL, { method: 'POST', body: valForm, signal: ctrl.signal });
-        const valData = await valRes.json();
+        const valRes = await fetch(N8N_VALIDATE_URL, { method: 'POST', body: valForm, signal: ctrl.signal });
+        const ct     = valRes.headers.get('content-type') || '';
 
-        if (!valRes.ok || !valData.passed) {
-          // Validation failed — show Claude's friendly error and go back
-          loadingSection.classList.remove('visible');
-          uploadSection.style.display = 'block';
-          showError(valData.reply || '❌ Excel validation failed. Please check your file matches the expected format.');
-          return;
-        }
-        // Validation passed
-        stepDone('step1');
-        if (valData.warnings && valData.warnings.length) {
-          // Show warnings non-blocking after success
-          console.warn('Validation warnings:', valData.warnings);
+        // If n8n returns HTML (not running / wrong port) treat as offline and skip
+        if (!ct.includes('application/json')) {
+          stepDone('step1');
+          // fall through to upload
+        } else {
+          const valData = await valRes.json();
+
+          if (!valRes.ok || !valData.passed) {
+            // Validation failed — show Claude's friendly error and go back
+            loadingSection.classList.remove('visible');
+            uploadSection.style.display = 'block';
+            showError(valData.reply || '❌ Excel validation failed. Please check your file matches the expected format.');
+            return;
+          }
+          // Validation passed
+          stepDone('step1');
+          if (valData.warnings && valData.warnings.length) {
+            console.warn('Validation warnings:', valData.warnings);
+          }
         }
       } catch (err) {
         // Timeout or network error — skip validation, proceed anyway
