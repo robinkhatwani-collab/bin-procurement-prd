@@ -484,12 +484,16 @@
           }
         }
       } catch (err) {
-        // Any failure — timeout, empty body, bad JSON — all block the upload
         loadingSection.classList.remove('visible');
         uploadSection.style.display = 'block';
-        const msg = err.name === 'AbortError'
-          ? '⚠️ n8n validation timed out. Please check that n8n is running at localhost:5678 and the workflow is active.'
-          : '⚠️ n8n validation workflow is not active. Open n8n at localhost:5678, import excel-validation.json, and activate it before uploading.';
+        let msg;
+        if (err.name === 'AbortError') {
+          msg = '⚠️ n8n validation timed out. Check that n8n is running at localhost:5678.';
+        } else if (err instanceof SyntaxError) {
+          msg = '⚠️ n8n returned an empty response. Re-import excel-validation.json into n8n and activate the workflow, then try again.';
+        } else {
+          msg = '⚠️ n8n validation error: ' + err.message;
+        }
         showError(msg);
         return;
       }
