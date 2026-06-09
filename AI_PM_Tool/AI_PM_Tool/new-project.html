@@ -338,28 +338,29 @@
   let n8nOnline     = false;
 
   // ── Check n8n reachability on page load ──
-  // Probes the webhook and checks the response is non-empty JSON
-  // A 200 with empty body means n8n is running but the workflow is NOT activated
+  // Uses GET /healthz — the only reliable probe that doesn't trigger the workflow.
+  // Workflow activity is verified at actual submit time (not here), because
+  // n8n returns 200 + empty body for both active and inactive workflows on empty POST.
+  const N8N_HEALTH_URL = 'http://localhost:5678/healthz';
+
   async function checkN8n() {
     try {
       const ctrl = new AbortController();
-      setTimeout(() => ctrl.abort(), 3000);
-      const res  = await fetch(N8N_VALIDATE_URL, { method: 'POST', body: new FormData(), signal: ctrl.signal });
-      const ct   = res.headers.get('content-type') || '';
-      const text = await res.text();
-      // Must be JSON AND non-empty — empty body means workflow is inactive
-      n8nOnline = ct.includes('application/json') && text.trim().length > 0;
+      setTimeout(() => ctrl.abort(), 4000);
+      const res  = await fetch(N8N_HEALTH_URL, { signal: ctrl.signal });
+      const data = await res.json();
+      n8nOnline  = data.status === 'ok';
     } catch {
       n8nOnline = false;
     }
+
     n8nBadge.className = `n8n-badge ${n8nOnline ? 'online' : 'offline'}`;
     n8nBadgeText.textContent = n8nOnline
-      ? 'n8n validation active'
-      : 'n8n required — activate workflow before uploading';
-    // Block the submit button when n8n is not active
+      ? 'n8n running — validation active'
+      : 'n8n not running — start n8n before uploading';
     if (!n8nOnline) {
       submitBtn.disabled = true;
-      submitLabel.textContent = 'n8n validation required to upload';
+      submitLabel.textContent = 'Start n8n to enable upload';
     }
   }
   checkN8n();
