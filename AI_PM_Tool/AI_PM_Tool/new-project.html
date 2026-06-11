@@ -278,7 +278,7 @@
       <div style="font-size:17px;font-weight:700;margin-bottom:6px;">Processing your project…</div>
       <div style="font-size:13px;color:var(--text-muted);">This takes just a few seconds</div>
       <div class="loading-steps">
-        <div class="loading-step" id="step1"><span class="step-dot"></span> Validating Excel structure via n8n</div>
+        <div class="loading-step" id="step1"><span class="step-dot"></span> Validating Excel structure &amp; guardrails</div>
         <div class="loading-step" id="step2"><span class="step-dot"></span> Reading &amp; extracting project data</div>
         <div class="loading-step" id="step3"><span class="step-dot"></span> Creating project directory</div>
         <div class="loading-step" id="step4"><span class="step-dot"></span> Generating PRD page</div>
@@ -374,9 +374,11 @@
       }
 
       // ── Find header row ──────────────────────────────────────────────────
+      // Rows 0–2 are always project metadata (objective, scope, etc.) — skip them.
+      // Look for the header row from row index 2 onward (row 3 in the sheet).
       const HEADER_KW = ['step','description','status','dri','responsible','email','date','notes','dependency'];
-      let headerIdx = 0;
-      for (let i = 0; i < Math.min(raw.length, 4); i++) {
+      let headerIdx = 2; // default: row 3 is the header
+      for (let i = 2; i < Math.min(raw.length, 6); i++) {
         const vals = raw[i].map(v => String(v || '').toLowerCase());
         if (vals.some(v => HEADER_KW.some(k => v.includes(k)))) { headerIdx = i; break; }
       }
@@ -446,7 +448,7 @@
 
       let missingCount = 0, badStatus = 0;
       dataRows.forEach((row, i) => {
-        const rowNum = i + headerIdx + 2;
+        const rowNum = i + headerIdx + 2; // +1 for 0-index, +1 for header row itself
         for (const [key, col] of Object.entries(colMap)) {
           if (!row[col]) { missingCount++; if (missingCount <= 4) errors.push(`Row ${rowNum}: "${col}" is empty — required.`); }
         }
