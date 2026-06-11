@@ -1171,6 +1171,9 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         elif self.path == "/api/index-status":
             self.handle_index_status()
             return
+        elif self.path == "/api/context":
+            self.handle_context()
+            return
         return super().do_GET()
 
     def do_POST(self):
@@ -1285,6 +1288,40 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         self.send_header("Access-Control-Allow-Origin", "*")
         self.end_headers()
         self.wfile.write(body)
+
+    def handle_context(self):
+        """Return combined plain-text project context for the n8n chatbot."""
+        try:
+            registry_path = PROJECTS_DIR / "registry.json"
+            if not registry_path.exists():
+                self._json_ok({"data": "No projects found.", "project_count": 0})
+                return
+
+            with open(registry_path, encoding="utf-8") as f:
+                projects = json.load(f)
+
+            parts = []
+            for p in projects:
+                slug = p.get("slug", "")
+                title = p.get("title", slug)
+                tracker = PROJECTS_DIR / slug / "status-tracker.html"
+                if tracker.exists():
+                    with open(tracker, encoding="utf-8") as f:
+                        html = f.read()
+                    # Strip HTML tags for cleaner context
+                    import re as _re
+                    text = _re.sub(r'<[^>]+>', ' ', html)
+                    text = _re.sub(r'\s+', ' ', text).strip()
+                    parts.append(f"=== PROJECT: {title} ===\n{text[:4000]}")
+
+            combined = "\n\n".join(parts) if parts else "No project data available."
+            self._json_ok({
+                "data": combined,
+                "project_count": len(parts),
+                "projects": [p.get("title", p.get("slug")) for p in projects]
+            })
+        except Exception as e:
+            self._json_ok({"data": f"Context error: {e}", "project_count": 0})
 
     def handle_index_status(self):
         engine = get_rag_engine()
