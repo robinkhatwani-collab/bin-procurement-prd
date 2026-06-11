@@ -151,15 +151,12 @@
     .error-box { display: none; background: var(--red-dim); border: 1px solid rgba(248,113,113,.3); border-radius: 12px; padding: 16px 20px; margin-top: 16px; font-size: 13px; color: var(--red); }
     .error-box.visible { display: block; }
 
-    /* N8N VALIDATION BADGE */
-    .n8n-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; letter-spacing: .4px; padding: 4px 11px; border-radius: 99px; margin-top: 12px; }
-    .n8n-badge.online  { background: rgba(52,211,153,.12); color: #34d399; border: 1px solid rgba(52,211,153,.3); }
-    .n8n-badge.offline { background: rgba(245,158,11,.12); color: #f59e0b; border: 1px solid rgba(245,158,11,.3); }
-    .n8n-badge.checking{ background: rgba(255,255,255,.06); color: var(--text-dim); border: 1px solid var(--border); }
-    .n8n-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
-    .n8n-badge.online  .n8n-dot { background: #34d399; box-shadow: 0 0 6px rgba(52,211,153,.6); }
-    .n8n-badge.offline .n8n-dot { background: #f59e0b; }
-    .n8n-badge.checking .n8n-dot { background: var(--text-dim); }
+    /* VALIDATION STATUS BADGE */
+    .val-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; letter-spacing: .4px; padding: 4px 11px; border-radius: 99px; margin-top: 12px; }
+    .val-badge.ready   { background: rgba(52,211,153,.12); color: #34d399; border: 1px solid rgba(52,211,153,.3); }
+    .val-badge.waiting { background: rgba(255,255,255,.06); color: var(--text-dim); border: 1px solid var(--border); }
+    .val-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-dim); flex-shrink: 0; }
+    .val-badge.ready .val-dot { background: #34d399; box-shadow: 0 0 6px rgba(52,211,153,.6); }
 
     /* FORMAT HINT */
     .format-hint { background: var(--surface2); border: 1px solid var(--border); border-radius: 14px; padding: 22px 26px; margin-bottom: 24px; }
@@ -257,11 +254,11 @@
           </div>
         </div>
 
-        <!-- n8n validation status -->
+        <!-- Validation ready badge -->
         <div style="text-align:center;">
-          <span class="n8n-badge checking" id="n8nBadge">
-            <span class="n8n-dot"></span>
-            <span id="n8nBadgeText">Checking n8n validation…</span>
+          <span class="val-badge waiting" id="valBadge">
+            <span class="val-dot"></span>
+            <span id="valBadgeText">Select a file to validate</span>
           </span>
         </div>
 
@@ -317,9 +314,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
-  // ── n8n webhook URL — update if your n8n runs on a different port ──
-  const N8N_VALIDATE_URL = 'http://localhost:5678/webhook/validate-excel';
-
   const dropZone       = document.getElementById('dropZone');
   const fileInput      = document.getElementById('fileInput');
   const fileSelected   = document.getElementById('fileSelected');
@@ -332,39 +326,152 @@
   const uploadSection  = document.getElementById('uploadSection');
   const loadingSection = document.getElementById('loadingSection');
   const successSection = document.getElementById('successSection');
-  const n8nBadge       = document.getElementById('n8nBadge');
-  const n8nBadgeText   = document.getElementById('n8nBadgeText');
+  const valBadge       = document.getElementById('valBadge');
+  const valBadgeText   = document.getElementById('valBadgeText');
 
-  let selectedFile  = null;
-  let n8nOnline     = false;
+  let selectedFile = null;
 
-  // ── Check n8n reachability on page load ──
-  // Uses GET /healthz — the only reliable probe that doesn't trigger the workflow.
-  // Workflow activity is verified at actual submit time (not here), because
-  // n8n returns 200 + empty body for both active and inactive workflows on empty POST.
-  const N8N_HEALTH_URL = 'http://localhost:5678/healthz';
+  // ══════════════════════════════════════════════════════════════════════════
+  // IN-BROWSER EXCEL VALIDATION
+  // All checks run client-side using SheetJS. No n8n dependency.
+  // ══════════════════════════════════════════════════════════════════════════
+  const CARD_DOMAIN_KEYWORDS = [
+    'credit card','debit card','payment card','card launch','card program','card issuance',
+    'card production','card network','card scheme','card processing','cardholder','card holder',
+    'bin','bin procurement','bin range','pan','cvv','cvc',
+    'issuer','issuing','acquiring','acquirer',
+    'visa','mastercard','amex','american express','discover','unionpay','rupay','jcb',
+    'chargeback','dispute','fraud detection','fraud scoring','fraud prevention',
+    'authorization','authorisation','clearing','settlement','net settlement',
+    'settlement file','reconciliation','payment processing','payment gateway',
+    'pos terminal','point of sale','atm','contactless','emv',
+    'reward','rewards','reward points','reward program','reward redemption',
+    'loyalty','loyalty points','loyalty program','loyalty redemption',
+    'tokenization','tokenisation','3d secure','3ds',
+    'credit limit','debit limit','spending limit','card activation','interchange'
+  ];
 
-  async function checkN8n() {
+  const BAD_WORDS = [
+    'fuck','fucking','fucked','shit','shitty','bullshit','ass','asshole','bitch',
+    'bastard','piss','prick','dick','cock','cunt','wanker','twat',
+    'nigger','nigga','faggot','fag','dyke','tranny','spic','kike','chink',
+    'wetback','raghead','cracker','gook','nazi','kkk',
+    'kill you','murder','rape','terrorist','bomb','suicide','self-harm',
+    'porn','pornography','xxx'
+  ];
+
+  async function validateExcel(file) {
+    // Returns { passed: bool, errors: [], warnings: [] }
     try {
-      const ctrl = new AbortController();
-      setTimeout(() => ctrl.abort(), 4000);
-      const res  = await fetch(N8N_HEALTH_URL, { signal: ctrl.signal });
-      const data = await res.json();
-      n8nOnline  = data.status === 'ok';
-    } catch {
-      n8nOnline = false;
-    }
+      const buf  = await file.arrayBuffer();
+      const wb   = XLSX.read(new Uint8Array(buf), { type: 'array', raw: false });
+      const ws   = wb.Sheets[wb.SheetNames[0]];
+      // array-of-arrays, skip totally blank rows
+      const raw  = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '', blankrows: false });
 
-    n8nBadge.className = `n8n-badge ${n8nOnline ? 'online' : 'offline'}`;
-    n8nBadgeText.textContent = n8nOnline
-      ? 'n8n running — validation active'
-      : 'n8n not running — start n8n before uploading';
-    if (!n8nOnline) {
-      submitBtn.disabled = true;
-      submitLabel.textContent = 'Start n8n to enable upload';
+      if (!raw || raw.length === 0) {
+        return { passed: false, errors: ['The file appears empty — no data found on the first sheet.'], warnings: [] };
+      }
+
+      // ── Find header row ──────────────────────────────────────────────────
+      const HEADER_KW = ['step','description','status','dri','responsible','email','date','notes','dependency'];
+      let headerIdx = 0;
+      for (let i = 0; i < Math.min(raw.length, 4); i++) {
+        const vals = raw[i].map(v => String(v || '').toLowerCase());
+        if (vals.some(v => HEADER_KW.some(k => v.includes(k)))) { headerIdx = i; break; }
+      }
+
+      const headers  = raw[headerIdx].map(v => String(v || '').trim());
+      const dataRows = raw.slice(headerIdx + 1)
+        .map(r => {
+          const obj = {};
+          headers.forEach((h, i) => { obj[h || `col_${i}`] = String(r[i] !== undefined ? r[i] : '').trim(); });
+          return obj;
+        })
+        .filter(r => Object.values(r).some(v => v !== ''));
+
+      if (dataRows.length === 0) {
+        return { passed: false, errors: ['No data rows found after the header row. Add at least one milestone row.'], warnings: [] };
+      }
+
+      // ── GUARDRAIL 1: Domain check ────────────────────────────────────────
+      const allText = raw.flat().map(v => String(v || '').toLowerCase()).join(' ') + ' ' + file.name.toLowerCase();
+      const domainOk = CARD_DOMAIN_KEYWORDS.some(kw => allText.includes(kw));
+      if (!domainOk) {
+        return {
+          passed: false,
+          errors: ['❌ Domain rejected: This project does not appear to be in the Credit Card Processing domain.\n\nThis tool only accepts projects related to card issuance, acquiring, fraud, disputes, payments, BIN management, rewards, loyalty, or settlement.\n\nPlease verify your project content.'],
+          warnings: []
+        };
+      }
+
+      // ── GUARDRAIL 2: Content / bad words check ───────────────────────────
+      const allCells = raw.flat().map(v => String(v || '').toLowerCase());
+      const flagged  = [];
+      for (const cell of allCells) {
+        for (const word of BAD_WORDS) {
+          if (flagged.includes(word)) continue;
+          const matched = (word.includes(' ') || word.includes('-'))
+            ? cell.includes(word)
+            : new RegExp('\\b' + word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i').test(cell);
+          if (matched) flagged.push(word);
+        }
+      }
+      if (flagged.length > 0) {
+        return {
+          passed: false,
+          errors: [`❌ Content rejected: Your spreadsheet contains ${flagged.length} inappropriate term(s).\n\nAll content must be professional and workplace-appropriate. Please review every cell, remove offensive language, and re-upload.`],
+          warnings: []
+        };
+      }
+
+      // ── Structural checks ────────────────────────────────────────────────
+      const REQUIRED = [
+        { key: 'step',    patterns: ['step','#','steps'] },
+        { key: 'desc',    patterns: ['description','task','activity'] },
+        { key: 'status',  patterns: ['status'] },
+        { key: 'dri',     patterns: ['dri','owner','responsible','assignee'] },
+        { key: 'email',   patterns: ['email'] },
+      ];
+      const VALID_STATUSES = ['to do','in progress','done','blocked','todo','complete','completed','not started'];
+
+      const colMap = {};
+      const errors = [], warnings = [];
+
+      for (const col of REQUIRED) {
+        const found = headers.find(h => col.patterns.some(p => h.toLowerCase().includes(p)));
+        if (found) colMap[col.key] = found;
+        else errors.push(`Required column missing: "${col.patterns[0]}" — found: ${headers.filter(h=>h).join(', ')}`);
+      }
+
+      let missingCount = 0, badStatus = 0;
+      dataRows.forEach((row, i) => {
+        const rowNum = i + headerIdx + 2;
+        for (const [key, col] of Object.entries(colMap)) {
+          if (!row[col]) { missingCount++; if (missingCount <= 4) errors.push(`Row ${rowNum}: "${col}" is empty — required.`); }
+        }
+        if (colMap.status) {
+          const sv = (row[colMap.status] || '').toLowerCase();
+          if (sv && !VALID_STATUSES.includes(sv)) {
+            badStatus++;
+            if (badStatus <= 3) errors.push(`Row ${rowNum}: Invalid status "${row[colMap.status]}". Use: To Do, In Progress, Done, or Blocked.`);
+          }
+        }
+        if (colMap.email) {
+          const ev = row[colMap.email] || '';
+          if (ev && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(ev)) warnings.push(`Row ${rowNum}: Invalid email "${ev}".`);
+        }
+      });
+
+      if (missingCount > 4) errors.push(`...and ${missingCount - 4} more missing required cells.`);
+      if (badStatus > 3)    errors.push(`...and ${badStatus - 3} more invalid status values.`);
+
+      return { passed: errors.length === 0, errors, warnings };
+
+    } catch (err) {
+      return { passed: false, errors: ['Could not parse the file: ' + err.message + '. Please ensure it is a valid .xlsx file.'], warnings: [] };
     }
   }
-  checkN8n();
 
   function formatBytes(bytes) {
     if (bytes < 1024) return bytes + ' B';
@@ -383,7 +490,9 @@
     fileSize.textContent = formatBytes(file.size);
     fileSelected.classList.add('visible');
     submitBtn.disabled = false;
-    submitLabel.textContent = 'Generate PRD & Status Tracker';
+    submitLabel.textContent = 'Validate & Generate';
+    valBadge.className = 'val-badge ready';
+    valBadgeText.textContent = '✓ Ready to validate';
     hideError();
   }
 
@@ -395,6 +504,8 @@
     fileSelected.classList.remove('visible');
     submitBtn.disabled = true;
     submitLabel.textContent = 'Select a file to continue';
+    valBadge.className = 'val-badge waiting';
+    valBadgeText.textContent = 'Select a file to validate';
     hideError();
   });
 
@@ -451,73 +562,18 @@
     uploadSection.style.display = 'none';
     loadingSection.classList.add('visible');
 
-    // ── Step 1: n8n Excel Validation ──
-    // Parse Excel in the browser first (avoids n8n binary handling issues)
-    // then send rows as JSON to n8n for guardrail checks.
+    // ── Step 1: In-browser Excel Validation (SheetJS — no n8n needed) ──
     stepActive('step1');
-
-    if (n8nOnline) {
-      try {
-        // Parse Excel locally using SheetJS
-        const arrayBuf = await selectedFile.arrayBuffer();
-        const wb       = XLSX.read(new Uint8Array(arrayBuf), { type: 'array', cellDates: true, raw: false });
-        const ws       = wb.Sheets[wb.SheetNames[0]];
-        const rawRows  = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '', blankrows: false });
-
-        if (!rawRows || rawRows.length < 2) {
-          loadingSection.classList.remove('visible');
-          uploadSection.style.display = 'block';
-          showError('❌ The Excel file appears empty or has fewer than 2 rows. Please check the file and re-upload.');
-          return;
-        }
-
-        // Send parsed rows as JSON — n8n no longer needs to handle binary
-        const ctrl = new AbortController();
-        setTimeout(() => ctrl.abort(), 15000);
-        const valRes = await fetch(N8N_VALIDATE_URL, {
-          method:  'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body:    JSON.stringify({ rows: rawRows, fileName: selectedFile.name }),
-          signal:  ctrl.signal
-        });
-        const ct = valRes.headers.get('content-type') || '';
-
-        if (!ct.includes('application/json')) {
-          stepDone('step1');
-        } else {
-          const valData = await valRes.json();
-          if (!valRes.ok || !valData.passed) {
-            loadingSection.classList.remove('visible');
-            uploadSection.style.display = 'block';
-            showError(valData.reply || '❌ Excel validation failed. Please check your file matches the expected format.');
-            return;
-          }
-          stepDone('step1');
-          if (valData.warnings && valData.warnings.length) {
-            console.warn('Validation warnings:', valData.warnings);
-          }
-        }
-      } catch (err) {
-        loadingSection.classList.remove('visible');
-        uploadSection.style.display = 'block';
-        let msg;
-        if (err.name === 'AbortError') {
-          msg = '⚠️ n8n validation timed out. Check that n8n is running at localhost:5678.';
-        } else if (err instanceof SyntaxError) {
-          msg = '⚠️ n8n returned an empty response. Re-import excel-validation.json into n8n and activate the workflow, then try again.';
-        } else {
-          msg = '⚠️ n8n validation error: ' + err.message;
-        }
-        showError(msg);
-        return;
-      }
-    } else {
-      // n8n offline — hard block, do not proceed
+    const validation = await validateExcel(selectedFile);
+    if (!validation.passed) {
       loadingSection.classList.remove('visible');
       uploadSection.style.display = 'block';
-      showError('⚠️ n8n validation is required before uploading. Please start n8n at localhost:5678 and activate the Excel Validation workflow.');
+      const msg = validation.errors.join('\n\n');
+      showError(msg);
       return;
     }
+    if (validation.warnings.length) console.warn('Validation warnings:', validation.warnings);
+    stepDone('step1');
 
     // ── Steps 2–6: animate remaining steps ──
     animateSteps([
