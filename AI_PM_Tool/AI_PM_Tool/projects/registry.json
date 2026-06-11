@@ -7,7 +7,7 @@
     "done": 4,
     "progress": 13,
     "dris": 4,
-    "updated": "2026-05-19T19:30:21.308865"
+    "updated": "2026-06-09T09:39:42.076747"
   },
   {
     "slug": "reward-rule-creation-api",
@@ -17,7 +17,7 @@
     "done": 4,
     "progress": 13,
     "dris": 4,
-    "updated": "2026-05-19T15:49:33.787444"
+    "updated": "2026-06-09T09:48:56.303000"
   },
   {
     "slug": "trace-file-log-optimization",
@@ -38,5 +38,15 @@
     "progress": 13,
     "dris": 4,
     "updated": "2026-05-19T15:50:28.880978"
+  },
+  {
+    "slug": "reward-rule-api",
+    "title": "Reward Rule API",
+    "objective": "Tracking the Status of Reward Rule API",
+    "total": 31,
+    "done": 4,
+    "progress": 13,
+    "dris": 4,
+    "updated": "2026-06-11T06:27:16.848243"
   }
 ]
