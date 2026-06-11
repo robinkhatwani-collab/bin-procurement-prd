@@ -1290,7 +1290,8 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         self.wfile.write(body)
 
     def handle_context(self):
-        """Return combined plain-text project context for the n8n chatbot."""
+        """Return clean project context for the n8n chatbot — strips CSS/JS, keeps data."""
+        import re as _re
         try:
             registry_path = PROJECTS_DIR / "registry.json"
             if not registry_path.exists():
@@ -1298,27 +1299,39 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                 return
 
             with open(registry_path, encoding="utf-8") as f:
-                projects = json.load(f)
+                all_projects = json.load(f)
 
             parts = []
-            for p in projects:
-                slug = p.get("slug", "")
+            found_titles = []
+            for p in all_projects:
+                slug  = p.get("slug", "")
                 title = p.get("title", slug)
                 tracker = PROJECTS_DIR / slug / "status-tracker.html"
-                if tracker.exists():
-                    with open(tracker, encoding="utf-8") as f:
-                        html = f.read()
-                    # Strip HTML tags for cleaner context
-                    import re as _re
-                    text = _re.sub(r'<[^>]+>', ' ', html)
-                    text = _re.sub(r'\s+', ' ', text).strip()
-                    parts.append(f"=== PROJECT: {title} ===\n{text[:4000]}")
+                if not tracker.exists():
+                    continue  # skip stale registry entries
 
-            combined = "\n\n".join(parts) if parts else "No project data available."
+                with open(tracker, encoding="utf-8") as f:
+                    html = f.read()
+
+                # Remove <style>…</style> and <script>…</script> blocks entirely
+                html = _re.sub(r'<style[^>]*>[\s\S]*?</style>', '', html, flags=_re.IGNORECASE)
+                html = _re.sub(r'<script[^>]*>[\s\S]*?</script>', '', html, flags=_re.IGNORECASE)
+                html = _re.sub(r'<head[^>]*>[\s\S]*?</head>', '', html, flags=_re.IGNORECASE)
+
+                # Strip remaining HTML tags
+                text = _re.sub(r'<[^>]+>', ' ', html)
+                # Collapse whitespace
+                text = _re.sub(r'[ \t]+', ' ', text)
+                text = _re.sub(r'\n{3,}', '\n\n', text).strip()
+
+                parts.append(f"=== PROJECT: {title} (slug: {slug}) ===\n{text[:5000]}")
+                found_titles.append(title)
+
+            combined = "\n\n".join(parts) if parts else "No project data available yet. Add a project first."
             self._json_ok({
                 "data": combined,
                 "project_count": len(parts),
-                "projects": [p.get("title", p.get("slug")) for p in projects]
+                "projects": found_titles
             })
         except Exception as e:
             self._json_ok({"data": f"Context error: {e}", "project_count": 0})
