@@ -496,8 +496,9 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
           <li>Adds project card to the central dashboard with a live link</li>
           <li>Flags security steps (Column J = Y) — AI monitoring disabled</li>
         </ul>
-        <p style="margin-top:10px"><strong>Agentic behaviour:</strong> Schema validation with intelligent error messaging. Adaptive layout — card view under 10 steps, table view for 10+.</p>
-        <p style="margin-top:8px"><strong>Output:</strong> <code>project-{slug}.html</code> added to dashboard.</p>
+        <p style="margin-top:10px"><strong>Agentic behaviour:</strong> Full in-browser validation pipeline (SheetJS) before upload — domain guardrail (40+ credit card keywords), content guardrail (offensive language), structural checks (required columns, status values, email format). Adaptive layout — card view under 10 steps, table view for 10+.</p>
+        <p style="margin-top:8px"><strong>Validation workflow:</strong> <code>excel-validation.json</code> (n8n) augments browser validation for legacy flows. Browser-side SheetJS parse + guardrails run first — no server dependency for validation.</p>
+        <p style="margin-top:6px"><strong>Output:</strong> <code>projects/{slug}/prd.html</code> + <code>projects/{slug}/status-tracker.html</code> added to dashboard. <code>projects/registry.json</code> updated.</p>
       </div>
     </div>
 
@@ -524,7 +525,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);color:var(--
           <li>Prompt caching applied to repeated project context — reduces query cost by ~70%</li>
           <li>Out-of-scope questions (e.g. general advice) rejected before any LLM call — <em>Scope Guard node</em></li>
         </ul>
-        <p style="margin-top:10px"><strong>Implementation (POC):</strong> Orchestrated by an <strong>n8n workflow</strong> running locally. The chat panel POSTs to an n8n Webhook → n8n fetches live tracker HTML → Scope Guard IF node filters off-topic questions → Claude Sonnet called via Anthropic API → answer returned to UI. See <a href="#n8n-spec" style="color:var(--secondary)">Section 12</a> for the full node-by-node spec.</p>
+        <p style="margin-top:10px"><strong>Implementation (POC):</strong> Orchestrated by an <strong>n8n workflow</strong> running locally. The chat panel POSTs to an n8n Webhook → n8n calls <code>/api/context</code> on the Python server (returns all active project data stripped of CSS/JS) → Scope Guard IF node filters off-topic questions → Claude Sonnet called via Anthropic API → answer returned to UI. See <a href="#n8n-spec" style="color:var(--secondary)">Section 12</a> for the full node-by-node spec.</p>
         <p style="margin-top:8px"><strong>Agentic behaviour:</strong> Plans a sequence of n8n tool calls to answer complex queries. Does not answer in one static prompt — decomposes the question first. (<em>Agentic RAG loop</em>)</p>
       </div>
     </div>
@@ -927,12 +928,13 @@ Provide: (1) blocked_steps, (2) cascade_risks with impact, (3) critical_path, (4
   <table>
     <thead><tr><th>Deliverable</th><th>Learning Concepts Applied</th><th>Description</th></tr></thead>
     <tbody>
-      <tr><td><strong>Web Upload UI</strong></td><td>—</td><td>Single-page web form for Excel upload; schema validation with inline error feedback</td></tr>
-      <tr><td><strong>Agent 1 — Tracker Generator</strong></td><td>Tokens</td><td>Python script; parses .xlsx, generates project-{slug}.html with RAG, progress bar, steps table</td></tr>
-      <tr><td><strong>Dashboard (index.html)</strong></td><td>—</td><td>Central hub showing all generated project cards; each card links to its tracker HTML page</td></tr>
-      <tr><td><strong>Agent 3 — Email Monitor</strong></td><td>Perceive→Plan→ActHHH</td><td>Python script (cron); reads project Excel; sends SMTP emails; logs to email-log.json</td></tr>
-      <tr><td><strong>Agent 4 — Dependency Evaluator</strong></td><td>Knowledge GraphSMART Goals</td><td>Python script; parses Column I dependency graph; outputs blocked steps + milestone JSON</td></tr>
-      <tr><td><strong>Agent 2 — Chatbot UI + n8n Workflow</strong></td><td>RAGAgentic RAGn8n</td><td>Chat panel POSTs to n8n Webhook; n8n fetches live tracker HTML, runs Scope Guard, calls Claude Sonnet via Anthropic API, returns answer. Workflow exported as <code>agent2-chatbot.json</code>. See <a href="#n8n-spec" style="color:var(--secondary)">Section 12</a>.</td></tr>
+      <tr><td><strong>Web Upload UI</strong></td><td>Prompt Eng · Guardrails</td><td>In-browser SheetJS parse + domain/content/structural guardrails. On pass: POST to Python server → PRD + Status Tracker generated. <code>new-project.html</code></td></tr>
+      <tr><td><strong>Excel Validation Guardrails</strong></td><td>Guardrails · Content Safety</td><td>Browser-side: domain check (40+ credit card keywords), bad-words check, required column check, status/email validation. Legacy n8n flow: <code>excel-validation.json</code></td></tr>
+      <tr><td><strong>Agent 1 — Tracker Generator</strong></td><td>Tokens · Grounding</td><td>Python server (<code>server.py</code>); parses .xlsx, generates <code>projects/{slug}/prd.html</code> + <code>status-tracker.html</code>; updates <code>registry.json</code></td></tr>
+      <tr><td><strong>Dashboard</strong></td><td>—</td><td>Central hub (<code>default.html</code>) showing all generated project cards; each card links to its PRD and tracker. <code>projects.html</code> for full summary view.</td></tr>
+      <tr><td><strong>Agent 2 — Chatbot UI + n8n Workflow</strong></td><td>RAG · Agentic RAG · n8n</td><td>Chat panel POSTs to n8n Webhook; n8n calls <code>/api/context</code> to get all project data, runs Scope Guard, calls Claude Sonnet, returns answer. Workflow: <code>agent2-chatbot.json</code>. See <a href="#n8n-spec" style="color:var(--secondary)">Section 12</a>.</td></tr>
+      <tr><td><strong>Agent 3 — Email Monitor</strong></td><td>Perceive→Plan→Act · HHH</td><td>Planned. Python script (cron); reads project data; sends HHH-compliant DRI deadline emails.</td></tr>
+      <tr><td><strong>Agent 4 — Dependency Evaluator</strong></td><td>Knowledge Graph · SMART Goals</td><td>Planned. Parses dependency graph; outputs blocked steps + SMART milestone JSON.</td></tr>
     </tbody>
   </table>
 
@@ -940,17 +942,19 @@ Provide: (1) blocked_steps, (2) cascade_risks with impact, (3) critical_path, (4
   <table>
     <thead><tr><th>File</th><th>Purpose</th></tr></thead>
     <tbody>
-      <tr><td><code>index.html</code></td><td>This PRD — Learning in Practice + full product spec</td></tr>
-      <tr><td><code>upload.html</code></td><td>Excel upload UI (Agent 1 trigger)</td></tr>
-      <tr><td><code>agent1.py</code></td><td>HTML tracker generator — reads Excel, outputs project-{slug}.html</td></tr>
-      <tr><td><code>agent3.py</code></td><td>Deadline monitor — HHH-compliant DRI emails via SMTP</td></tr>
-      <tr><td><code>agent4.py</code></td><td>Knowledge Graph traversal — blocked steps + SMART milestone JSON</td></tr>
-      <tr><td><code>chat.js</code></td><td>Agent 2 frontend — POSTs to n8n Webhook; renders reply in chat panel</td></tr>
-      <tr><td><code>agent2-chatbot.json</code></td><td>n8n workflow export — import into n8n to activate Agent 2</td></tr>
-      <tr><td><code>projects/{slug}/input.xlsx</code></td><td>Source Excel file per project</td></tr>
-      <tr><td><code>projects/{slug}/tracker.html</code></td><td>Generated status tracker per project</td></tr>
-      <tr><td><code>email-log.json</code></td><td>Agent 3 send log with full audit trail</td></tr>
-      <tr><td><code>project-index.json</code></td><td>Shared project registry — all agents read this</td></tr>
+      <tr><td><code>index.html</code></td><td>This PRD — Learning in Practice + full product spec (also served at GitHub Pages root)</td></tr>
+      <tr><td><code>default.html</code></td><td>Dashboard landing page — links to all tools</td></tr>
+      <tr><td><code>new-project.html</code></td><td>Excel upload UI with in-browser SheetJS validation + guardrails</td></tr>
+      <tr><td><code>projects.html</code></td><td>All Projects summary hub — cards + table view</td></tr>
+      <tr><td><code>server.py</code></td><td>Python HTTP server — handles upload, chat, reindex, context endpoints</td></tr>
+      <tr><td><code>start_server.sh</code></td><td>Server start wrapper — used by launchd plist for auto-start at login</td></tr>
+      <tr><td><code>agent2-chatbot.json</code></td><td>n8n workflow — import into n8n to activate Agent 2 chatbot</td></tr>
+      <tr><td><code>excel-validation.json</code></td><td>n8n workflow — legacy Excel validation with domain + content guardrails</td></tr>
+      <tr><td><code>projects/registry.json</code></td><td>Shared project registry — all agents read this; updated on every upload</td></tr>
+      <tr><td><code>projects/{slug}/prd.html</code></td><td>Generated PRD page per project</td></tr>
+      <tr><td><code>projects/{slug}/status-tracker.html</code></td><td>Generated live status tracker per project</td></tr>
+      <tr><td><code>ai-learning.html</code></td><td>AI Learning Hub — 6-week curriculum, 6 weeks complete</td></tr>
+      <tr><td><code>learning-cards.html</code></td><td>Public GitHub Pages learning cards — shareable URL</td></tr>
     </tbody>
   </table>
 </div>
@@ -974,8 +978,8 @@ Provide: (1) blocked_steps, (2) cascade_risks with impact, (3) critical_path, (4
       <tr><td><strong>2</strong></td><td><span class="badge badge-gray">Set</span></td><td>Extract Fields</td><td>Maps incoming JSON to clean variables</td><td><code>user_message</code> ← body.message · <code>history</code> ← body.history · <code>conv_id</code> ← body.conversation_id</td></tr>
       <tr><td><strong>3</strong></td><td><span class="badge badge-amber">IF</span></td><td>Scope Guard</td><td>Rejects out-of-scope questions before any LLM call is made</td><td>True branch (in scope): message contains project / step / status / overdue / DRI / milestone / blocked / tracker · False branch → Node 4a</td></tr>
       <tr><td><strong>4a</strong></td><td><span class="badge badge-gray">Respond to Webhook</span></td><td>Out-of-Scope Reply</td><td>Returns boundary message immediately; no LLM called</td><td>Body: <code>&#123; "reply": "I can only answer questions about project status, steps, DRIs, and timelines." &#125;</code></td></tr>
-      <tr><td><strong>4b</strong></td><td><span class="badge badge-blue">HTTP Request</span></td><td>Fetch Tracker HTML</td><td>Pulls the live tracker page from the local server</td><td>Method: GET · URL: <code>http://localhost:8080/bin-tracker</code> · Output: raw HTML string. For multi-project: loop over <code>project-index.json</code> URLs.</td></tr>
-      <tr><td><strong>5</strong></td><td><span class="badge badge-purple">Code</span></td><td>Parse Tracker HTML</td><td>Extracts structured project data from raw HTML</td><td>JS: parse step rows (number, description, DRI, status, dates), RAG status, overdue count · Output: <code>project_context_json</code> string</td></tr>
+      <tr><td><strong>4b</strong></td><td><span class="badge badge-blue">HTTP Request</span></td><td>Fetch Tracker HTML</td><td>Fetches combined project context from the Python server</td><td>Method: GET · URL: <code>http://localhost:8080/api/context</code> · Returns JSON: <code>&#123; data, project_count, projects[] &#125;</code> — all active projects stripped of CSS/JS · <code>onError: continueRegularOutput</code></td></tr>
+      <tr><td><strong>5</strong></td><td><span class="badge badge-purple">Code</span></td><td>Parse Tracker HTML</td><td>Reads context from /api/context JSON response</td><td>JS: reads <code>resp.data</code> → cleans CSS remnants → outputs <code>project_context</code> string + project list · <code>onError: continueRegularOutput</code></td></tr>
       <tr><td><strong>6</strong></td><td><span class="badge badge-purple">Code</span></td><td>Build Prompt Context</td><td>Assembles the full LLM input from project data + conversation history</td><td>Combines <code>project_context_json</code> + <code>history[]</code> into a structured context string · Tags repeated project data with Anthropic prompt cache marker to reduce cost ~70%</td></tr>
       <tr><td><strong>7</strong></td><td><span class="badge badge-blue">HTTP Request</span></td><td>Claude API Call</td><td>Sends context + user question to Claude Sonnet</td><td>POST <code>https://api.anthropic.com/v1/messages</code> · Header: <code>x-api-key: {{ANTHROPIC_API_KEY}}</code> · Model: <code>claude-sonnet-4-6</code> · Max tokens: 300 · System prompt: see below</td></tr>
       <tr><td><strong>8</strong></td><td><span class="badge badge-purple">Code</span></td><td>Format Response</td><td>Extracts clean answer text from Claude's API response envelope</td><td><code>response.content[0].text</code> · Appends <code>sources: ["tracker.html"]</code> and <code>timestamp</code></td></tr>
@@ -1046,7 +1050,7 @@ async function sendMessage(userMessage, history) {
       <tr><td><strong>n8n running locally</strong></td><td>Install via <code>npm install -g n8n</code> then <code>n8n start</code> · Default port: 5678 · Must be running when the chat panel is in use</td></tr>
       <tr><td><strong>Workflow import</strong></td><td>Import <code>agent2-chatbot.json</code> into n8n UI at <code>http://localhost:5678</code> · Activate the workflow</td></tr>
       <tr><td><strong>Anthropic API Key</strong></td><td>Set <code>ANTHROPIC_API_KEY</code> as an n8n credential (HTTP Header Auth) or environment variable · Never hardcoded in workflow JSON</td></tr>
-      <tr><td><strong>Python server running</strong></td><td><code>bash start_server.sh</code> must be active so n8n can fetch <code>http://localhost:8080/bin-tracker</code></td></tr>
+      <tr><td><strong>Python server running</strong></td><td><code>bash start_server.sh</code> must be active (auto-started via launchd). n8n fetches <code>http://localhost:8080/api/context</code> — returns all active project data as clean text.</td></tr>
       <tr><td><strong>CORS</strong></td><td>n8n Webhook node handles CORS by default · No extra config needed for local use</td></tr>
     </tbody>
   </table>
@@ -1436,6 +1440,50 @@ function showArchTab(tab) {
   </div>
 
   <div>
+
+    <!-- Jun 9–11 2026 -->
+    <div style="margin-bottom:28px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+        <div style="background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.3);border-radius:8px;padding:5px 14px;font-size:.78rem;font-weight:700;color:var(--green);white-space:nowrap;">Jun 9–11 2026</div>
+        <div style="flex:1;height:1px;background:var(--border2);"></div>
+        <div style="font-size:.72rem;color:var(--text-dim);white-space:nowrap;">Session 5</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+
+        <div style="background:var(--surface2);border:1px solid var(--border);border-left:4px solid var(--green);border-radius:10px;padding:14px 18px;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+            <span style="font-size:.72rem;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:.7px;">🛠️ Built</span>
+            <span style="font-size:.82rem;font-weight:700;color:var(--text);">In-Browser Excel Validation + Guardrails</span>
+          </div>
+          <p style="font-size:.82rem;color:var(--text-muted);margin:0;">Replaced n8n binary-handling validation with SheetJS browser-side parsing. Implemented 3-layer guardrail system: Domain Check (40+ credit card keywords — rejects non-domain projects), Content Check (bad-words regex with word boundaries), Structural Check (required columns, status values, email format). Auto-detects header row, skips first 3 metadata rows.</p>
+        </div>
+
+        <div style="background:var(--surface2);border:1px solid var(--border);border-left:4px solid var(--green);border-radius:10px;padding:14px 18px;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+            <span style="font-size:.72rem;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:.7px;">🛠️ Built</span>
+            <span style="font-size:.82rem;font-weight:700;color:var(--text);">Agent 2 Chatbot — /api/context Endpoint</span>
+          </div>
+          <p style="font-size:.82rem;color:var(--text-muted);margin:0;">Added <code style="font-size:.78rem;background:var(--surface3);padding:1px 6px;border-radius:4px;">GET /api/context</code> to the Python server — strips CSS/JS from all project tracker HTML, returns clean combined text. Updated n8n workflow URL from broken <code style="font-size:.78rem;background:var(--surface3);padding:1px 6px;border-radius:4px;">/bin-tracker</code> (404) to <code style="font-size:.78rem;background:var(--surface3);padding:1px 6px;border-radius:4px;">/api/context</code>. Fixed field name mismatch (<code style="font-size:.78rem;background:var(--surface3);padding:1px 6px;border-radius:4px;">html</code> → <code style="font-size:.78rem;background:var(--surface3);padding:1px 6px;border-radius:4px;">project_context</code>) that caused "no information" replies.</p>
+        </div>
+
+        <div style="background:var(--surface2);border:1px solid var(--border);border-left:4px solid var(--green);border-radius:10px;padding:14px 18px;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+            <span style="font-size:.72rem;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:.7px;">🔧 Fixed</span>
+            <span style="font-size:.82rem;font-weight:700;color:var(--text);">n8n onError: stop → continueRegularOutput (all nodes)</span>
+          </div>
+          <p style="font-size:.82rem;color:var(--text-muted);margin:0;">Root cause of all "empty response" issues: n8n's default <code style="font-size:.78rem;background:var(--surface3);padding:1px 6px;border-radius:4px;">onError: stop</code> silently killed the workflow before <code style="font-size:.78rem;background:var(--surface3);padding:1px 6px;border-radius:4px;">respondToWebhook</code> was reached when any node failed (Claude API, HTTP fetch). Fixed across both <code style="font-size:.78rem;background:var(--surface3);padding:1px 6px;border-radius:4px;">agent2-chatbot.json</code> and <code style="font-size:.78rem;background:var(--surface3);padding:1px 6px;border-radius:4px;">excel-validation.json</code>.</p>
+        </div>
+
+        <div style="background:var(--surface2);border:1px solid var(--border);border-left:4px solid var(--secondary);border-radius:10px;padding:14px 18px;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+            <span style="font-size:.72rem;font-weight:800;color:var(--secondary);text-transform:uppercase;letter-spacing:.7px;">📚 Learned</span>
+            <span style="font-size:.82rem;font-weight:700;color:var(--text);">Weeks 5 &amp; 6 Published — Safety, Benchmarks, Fine-Tuning, AI Strategy</span>
+          </div>
+          <p style="font-size:.82rem;color:var(--text-muted);margin:0;">Week 5 (19 topics, 6 phases): AI Safety, Bias/Fairness, Hallucinations, XAI, Red Teaming, GDPR/CCPA, EU AI Act, AI Leaderboards &amp; Benchmarks, MLCommons, Model Selection Framework, Prompt Engineering with credit card case studies. Week 6 (18 topics, 5 phases): Fine-Tuning types (LoRA/DPO/RLHF), Embeddings &amp; Vector DBs, Data Strategy, MLOps, AI PRDs, A/B Testing, Business Models, AI ROI, GTM.</p>
+        </div>
+
+      </div>
+    </div>
 
     <!-- Jun 5 2026 -->
     <div style="margin-bottom:28px;">
