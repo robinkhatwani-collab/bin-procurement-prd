@@ -28,41 +28,6 @@
     },
 
     {
-      "id": "node-3",
-      "name": "Scope Guard",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
-      "position": [680, 300],
-      "parameters": {
-        "conditions": {
-          "options": { "caseSensitive": false },
-          "conditions": [
-            {
-              "id": "c1",
-              "leftValue": "={{ $json.user_message }}",
-              "rightValue": "project|step|status|overdue|dri|milestone|blocked|tracker|risk|deadline|phase|assignee|owner|complete|progress|launch|dependent|dependency|bin|reward|migration|trace|aws|all project|summary|which project|list project",
-              "operator": { "type": "string", "operation": "regex" }
-            }
-          ],
-          "combinator": "and"
-        }
-      }
-    },
-
-    {
-      "id": "node-4a",
-      "name": "Out-of-Scope Reply",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1,
-      "position": [900, 500],
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "={{ JSON.stringify({ reply: \"I can only answer questions about project status, steps, DRI assignments, deadlines, and milestones. Please ask something related to your tracked projects.\", sources: [], timestamp: new Date().toISOString() }) }}",
-        "options": { "responseCode": 200 }
-      }
-    },
-
-    {
       "id": "node-4b",
       "name": "Fetch Registry",
       "type": "n8n-nodes-base.httpRequest",
@@ -224,13 +189,7 @@
       "main": [[{ "node": "Extract Fields", "type": "main", "index": 0 }]]
     },
     "Extract Fields": {
-      "main": [[{ "node": "Scope Guard", "type": "main", "index": 0 }]]
-    },
-    "Scope Guard": {
-      "main": [
-        [{ "node": "Fetch Registry",    "type": "main", "index": 0 }],
-        [{ "node": "Out-of-Scope Reply", "type": "main", "index": 0 }]
-      ]
+      "main": [[{ "node": "Fetch Registry", "type": "main", "index": 0 }]]
     },
     "Fetch Registry": {
       "main": [[{ "node": "Identify Project", "type": "main", "index": 0 }]]
