@@ -35,7 +35,7 @@
       "position": [900, 140],
       "parameters": {
         "method": "GET",
-        "url": "http://localhost:8080/projects/registry.json",
+        "url": "http://127.0.0.1:8080/projects/registry.json",
         "options": {
           "response": {
             "response": { "responseFormat": "text" }
@@ -85,7 +85,7 @@
       "position": [1560, 60],
       "parameters": {
         "method": "GET",
-        "url": "=http://localhost:8080/projects/{{ $json.matched_slug }}/status-tracker.html",
+        "url": "=http://127.0.0.1:8080/projects/{{ $json.matched_slug }}/status-tracker.html",
         "options": {
           "response": {
             "response": { "responseFormat": "text" }
